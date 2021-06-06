@@ -1,0 +1,25 @@
+image: maven:3-jdk-11
+
+cache:
+  paths:
+    - .m2/
+
+stages:
+  - build
+  - deploy
+
+maven-build:
+  image: maven:3-jdk-11
+  stage: build
+  script: "mvn -Pproduction clean package -DskipTests"
+
+deploy:
+  stage: deploy
+  image: ruby:latest
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=$APP_NAME --api-key=$HEROKU_API_KEY
+  only:
+    - master
