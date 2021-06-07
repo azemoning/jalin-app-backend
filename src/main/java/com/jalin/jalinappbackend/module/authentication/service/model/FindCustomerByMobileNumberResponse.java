@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FindCustomerByMobilePhoneResponse {
+public class FindCustomerByMobileNumberResponse {
     private Boolean success;
     private String fullName;
     private String mobileNumber;

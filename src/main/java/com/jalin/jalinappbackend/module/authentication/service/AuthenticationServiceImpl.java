@@ -5,7 +5,7 @@ import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
-import com.jalin.jalinappbackend.module.authentication.service.model.FindCustomerByMobilePhoneResponse;
+import com.jalin.jalinappbackend.module.authentication.service.model.FindCustomerByMobileNumberResponse;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +33,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         try {
-            ResponseEntity<FindCustomerByMobilePhoneResponse> response = restTemplateUtility.initialize()
+            ResponseEntity<FindCustomerByMobileNumberResponse> response = restTemplateUtility.initialize()
                     .getForEntity(
                             BASE_URL + FIND_CUSTOMER_BY_MOBILE_PHONE_ENDPOINT + mobileNumberRequestBody,
-                            FindCustomerByMobilePhoneResponse.class);
+                            FindCustomerByMobileNumberResponse.class);
 
             User user = userRepository.save(new User(
                     userRequestBody.getEmail(),
