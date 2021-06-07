@@ -12,24 +12,27 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_details")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class UserDetails {
     @Id
-    @GeneratedValue
-    private UUID userId;
-    private String email;
-    private String password;
+    private UUID userDetailsId;
+    private String fullName;
+    private String address;
+    private String accountNumber;
+    private String jalinId;
+    private String displayName;
+    private String mobileNumber;
+    private String profilePicture;
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
     @CreationTimestamp
     private Date createdDate;
     @UpdateTimestamp
     private Date modifiedDate;
-
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
 }
