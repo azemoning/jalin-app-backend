@@ -23,6 +23,9 @@ public class User {
     private UUID userId;
     private String email;
     private String password;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
     @CreationTimestamp
     private Date createdDate;
     @UpdateTimestamp
@@ -31,5 +34,11 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public User(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 }
