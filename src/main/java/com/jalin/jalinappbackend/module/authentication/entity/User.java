@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -27,9 +27,9 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
     @CreationTimestamp
-    private Date createdDate;
+    private Instant createdDate;
     @UpdateTimestamp
-    private Date modifiedDate;
+    private Instant modifiedDate;
 
     public User(String email, String password) {
         this.email = email;

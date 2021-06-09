@@ -7,7 +7,9 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,13 +24,12 @@ public class RegisterRequest {
     @NotBlank
     @Size(min = 8)
     private String password;
-
     @NotBlank
     private String idCardNumber;
     @NotBlank
     private String fullName;
-    @NotBlank
-    private String dateOfBirth;
+    @NotNull
+    private LocalDate dateOfBirth;
     @NotBlank
     private String address;
     @NotBlank
@@ -39,7 +40,6 @@ public class RegisterRequest {
     private String subDistrict;
     @NotBlank
     private String postalCode;
-
     @NotBlank
     private String maritalStatus;
     @NotBlank
