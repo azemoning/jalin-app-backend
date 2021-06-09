@@ -8,6 +8,7 @@ import com.jalin.jalinappbackend.module.authentication.jwt.JwtTokenUtility;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.LoginRequest;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.RegisterRequest;
 import com.jalin.jalinappbackend.module.authentication.service.AuthenticationService;
+import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,32 +25,18 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class AuthenticationController {
     @Autowired
+    private ModelMapperUtility modelMapperUtility;
+    @Autowired
     private JwtTokenUtility jwtTokenUtility;
     @Autowired
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest requestBody) {
-        User newUser = new User();
-        newUser.setEmail(requestBody.getEmail());
-        newUser.setPassword(requestBody.getPassword());
-
-        UserDetails newUserDetails = new UserDetails();
-        newUserDetails.setMobileNumber(requestBody.getMobileNumber());
-        newUserDetails.setIdCardNumber(requestBody.getIdCardNumber());
-        newUserDetails.setFullName(requestBody.getFullName());
-        newUserDetails.setDateOfBirth(requestBody.getDateOfBirth());
-        newUserDetails.setAddress(requestBody.getAddress());
-        newUserDetails.setProvince(requestBody.getProvince());
-        newUserDetails.setCity(requestBody.getCity());
-        newUserDetails.setSubDistrict(requestBody.getSubDistrict());
-        newUserDetails.setPostalCode(requestBody.getPostalCode());
-        newUserDetails.setMaritalStatus(requestBody.getMaritalStatus());
-        newUserDetails.setBankingGoals(requestBody.getBankingGoals());
-        newUserDetails.setOccupation(requestBody.getBankingGoals());
-        newUserDetails.setSourceOfIncome(requestBody.getSourceOfIncome());
-        newUserDetails.setIncomeRange(requestBody.getIncomeRange());
-
+        User newUser = modelMapperUtility.initialize()
+                .map(requestBody, User.class);
+        UserDetails newUserDetails = modelMapperUtility.initialize()
+                .map(requestBody, UserDetails.class);
         authenticationService.register(newUser, newUserDetails);
         return new ResponseEntity<>(
                 new SuccessResponse(true, "User registered successfully"),
