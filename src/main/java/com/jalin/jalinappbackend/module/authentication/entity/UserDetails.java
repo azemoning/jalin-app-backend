@@ -8,7 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +23,7 @@ public class UserDetails {
     private UUID userDetailsId;
     private String idCardNumber;
     private String fullName;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String address;
     private String province;
     private String city;
@@ -47,7 +48,7 @@ public class UserDetails {
     @JoinColumn(name = "user_id")
     private User user;
     @CreationTimestamp
-    private Date createdDate;
+    private Instant createdDate;
     @UpdateTimestamp
-    private Date modifiedDate;
+    private Instant modifiedDate;
 }
