@@ -20,9 +20,24 @@ import java.util.UUID;
 public class UserDetails {
     @Id
     private UUID userDetailsId;
+    private String idCardNumber;
     private String fullName;
+    private String dateOfBirth;
     private String address;
+    private String province;
+    private String city;
+    private String subDistrict;
+    private String postalCode;
+    private String idCardImage;
+
+    private String maritalStatus;
+    private String bankingGoals;
+    private String occupation;
+    private String sourceOfIncome;
+    private String incomeRange;
+
     private String accountNumber;
+
     private String jalinId;
     private String displayName;
     private String mobileNumber;
