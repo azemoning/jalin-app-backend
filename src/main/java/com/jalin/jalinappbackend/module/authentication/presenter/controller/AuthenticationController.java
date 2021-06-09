@@ -39,7 +39,7 @@ public class AuthenticationController {
                 .map(requestBody, UserDetails.class);
         authenticationService.register(newUser, newUserDetails);
         return new ResponseEntity<>(
-                new SuccessResponse(true, "User registered successfully"),
+                new SuccessResponse(true, "User successfully registered "),
                 HttpStatus.CREATED);
     }
 
