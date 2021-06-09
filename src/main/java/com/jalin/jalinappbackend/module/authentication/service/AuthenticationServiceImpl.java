@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 
@@ -34,6 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String BASE_URL = "https://jalin-bank-resource-server.herokuapp.com";
     private static final String ADD_NEW_CUSTOMER_ENDPOINT = "/api/v1/customers";
     private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts?customerId=";
+    private static final String FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT = "/api/v1/customers/find?idCardNumber=";
     private static final String IDR_CURRENCY = "IDR";
     @Autowired
     private ModelMapperUtility modelMapperUtility;
@@ -55,13 +57,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (userDetailsRepository.findByMobileNumber(userDetailsRequestBody.getMobileNumber()).isPresent() ||
                 userRepository.findByEmail(userRequestBody.getEmail()).isPresent()) {
             throw new RegisterFailedException("Email address or mobile number already registered");
-        } else if (userDetailsRepository.findByIdCardNumber(userDetailsRequestBody.getIdCardNumber()).isPresent()) {
+        } else if (isIdCardRegisteredAtServer(userDetailsRequestBody.getIdCardNumber()) ||
+                userDetailsRepository.findByIdCardNumber(userDetailsRequestBody.getIdCardNumber()).isPresent()) {
             throw new RegisterFailedException("ID card already registered");
         }
 
         ResponseEntity<AddNewCustomerResponse> addNewCustomerResponse = addCustomer(
-                userDetailsRequestBody.getFullName(),
-                userDetailsRequestBody.getMobileNumber());
+                userDetailsRequestBody.getIdCardNumber(),
+                userDetailsRequestBody.getFullName());
 
         ResponseEntity<AddNewBankAccountResponse> addNewBankAccountResponse = addBankAccount(
                 addNewCustomerResponse.getBody().getCustomerId());
@@ -92,6 +95,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (BadCredentialsException exception) {
             throw new AuthenticateFailedException("Incorrect email or password");
         }
+    }
+
+    private Boolean isIdCardRegisteredAtServer(String idCardNumber) {
+        try {
+            restTemplateUtility.initialize().getForObject(
+                    BASE_URL + FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT + idCardNumber,
+                    Object.class);
+        } catch (HttpClientErrorException exception) {
+            return false;
+        }
+        return true;
     }
 
     private ResponseEntity<AddNewCustomerResponse> addCustomer(String idCardNumber, String fullName) {
