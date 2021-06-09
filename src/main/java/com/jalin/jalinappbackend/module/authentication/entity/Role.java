@@ -1,18 +1,23 @@
 package com.jalin.jalinappbackend.module.authentication.entity;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "roles")
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-
-    @OneToOne(mappedBy = "role")
-    private User user;
+    @GeneratedValue
+    private UUID roleId;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum roleName;
 }
