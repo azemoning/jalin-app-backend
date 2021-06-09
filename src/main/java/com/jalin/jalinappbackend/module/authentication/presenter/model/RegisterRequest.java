@@ -22,4 +22,32 @@ public class RegisterRequest {
     @NotBlank
     @Size(min = 8)
     private String password;
+
+    @NotBlank
+    private String idCardNumber;
+    @NotBlank
+    private String fullName;
+    @NotBlank
+    private String dateOfBirth;
+    @NotBlank
+    private String address;
+    @NotBlank
+    private String province;
+    @NotBlank
+    private String city;
+    @NotBlank
+    private String subDistrict;
+    @NotBlank
+    private String postalCode;
+
+    @NotBlank
+    private String maritalStatus;
+    @NotBlank
+    private String bankingGoals;
+    @NotBlank
+    private String occupation;
+    @NotBlank
+    private String sourceOfIncome;
+    @NotBlank
+    private String incomeRange;
 }
