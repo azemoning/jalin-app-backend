@@ -17,6 +17,7 @@ import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCusto
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +33,8 @@ import java.math.BigDecimal;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private static final String BASE_URL = "https://jalin-bank-resource-server.herokuapp.com";
+    @Value("${resource.server.url}")
+    private String BASE_URL;
     private static final String ADD_NEW_CUSTOMER_ENDPOINT = "/api/v1/customers";
     private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts?customerId=";
     private static final String FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT = "/api/v1/customers/find?idCardNumber=";
