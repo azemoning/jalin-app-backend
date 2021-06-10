@@ -12,6 +12,8 @@ maven-build:
   image: maven:3-jdk-11
   stage: build
   script: "mvn -Pproduction clean package -DskipTests"
+  only:
+    - master
 
 deploy:
   stage: deploy
