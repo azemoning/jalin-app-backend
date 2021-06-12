@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -39,6 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts?customerId=";
     private static final String FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT = "/api/v1/customers/find?idCardNumber=";
     private static final String IDR_CURRENCY = "IDR";
+    private static final Integer INITIAL_BALANCE = 1000000000;
     @Autowired
     private ModelMapperUtility modelMapperUtility;
     @Autowired
@@ -69,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 userDetailsRequestBody.getFullName());
 
         ResponseEntity<AddNewBankAccountResponse> addNewBankAccountResponse = addBankAccount(
-                addNewCustomerResponse.getBody().getCustomerId());
+                Objects.requireNonNull(addNewCustomerResponse.getBody()).getCustomerId());
 
         Role userRole = roleRepository.findByRoleName(RoleEnum.USER)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -82,7 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         UserDetails newUserDetails = modelMapperUtility.initialize()
                 .map(userDetailsRequestBody, UserDetails.class);
-        newUserDetails.setAccountNumber(addNewBankAccountResponse.getBody().getAccountNumber());
+        newUserDetails.setAccountNumber(Objects.requireNonNull(addNewBankAccountResponse.getBody()).getAccountNumber());
         newUserDetails.setJalinId(newUserDetails.getFullName() + "-" + newUserDetails.getAccountNumber());
         newUserDetails.setUser(newUser);
         userDetailsRepository.save(newUserDetails);
@@ -125,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private ResponseEntity<AddNewBankAccountResponse> addBankAccount(String customerId) {
         AddNewBankAccountRequest request = new AddNewBankAccountRequest();
         request.setCurrency(IDR_CURRENCY);
-        request.setBalance(new BigDecimal(0));
+        request.setBalance(new BigDecimal(INITIAL_BALANCE));
 
         HttpEntity<AddNewBankAccountRequest> requestBody = new HttpEntity<>(request);
         return restTemplateUtility.initialize().postForEntity(
