@@ -46,7 +46,7 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public BigDecimal getAccountBalance() {
-        UserDetails userDetails = getUserDetails();
+        UserDetails userDetails = getSignedInUserDetails();
         ResponseEntity<GetBankAccountResponse> response = restTemplateUtility.initialize().getForEntity(
                 BASE_URL + GET_BANK_ACCOUNT_ENDPOINT + userDetails.getAccountNumber(),
                 GetBankAccountResponse.class);
@@ -55,7 +55,7 @@ public class BankingServiceImpl implements BankingService {
 
     @Override
     public void fundTransfer(String beneficiaryAccountNumber, BigDecimal amount) {
-        UserDetails userDetails = getUserDetails();
+        UserDetails userDetails = getSignedInUserDetails();
         FundTransferRequest request = new FundTransferRequest();
         request.setSourceAccountNumber(userDetails.getAccountNumber());
         request.setBeneficiaryAccountNumber(beneficiaryAccountNumber);
@@ -103,7 +103,7 @@ public class BankingServiceImpl implements BankingService {
         }
     }
 
-    private UserDetails getUserDetails() {
+    private UserDetails getSignedInUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getPrincipal().toString();
         User user = userRepository.findByEmail(email)
