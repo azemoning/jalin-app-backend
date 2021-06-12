@@ -1,6 +1,6 @@
 package com.jalin.jalinappbackend.module.authentication.service;
 
-import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
+import com.jalin.jalinappbackend.exception.AuthenticateFailedException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetailsImpl;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
@@ -17,7 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
+                .orElseThrow(() -> new AuthenticateFailedException("Incorrect email or password"));
         return new UserDetailsImpl(user);
     }
 }
