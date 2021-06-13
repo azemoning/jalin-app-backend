@@ -14,6 +14,10 @@ import com.jalin.jalinappbackend.module.authentication.service.model.AddNewBankA
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewBankAccountResponse;
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerRequest;
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerResponse;
+import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
+import com.jalin.jalinappbackend.module.gamification.point.entity.PointDetail;
+import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
+import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -55,6 +60,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserRepository userRepository;
     @Autowired
     private UserDetailsRepository userDetailsRepository;
+
+    @Autowired
+    private PointRepository pointRepository;
+    @Autowired
+    private PointDetailRepository pointDetailRepository;
 
     @Override
     public void register(User userRequestBody, UserDetails userDetailsRequestBody) {
@@ -88,6 +98,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         newUserDetails.setJalinId(newUserDetails.getFullName() + "-" + newUserDetails.getAccountNumber());
         newUserDetails.setUser(newUser);
         userDetailsRepository.save(newUserDetails);
+
+        // add new row in points table when user registered
+        Point newPoint = pointRepository.save(
+                new Point(newUser, 0, UUID.randomUUID()));
     }
 
     @Override
