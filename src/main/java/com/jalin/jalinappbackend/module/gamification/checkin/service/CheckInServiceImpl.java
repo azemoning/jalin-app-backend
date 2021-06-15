@@ -7,6 +7,7 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserRepository
 import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckIn;
 import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckInCounter;
 import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckInLog;
+import com.jalin.jalinappbackend.module.gamification.checkin.model.CheckInDto;
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInCounterRepository;
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInLogRepository;
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInRepository;
@@ -49,6 +50,25 @@ public class CheckInServiceImpl implements CheckInService {
         CheckInCounter newCheckInCounter = new CheckInCounter();
         newCheckInCounter.setUser(user);
         checkInCounterRepository.save(newCheckInCounter);
+    }
+
+    @Override
+    public CheckInDto getCheckInStatus() {
+        User signedInUser = getSignedInUser();
+        CheckInDto checkInDto = new CheckInDto();
+        checkInDto.setCounter(getCurrentCounter(signedInUser));
+
+        checkInRepository.findFirstByUserOrderByCreatedDateDesc(signedInUser)
+                .ifPresentOrElse(
+                        checkIn -> checkInDto.setLastCheckedIn(checkIn.getCreatedDate()),
+                        () -> checkInDto.setLastCheckedIn(null));
+
+        checkInLogRepository.findByUser(signedInUser)
+                .ifPresentOrElse(
+                        checkInLog -> checkInDto.setIsCheckedIn(true),
+                        () -> checkInDto.setIsCheckedIn(false));
+
+        return checkInDto;
     }
 
     @Override
