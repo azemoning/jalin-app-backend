@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
 public class PointController {
 
     @Autowired
     private PointService pointService;
 
-    @GetMapping("point")
+    @GetMapping("/points")
     public ResponseEntity<Object> getUserPoint() {
         return new ResponseEntity<>(pointService.getUserPoint(), HttpStatus.OK);
     }
