@@ -53,6 +53,14 @@ public class PointServiceImpl implements PointService {
         initiateUserPointSource(pointDetail, sourceName, sourceId);
     }
 
+    @Override
+    public Integer getUserPoint() {
+        User user = getSignedInUser();
+        Point point = pointRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return point.getTotalPoints();
+    }
+
     private User getSignedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getPrincipal().toString();

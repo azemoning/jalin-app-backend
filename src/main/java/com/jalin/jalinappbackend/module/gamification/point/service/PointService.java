@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface PointService {
     void initiateUserPoint(User user);
     void addUserPoint(PointSourceEnum sourceName, UUID sourceId, Integer pointAmount);
+    Integer getUserPoint();
 }
