@@ -14,10 +14,7 @@ import com.jalin.jalinappbackend.module.authentication.service.model.AddNewBankA
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewBankAccountResponse;
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerRequest;
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerResponse;
-import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
-import com.jalin.jalinappbackend.module.gamification.point.entity.PointDetail;
-import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
-import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
+import com.jalin.jalinappbackend.module.gamification.checkin.service.CheckInService;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
@@ -36,7 +33,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -61,12 +57,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserRepository userRepository;
     @Autowired
     private UserDetailsRepository userDetailsRepository;
-
     @Autowired
     private PointService pointService;
-
-//    @Autowired
-//    private CheckInService checkInService;
+    @Autowired
+    private CheckInService checkInService;
 
     @Override
     public void register(User userRequestBody, UserDetails userDetailsRequestBody) {
@@ -102,8 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userDetailsRepository.save(newUserDetails);
 
         pointService.initiateUserPoint(newUser);
-//        checkInService.initiateCounter(newUser);
-
+        checkInService.initiateCheckInCounter(newUser);
     }
 
     @Override
