@@ -39,7 +39,14 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public void addUserPoint(PointSourceEnum sourceName, UUID sourceId, Integer pointAmount) {
+        User user = getSignedInUser();
+        Point point = pointRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        point.setTotalPoints(point.getTotalPoints() + pointAmount);
+        Point savedUserPoint = pointRepository.save(point);
 
+        PointDetail pointDetail = initiateUserPointDetail(savedUserPoint, PointTypeEnum.ADD, pointAmount);
+        initiateUserPointSource(pointDetail, sourceName, sourceId);
     }
 
     private User getSignedInUser() {
