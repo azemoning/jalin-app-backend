@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.point.entity;
 
+import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckIn;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +24,9 @@ public class PointSource {
     @Enumerated(EnumType.STRING)
     private PointSourceEnum sourceName;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "check_in_id")
-//    private
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "check_in_id")
+    private CheckIn checkIn;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)

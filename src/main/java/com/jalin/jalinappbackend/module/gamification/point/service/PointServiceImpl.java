@@ -3,6 +3,8 @@ package com.jalin.jalinappbackend.module.gamification.point.service;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
+import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckIn;
+import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.*;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
@@ -12,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 @Service
@@ -29,6 +30,9 @@ public class PointServiceImpl implements PointService {
 
     @Autowired
     private PointSourceRepository pointSourceRepository;
+
+    @Autowired
+    private CheckInRepository checkInRepository;
 
     @Override
     public void initiateUserPoint(User user) {
@@ -67,12 +71,12 @@ public class PointServiceImpl implements PointService {
     private void initiateUserPointSource(PointDetail pointDetail, PointSourceEnum sourceName, UUID sourceId) {
         PointSource pointSource = new PointSource();
         if (sourceName == PointSourceEnum.CHECK_IN) {
-//            CheckIn checkIn = checkInRepository.findById(sourceId)
-//                    .orElseThrow(() -> new ResourceNotFoundException("Check in not found"));
+            CheckIn checkIn = checkInRepository.findById(sourceId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Check in not found"));
 
             pointSource.setPointDetail(pointDetail);
             pointSource.setSourceName(sourceName);
-//            pointSource.setCheckIn(checkIn);
+            pointSource.setCheckIn(checkIn);
             pointSourceRepository.save(pointSource);
         }
     }
