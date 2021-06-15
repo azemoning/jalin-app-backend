@@ -22,7 +22,7 @@ public class PointDetail {
     private UUID pointDetailId;
 
     @Enumerated(EnumType.STRING)
-    private PointTypeEnum pointTypeEnum;
+    private PointTypeEnum pointType;
     private Integer pointAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)

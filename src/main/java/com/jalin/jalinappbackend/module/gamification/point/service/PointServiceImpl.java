@@ -63,7 +63,7 @@ public class PointServiceImpl implements PointService {
     private PointDetail initiateUserPointDetail(Point point, PointTypeEnum pointTypeEnum, Integer pointAmount) {
         PointDetail pointDetail = new PointDetail();
         pointDetail.setPoint(point);
-        pointDetail.setPointTypeEnum(pointTypeEnum);
+        pointDetail.setPointType(pointTypeEnum);
         pointDetail.setPointAmount(pointAmount);
         return pointDetailRepository.save(pointDetail);
     }
