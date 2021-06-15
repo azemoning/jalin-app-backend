@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.authentication.entity;
 
+import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +28,11 @@ public class User {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "user",
+            orphanRemoval = true)
+    private Set<Transaction> transactions;
     @CreationTimestamp
     private Instant createdDate;
     @UpdateTimestamp

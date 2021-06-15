@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface UserDetailsRepository extends JpaRepository<UserDetails, UUID> {
     Optional<UserDetails> findByMobileNumber(String mobileNumber);
+    Optional<UserDetails> findByAccountNumber(String accountNumber);
     Optional<UserDetails> findByIdCardNumber(String idCardNumber);
 }
