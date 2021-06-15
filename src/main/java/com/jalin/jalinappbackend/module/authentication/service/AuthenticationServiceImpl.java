@@ -18,6 +18,7 @@ import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
 import com.jalin.jalinappbackend.module.gamification.point.entity.PointDetail;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
+import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserDetailsRepository userDetailsRepository;
 
     @Autowired
-    private PointRepository pointRepository;
-    @Autowired
-    private PointDetailRepository pointDetailRepository;
+    private PointService pointService;
+
+//    @Autowired
+//    private CheckInService checkInService;
 
     @Override
     public void register(User userRequestBody, UserDetails userDetailsRequestBody) {
@@ -99,9 +101,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         newUserDetails.setUser(newUser);
         userDetailsRepository.save(newUserDetails);
 
-        // add new row in points table when user registered
-        Point newPoint = pointRepository.save(
-                new Point(newUser, 0, UUID.randomUUID()));
+        pointService.initiateUserPoint(newUser);
+//        checkInService.initiateCounter(newUser);
+
     }
 
     @Override

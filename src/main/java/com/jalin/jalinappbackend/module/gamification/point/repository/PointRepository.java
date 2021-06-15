@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface PointRepository extends JpaRepository<Point, UUID> {
-    Optional<Point> findByUserId(User userId);
+    Optional<Point> findByUser(User user);
 }

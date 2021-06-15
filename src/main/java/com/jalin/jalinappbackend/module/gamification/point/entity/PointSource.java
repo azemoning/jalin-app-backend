@@ -11,23 +11,26 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "point_details")
+@Table(name = "point_sources")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class PointDetail {
+public class PointSource {
     @Id
-    @GeneratedValue
-    private UUID pointDetailId;
+    private UUID pointSourceId;
 
     @Enumerated(EnumType.STRING)
-    private PointTypeEnum pointTypeEnum;
-    private Integer pointAmount;
+    private PointSourceEnum sourceName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "point_id")
-    private Point point;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "check_in_id")
+//    private
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "point_detail_id")
+    private PointDetail pointDetail;
 
     @CreationTimestamp
     private Instant createdDate;

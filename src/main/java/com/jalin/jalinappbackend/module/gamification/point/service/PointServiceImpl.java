@@ -3,13 +3,16 @@ package com.jalin.jalinappbackend.module.gamification.point.service;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
-import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
-import com.jalin.jalinappbackend.module.gamification.point.entity.PointDetail;
+import com.jalin.jalinappbackend.module.gamification.point.entity.*;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
+import com.jalin.jalinappbackend.module.gamification.point.repository.PointSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.UUID;
 
 @Service
@@ -24,24 +27,46 @@ public class PointServiceImpl implements PointService {
     @Autowired
     private PointDetailRepository pointDetailRepository;
 
+    @Autowired
+    private PointSourceRepository pointSourceRepository;
+
     @Override
-    public void addUserPoint(UUID userId, Integer amount, String pointSource) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Point point = pointRepository.findByUserId(user)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        PointDetail pointDetail = new PointDetail(point, amount, pointSource);
-        point.setTotal(point.getTotal() + pointDetail.getAmount());
-        pointDetailRepository.save(pointDetail);
+    public void initiateUserPoint(User user) {
+        Point point = new Point();
+        point.setUser(user);
         pointRepository.save(point);
     }
 
     @Override
-    public Integer getUserPoint(UUID userId) {
-        User user = userRepository.findById(userId)
+    public void addUserPoint(PointSourceEnum sourceName, UUID sourceId, Integer pointAmount) {
+
+    }
+
+    private User getSignedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getPrincipal().toString();
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Point point = pointRepository.findByUserId(user)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return point.getTotal();
+    }
+
+    private PointDetail initiateUserPointDetail(Point point, PointTypeEnum pointTypeEnum, Integer pointAmount) {
+        PointDetail pointDetail = new PointDetail();
+        pointDetail.setPoint(point);
+        pointDetail.setPointTypeEnum(pointTypeEnum);
+        pointDetail.setPointAmount(pointAmount);
+        return pointDetailRepository.save(pointDetail);
+    }
+
+    private void initiateUserPointSource(PointDetail pointDetail, PointSourceEnum sourceName, UUID sourceId) {
+        PointSource pointSource = new PointSource();
+        if (sourceName == PointSourceEnum.CHECK_IN) {
+//            CheckIn checkIn = checkInRepository.findById(sourceId)
+//                    .orElseThrow(() -> new ResourceNotFoundException("Check in not found"));
+
+            pointSource.setPointDetail(pointDetail);
+            pointSource.setSourceName(sourceName);
+//            pointSource.setCheckIn(checkIn);
+            pointSourceRepository.save(pointSource);
+        }
     }
 }

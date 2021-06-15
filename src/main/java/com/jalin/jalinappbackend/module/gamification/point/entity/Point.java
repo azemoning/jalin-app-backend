@@ -2,9 +2,12 @@ package com.jalin.jalinappbackend.module.gamification.point.entity;
 
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,20 +19,16 @@ import java.util.UUID;
 public class Point {
     @Id
     private UUID pointId;
+    private Integer totalPoints = 0;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
-    private Integer total;
+    private User user;
 
-    @NaturalId
-    @Column(name = "point_detail_id")
-    private UUID pointDetailId;
+    @CreationTimestamp
+    private Instant createdDate;
 
-    public Point(User userId, Integer total, UUID pointDetailId) {
-        this.userId = userId;
-        this.total = total;
-        this.pointDetailId = pointDetailId;
-    }
+    @UpdateTimestamp
+    private Instant modifiedDate;
 }
