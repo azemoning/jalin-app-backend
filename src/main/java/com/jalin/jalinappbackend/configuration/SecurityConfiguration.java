@@ -81,7 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         CorsConfiguration config = new CorsConfiguration();
 
         List<String> allowedOriginPatterns = new ArrayList<String>();
-        allowedOriginPatterns.add("http:localhost:[*]");
+        allowedOriginPatterns.add("http://localhost:[*]");
 
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(allowedOriginPatterns);
