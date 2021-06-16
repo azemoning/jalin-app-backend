@@ -42,7 +42,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         return config;
                     };
                     c.configurationSource(source);
-                });
+                })
+        .csrf().disable();
 
         http = http
                 .sessionManagement()
