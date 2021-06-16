@@ -25,6 +25,7 @@ public class RegisterRequest {
     @NotBlank
     @Size(min = 8)
     private String password;
+
     @NotBlank
     private String idCardNumber;
     @NotBlank
@@ -34,16 +35,9 @@ public class RegisterRequest {
     private LocalDate dateOfBirth;
     @NotBlank
     private String address;
-    @NotBlank
-    private String province;
-    @NotBlank
-    private String city;
-    @NotBlank
-    private String subDistrict;
-    @NotBlank
-    private String postalCode;
-    @NotBlank
-    private String maritalStatus;
+    private String currentAddress;
+    private String idCardImage;
+
     @NotBlank
     private String bankingGoals;
     @NotBlank
@@ -52,4 +46,5 @@ public class RegisterRequest {
     private String sourceOfIncome;
     @NotBlank
     private String incomeRange;
+    private String npwpImage;
 }
