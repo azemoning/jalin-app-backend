@@ -25,17 +25,14 @@ public class UserDetails {
     private String fullName;
     private LocalDate dateOfBirth;
     private String address;
-    private String province;
-    private String city;
-    private String subDistrict;
-    private String postalCode;
+    private String currentAddress;
     private String idCardImage;
 
-    private String maritalStatus;
     private String bankingGoals;
     private String occupation;
     private String sourceOfIncome;
     private String incomeRange;
+    private String npwpImage;
 
     private String accountNumber;
 
