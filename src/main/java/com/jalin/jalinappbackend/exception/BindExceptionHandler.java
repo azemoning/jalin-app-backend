@@ -3,8 +3,8 @@ package com.jalin.jalinappbackend.exception;
 import com.jalin.jalinappbackend.model.ErrorDetailsResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
-public class MethodArgumentNotValidExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleException(MethodArgumentNotValidException exception) {
+public class BindExceptionHandler {
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Object> handleException(BindException exception) {
         List<FieldError> errors = exception.getFieldErrors();
         List<ErrorDetailsResponse.ErrorDetails> errorDetails = new ArrayList<>();
         for (FieldError fieldError : errors) {
