@@ -39,6 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(List.of("*"));
                         config.setAllowedMethods(List.of("*"));
+                        config.setAllowedHeaders(List.of("*"));
                         return config;
                     };
                     c.configurationSource(source);
@@ -84,20 +85,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
-
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        List<String> allowedOriginPatterns = new ArrayList<String>();
-//        allowedOriginPatterns.add("http://localhost:[*]");
-//
-//        config.setAllowCredentials(true);
-//        config.setAllowedOriginPatterns(allowedOriginPatterns);
-//        config.addAllowedHeader("*");
-//        config.addAllowedMethod("*");
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter(source);
-//    }
 }
