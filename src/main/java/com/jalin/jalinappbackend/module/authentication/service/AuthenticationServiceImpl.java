@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
@@ -63,6 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private CheckInService checkInService;
 
     @Override
+    @Transactional
     public void register(User userRequestBody, UserDetails userDetailsRequestBody) {
         if (userDetailsRepository.findByMobileNumber(userDetailsRequestBody.getMobileNumber()).isPresent() ||
                 userRepository.findByEmail(userRequestBody.getEmail()).isPresent()) {
