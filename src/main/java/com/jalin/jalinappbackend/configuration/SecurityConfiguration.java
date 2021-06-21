@@ -37,6 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         config.setAllowedOrigins(List.of("*"));
                         config.setAllowedMethods(List.of("*"));
                         config.setAllowedHeaders(List.of("*"));
+                        config.setExposedHeaders(List.of("*"));
                         return config;
                     };
                     c.configurationSource(source);
