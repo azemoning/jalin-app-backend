@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.model.SuccessResponse;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
@@ -63,7 +64,9 @@ public class BankingController {
                 requestBody.getCorporateId(),
                 requestBody.getBeneficiaryAccountNumber(),
                 requestBody.getAmount());
-        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Fund successfully transferred", transactionDto),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("/transfers/corporates")
