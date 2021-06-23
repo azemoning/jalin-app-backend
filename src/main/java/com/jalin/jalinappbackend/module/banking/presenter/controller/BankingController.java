@@ -1,7 +1,9 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessResponse;
+import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
+import com.jalin.jalinappbackend.module.banking.presenter.model.FundTransferDomesticRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.FundTransferRequest;
 import com.jalin.jalinappbackend.module.banking.repository.model.TransactionAggregation;
 import com.jalin.jalinappbackend.module.banking.service.BankingService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -50,5 +53,22 @@ public class BankingController {
         return new ResponseEntity<>(
                 new SuccessResponse(true, "Fund successfully transferred"),
                 HttpStatus.CREATED);
+    }
+
+    @PostMapping(
+            path = "/transfers/domestic",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> fundTransferDomestic(@Valid @ModelAttribute FundTransferDomesticRequest requestBody) {
+        TransactionDto transactionDto = bankingService.fundTransferDomestic(
+                requestBody.getCorporateId(),
+                requestBody.getBeneficiaryAccountNumber(),
+                requestBody.getAmount());
+        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/transfers/corporates")
+    public ResponseEntity<Object> getBankCorporates() {
+        List<CorporateDto> corporateDtoList = bankingService.getBankCorporates();
+        return new ResponseEntity<>(corporateDtoList, HttpStatus.OK);
     }
 }
