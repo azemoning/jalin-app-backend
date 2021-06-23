@@ -13,7 +13,6 @@ import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository
 import com.jalin.jalinappbackend.module.banking.service.model.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Slf4j
 public class BankingServiceImpl implements BankingService {
     @Value("${resource.server.url}")
     private String BASE_URL;
