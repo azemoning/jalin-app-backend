@@ -8,12 +8,14 @@ import lombok.Setter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class UserMissionDto {
+    private UUID id;
     private String activity;
     private String missionDescription;
     private String tncDescription;
@@ -25,5 +27,6 @@ public class UserMissionDto {
     private Integer missionProgress;
     private LocalTime completionTime;
     private String status;
+    private Boolean isClaimed;
     private Integer point;
 }

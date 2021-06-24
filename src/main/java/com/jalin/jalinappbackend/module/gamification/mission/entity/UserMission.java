@@ -42,6 +42,7 @@ public class UserMission {
     @Column(name = "mission_progress")
     private Integer missionProgress;
     private LocalTime completionTime;
+    private Boolean isClaimed;
     private String status;
 
     @CreationTimestamp
