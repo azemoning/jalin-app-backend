@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +21,7 @@ public class UserMissionDto {
     private String missionDescription;
     private String tncDescription;
     private Integer frequency;
-    private Integer minimumAmount;
+    private BigDecimal minimumAmount;
     private String expiration;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -28,5 +29,6 @@ public class UserMissionDto {
     private LocalTime completionTime;
     private String status;
     private Boolean isClaimed;
+    private Boolean isActive;
     private Integer point;
 }

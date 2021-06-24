@@ -4,6 +4,8 @@ import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
+import com.jalin.jalinappbackend.module.banking.entity.Transaction;
+import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMission;
 import com.jalin.jalinappbackend.module.gamification.mission.model.UserMissionDto;
@@ -31,6 +33,9 @@ public class UserMissionServiceImpl implements UserMissionService {
     private UserMissionRepository userMissionRepository;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -54,17 +59,22 @@ public class UserMissionServiceImpl implements UserMissionService {
             userMission.setUser(getSignedInUser());
             userMission.setStartDate(LocalDate.now());
 
-            if (mission.getExpiration().equals("WEEKLY") || mission.getExpiration().equals("weekly")) {
-                userMission.setEndDate(LocalDate.now().plusWeeks(1));
-            } else if (mission.getExpiration().equals("BIWEEKLY") || mission.getExpiration().equals("biweekly")) {
-                userMission.setEndDate(LocalDate.now().plusWeeks(2));
-            } else if (mission.getExpiration().equals("MONTHLY") || mission.getExpiration().equals("monthly")){
-                userMission.setEndDate(LocalDate.now().plusMonths(1));
+            switch (mission.getExpiration()) {
+                case "WEEKLY":
+                case "weekly":
+                    userMission.setEndDate(LocalDate.now().plusWeeks(1));
+                case "BIWEEKLY":
+                case "biweekly":
+                    userMission.setEndDate(LocalDate.now().plusWeeks(2));
+                case "MONTHLY":
+                case "monthly":
+                    userMission.setEndDate(LocalDate.now().plusMonths(1));
             }
 
             userMission.setMissionProgress(0);
             userMission.setStatus("INCOMPLETE");
             userMission.setIsClaimed(false);
+            userMission.setIsActive(true);
 
             if (userMission.getStatus().equals("COMPLETED")) {
                 userMission.setCompletionTime(LocalTime.now());
@@ -76,20 +86,38 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Override
     public void checkUserMissionProgress() {
+        Transaction transaction = transactionRepository
+                .findTopByUserAndTransactionTypeEqualsOrderByCreatedDateDesc(
+                        getSignedInUser(),
+                        "C");
+        Set<UserMissionDto> userMissionDtos = getUserMissions();
+
+        for (UserMissionDto userMission : userMissionDtos) {
+            if (userMission.getActivity().equals(transaction.getTransactionName())) {
+                double transactionAmount = transaction.getAmount().doubleValue();
+                double userMissionMinAmount = userMission.getMinimumAmount().doubleValue();
+                UserMission updateUserMission = userMissionRepository.getById(userMission.getId());
+                if (transactionAmount >= userMissionMinAmount) {
+                    updateUserMissionProgress(updateUserMission);
+                }
+            }
+        }
 
     }
 
     @Override
     public void updateUserMissionProgress(UserMission userMission) {
         Mission mission = missionService.getMissionById(userMission.getMission().getId());
-        userMission.setMissionProgress(userMission.getMissionProgress() + 1);
+        if (!userMission.getStatus().equals("COMPLETED")) {
+            userMission.setMissionProgress(userMission.getMissionProgress() + 1);
 
-        if (userMission.getMissionProgress().equals(mission.getFrequency())) {
-            userMission.setStatus("COMPLETED");
-            userMission.setCompletionTime(LocalTime.now());
+            if (userMission.getMissionProgress().equals(mission.getFrequency())) {
+                userMission.setStatus("COMPLETED");
+                userMission.setCompletionTime(LocalTime.now());
+            }
+
+            userMissionRepository.save(userMission);
         }
-
-        userMissionRepository.save(userMission);
     }
 
     // Need to be refactored
@@ -108,7 +136,7 @@ public class UserMissionServiceImpl implements UserMissionService {
         Set<UserMissionDto> userMissionData = new HashSet<>();
         for (UserMission userMission: userMissions) {
             Mission mission = missionService.getMissionById(userMission.getMission().getId());
-            if (!userMission.getIsClaimed()) {
+            if (!userMission.getIsActive()) {
                 UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
 
                 userMissionDto.setActivity(mission.getActivity());
@@ -134,10 +162,13 @@ public class UserMissionServiceImpl implements UserMissionService {
 
         if (userMission.getStatus().equals("COMPLETED")) {
             userMission.setIsClaimed(true);
+            userMission.setIsActive(false);
             userMissionRepository.save(userMission);
             pointService.addUserPoint(PointSourceEnum.MISSION, mission.getId(), mission.getPoint());
-        } else {
+        } else if (userMission.getStatus().equals("INCOMPLETE")){
             throw new ClaimMissionPointFailedException("Mission not completed yet");
+        } else if (userMission.getIsClaimed().equals(true)) {
+            throw new ClaimMissionPointFailedException("Mission point already claimed");
         }
     }
 

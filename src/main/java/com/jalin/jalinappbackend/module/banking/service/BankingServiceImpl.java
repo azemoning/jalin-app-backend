@@ -11,6 +11,7 @@ import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository
 import com.jalin.jalinappbackend.module.banking.service.model.FundTransferRequest;
 import com.jalin.jalinappbackend.module.banking.service.model.FundTransferResponse;
 import com.jalin.jalinappbackend.module.banking.service.model.GetBankAccountResponse;
+import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.json.JSONObject;
@@ -43,6 +44,9 @@ public class BankingServiceImpl implements BankingService {
     private UserDetailsRepository userDetailsRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private UserMissionService userMissionService;
 
     @Override
     public BigDecimal getAccountBalance() {
@@ -96,6 +100,8 @@ public class BankingServiceImpl implements BankingService {
 
             transactionRepository.save(sourceTransaction);
             transactionRepository.save(beneficiaryTransaction);
+
+            userMissionService.checkUserMissionProgress();
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
             String error = object.getString("error");

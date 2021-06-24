@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -28,7 +29,7 @@ public class Mission {
     private Integer frequency;
 
     @Column(name = "minimum_amount")
-    private Integer minAmount;
+    private BigDecimal minAmount;
     private String expiration;
     private Integer point;
 }

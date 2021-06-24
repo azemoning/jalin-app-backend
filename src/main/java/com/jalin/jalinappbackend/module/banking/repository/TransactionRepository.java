@@ -20,4 +20,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
             "GROUP BY t.transactionName, t.corporateNumber, t.accountNumber " +
             "ORDER BY COUNT(*) DESC")
     List<TransactionAggregation> findMostFrequentTransactions(User user);
+
+    Transaction findTopByUserAndTransactionTypeEqualsOrderByCreatedDateDesc(User user, String transactionType);
 }

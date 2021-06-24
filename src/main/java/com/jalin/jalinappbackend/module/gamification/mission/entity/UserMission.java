@@ -43,6 +43,7 @@ public class UserMission {
     private Integer missionProgress;
     private LocalTime completionTime;
     private Boolean isClaimed;
+    private Boolean isActive;
     private String status;
 
     @CreationTimestamp
