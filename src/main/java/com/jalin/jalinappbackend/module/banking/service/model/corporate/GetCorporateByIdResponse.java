@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.banking.service.model;
+package com.jalin.jalinappbackend.module.banking.service.model.corporate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

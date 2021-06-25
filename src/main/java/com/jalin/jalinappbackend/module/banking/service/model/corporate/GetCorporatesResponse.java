@@ -1,6 +1,7 @@
-package com.jalin.jalinappbackend.module.banking.service.model;
+package com.jalin.jalinappbackend.module.banking.service.model.corporate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jalin.jalinappbackend.module.banking.service.model.CorporateResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GetBankCorporatesResponse {
+public class GetCorporatesResponse {
     @JsonProperty("data")
     List<CorporateResponse> corporateList;
 }
