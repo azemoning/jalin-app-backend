@@ -25,11 +25,12 @@ public class Transaction {
     private String transactionType;
     private String currency;
     private BigDecimal amount;
-    private String corporateNumber;
+    private String corporateId;
     private String accountNumber;
     private String transactionName;
     private String transactionDescription;
     private String transactionMessage;
+    private String transactionNote;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
