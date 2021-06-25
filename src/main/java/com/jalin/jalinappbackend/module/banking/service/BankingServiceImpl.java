@@ -7,7 +7,6 @@ import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
-import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.banking.service.model.*;
@@ -27,8 +26,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -38,7 +35,6 @@ public class BankingServiceImpl implements BankingService {
     private static final String GET_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts/";
     private static final String FUND_TRANSFER_ENDPOINT = "/api/v1/transfers";
     private static final String FUND_TRANSFER_DOMESTIC_ENDPOINT = "/api/v1/transfers/domestic";
-    private static final String GET_BANK_CORPORATES_ENDPOINT = "/api/v1/corporates/bank";
     @Autowired
     private ModelMapperUtility modelMapperUtility;
     @Autowired
@@ -49,6 +45,8 @@ public class BankingServiceImpl implements BankingService {
     private UserDetailsRepository userDetailsRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private CorporateService corporateService;
 
     @Override
     public BigDecimal getAccountBalance() {
@@ -60,7 +58,7 @@ public class BankingServiceImpl implements BankingService {
     }
 
     @Override
-    public void fundTransfer(String beneficiaryAccountNumber, BigDecimal amount) {
+    public TransactionDto fundTransfer(String beneficiaryAccountNumber, BigDecimal amount) {
         UserDetails userDetails = getSignedInUserDetails();
         FundTransferRequest request = new FundTransferRequest();
         request.setSourceAccountNumber(userDetails.getAccountNumber());
@@ -87,7 +85,7 @@ public class BankingServiceImpl implements BankingService {
             Transaction sourceTransaction = modelMapperUtility.initialize()
                     .map(response.getBody().getSourceTransaction(), Transaction.class);
             sourceTransaction.setTransactionDate(LocalDate.parse(response.getBody().getSourceTransaction().getTransactionDate()));
-            sourceTransaction.setCorporateNumber(getCorporateNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
+            sourceTransaction.setCorporateId(getCorporateNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
             sourceTransaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
             sourceTransaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
             sourceTransaction.setUser(sourceUserDetails.getUser());
@@ -95,13 +93,18 @@ public class BankingServiceImpl implements BankingService {
             Transaction beneficiaryTransaction = modelMapperUtility.initialize()
                     .map(response.getBody().getBeneficiaryTransaction(), Transaction.class);
             beneficiaryTransaction.setTransactionDate(LocalDate.parse(response.getBody().getBeneficiaryTransaction().getTransactionDate()));
-            beneficiaryTransaction.setCorporateNumber(getCorporateNumber(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
+            beneficiaryTransaction.setCorporateId(getCorporateNumber(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
             beneficiaryTransaction.setAccountNumber(getAccountNumber(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
             beneficiaryTransaction.setTransactionMessage(getTransactionMessage(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
             beneficiaryTransaction.setUser(beneficiaryUserDetails.getUser());
 
-            transactionRepository.save(sourceTransaction);
+            Transaction savedSourceTransaction = transactionRepository.save(sourceTransaction);
             transactionRepository.save(beneficiaryTransaction);
+
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(savedSourceTransaction, TransactionDto.class);
+            transactionDto.setTransactionTime(LocalTime.ofInstant(savedSourceTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            return transactionDto;
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
             String error = object.getString("error");
@@ -128,7 +131,7 @@ public class BankingServiceImpl implements BankingService {
             Transaction transaction = modelMapperUtility.initialize()
                     .map(response.getBody(), Transaction.class);
             transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getTransactionDate()));
-            transaction.setCorporateNumber(getCorporateNumber(response.getBody().getTransactionDescription()));
+            transaction.setCorporateId(getCorporateNumber(response.getBody().getTransactionDescription()));
             transaction.setAccountNumber(getAccountNumber(response.getBody().getTransactionDescription()));
             transaction.setTransactionMessage(getTransactionMessage(response.getBody().getTransactionDescription()));
             transaction.setUser(userDetails.getUser());
@@ -136,6 +139,7 @@ public class BankingServiceImpl implements BankingService {
             Transaction savedTransaction = transactionRepository.save(transaction);
             TransactionDto transactionDto = modelMapperUtility.initialize()
                     .map(savedTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
             transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
             return transactionDto;
         } catch (HttpClientErrorException exception) {
@@ -143,21 +147,6 @@ public class BankingServiceImpl implements BankingService {
             String error = object.getString("error");
             throw new TransferFailedException(error);
         }
-    }
-
-    @Override
-    public List<CorporateDto> getBankCorporates() {
-        ResponseEntity<GetBankCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
-                BASE_URL + GET_BANK_CORPORATES_ENDPOINT,
-                GetBankCorporatesResponse.class);
-        List<CorporateResponse> corporateResponseList = Objects.requireNonNull(response.getBody()).getCorporateList();
-        List<CorporateDto> corporateDtoList = new ArrayList<>();
-        for (CorporateResponse corporateResponse : corporateResponseList) {
-            CorporateDto corporateDto = modelMapperUtility.initialize()
-                    .map(corporateResponse, CorporateDto.class);
-            corporateDtoList.add(corporateDto);
-        }
-        return corporateDtoList;
     }
 
     private UserDetails getSignedInUserDetails() {
