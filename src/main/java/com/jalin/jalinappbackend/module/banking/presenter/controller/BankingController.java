@@ -95,7 +95,7 @@ public class BankingController {
         return new ResponseEntity<>(transferListDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/transfers/corporates")
+    @GetMapping("/transfers/corporates/bank")
     public ResponseEntity<Object> getBankCorporates() {
         List<CorporateDto> corporateDtoList = corporateService.getBankCorporates();
         return new ResponseEntity<>(corporateDtoList, HttpStatus.OK);
