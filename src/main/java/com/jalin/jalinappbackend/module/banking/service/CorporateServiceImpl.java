@@ -3,8 +3,8 @@ package com.jalin.jalinappbackend.module.banking.service;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.service.model.CorporateResponse;
-import com.jalin.jalinappbackend.module.banking.service.model.GetBankCorporatesResponse;
-import com.jalin.jalinappbackend.module.banking.service.model.GetCorporateByIdResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.corporate.GetCorporateByIdResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.corporate.GetCorporatesResponse;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import org.json.JSONObject;
@@ -23,6 +23,7 @@ public class CorporateServiceImpl implements CorporateService {
     @Value("${resource.server.url}")
     private String BASE_URL;
     private static final String GET_BANK_CORPORATES_ENDPOINT = "/api/v1/corporates/bank";
+    private static final String GET_DIGITAL_WALLET_CORPORATES_ENDPOINT = "/api/v1/corporates/wallet";
     private static final String GET_CORPORATE_BY_CORPORATE_ID = "/api/v1/corporates/";
     @Autowired
     private ModelMapperUtility modelMapperUtility;
@@ -31,9 +32,25 @@ public class CorporateServiceImpl implements CorporateService {
 
     @Override
     public List<CorporateDto> getBankCorporates() {
-        ResponseEntity<GetBankCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
+        ResponseEntity<GetCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
                 BASE_URL + GET_BANK_CORPORATES_ENDPOINT,
-                GetBankCorporatesResponse.class);
+                GetCorporatesResponse.class);
+
+        List<CorporateResponse> corporateResponseList = Objects.requireNonNull(response.getBody()).getCorporateList();
+        List<CorporateDto> corporateDtoList = new ArrayList<>();
+        for (CorporateResponse corporateResponse : corporateResponseList) {
+            CorporateDto corporateDto = modelMapperUtility.initialize()
+                    .map(corporateResponse, CorporateDto.class);
+            corporateDtoList.add(corporateDto);
+        }
+        return corporateDtoList;
+    }
+
+    @Override
+    public List<CorporateDto> getDigitalWalletCorporates() {
+        ResponseEntity<GetCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_DIGITAL_WALLET_CORPORATES_ENDPOINT,
+                GetCorporatesResponse.class);
 
         List<CorporateResponse> corporateResponseList = Objects.requireNonNull(response.getBody()).getCorporateList();
         List<CorporateDto> corporateDtoList = new ArrayList<>();
