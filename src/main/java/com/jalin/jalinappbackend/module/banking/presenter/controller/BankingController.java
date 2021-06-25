@@ -1,10 +1,11 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
-import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
+import com.jalin.jalinappbackend.module.banking.model.ConfirmTransferDto;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.model.TransferListDto;
 import com.jalin.jalinappbackend.module.banking.presenter.model.AddTransferListRequest;
+import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmTransferRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.FundTransferRequest;
 import com.jalin.jalinappbackend.module.banking.repository.model.TransactionAggregation;
 import com.jalin.jalinappbackend.module.banking.service.BankingService;
@@ -58,6 +59,15 @@ public class BankingController {
     }
 
     @PostMapping(
+            path = "/transfers/confirm",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> confirmTransfer(@Valid @ModelAttribute ConfirmTransferRequest requestBody) {
+        ConfirmTransferDto confirmTransferDto = bankingService.confirmTransfer(
+                requestBody.getCorporateId(), requestBody.getAccountNumber(), requestBody.getAmount());
+        return new ResponseEntity<>(confirmTransferDto, HttpStatus.OK);
+    }
+
+    @PostMapping(
             path = "/transfers",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> fundTransfer(@Valid @ModelAttribute FundTransferRequest requestBody) {
@@ -74,9 +84,7 @@ public class BankingController {
                     requestBody.getAmount(),
                     requestBody.getTransactionNote());
         }
-        return new ResponseEntity<>(
-                new SuccessDetailsResponse(true, "Fund successfully transferred", transactionDto),
-                HttpStatus.CREATED);
+        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
     }
 
     @PostMapping(
