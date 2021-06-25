@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class WalletListDto {
     private String corporateId;
+    private String corporateName;
     private String accountNumber;
     private String fullName;
 }
