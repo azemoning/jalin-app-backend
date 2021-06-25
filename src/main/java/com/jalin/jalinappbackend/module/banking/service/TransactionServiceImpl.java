@@ -16,9 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -30,25 +29,27 @@ public class TransactionServiceImpl implements TransactionService {
     private UserDetailsRepository userDetailsRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private CorporateService corporateService;
 
     @Override
-    public Set<TransactionDto> getAllTransactions() {
+    public List<TransactionDto> getAllTransactions() {
         User user = getSignedInUser();
-        List<Transaction> transactionList = transactionRepository.findByUser(user);
-        Set<TransactionDto> transactionDtoSet = new HashSet<>();
+        List<Transaction> transactionList = transactionRepository.findByUserOrderByCreatedDateAsc(user);
+        List<TransactionDto> transactionDtoSet = new ArrayList<>();
         for (Transaction transaction : transactionList) {
             TransactionDto transactionDto = modelMapperUtility.initialize().map(transaction, TransactionDto.class);
-            transactionDto.setTransactionTime(LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.systemDefault()));
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(transaction.getCorporateId()).getCorporateName());
+            transactionDto.setTransactionTime(LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
             transactionDtoSet.add(transactionDto);
         }
         return transactionDtoSet;
     }
 
     @Override
-    public Set<TransactionAggregation> getMostFrequentTransactions() {
+    public List<TransactionAggregation> getMostFrequentTransactions() {
         User user = getSignedInUser();
-        List<TransactionAggregation> transactionAggregationList = transactionRepository.findMostFrequentTransactions(user);
-        return new HashSet<>(transactionAggregationList);
+        return transactionRepository.findMostFrequentTransactions(user);
     }
 
     private User getSignedInUser() {
