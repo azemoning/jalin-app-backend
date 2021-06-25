@@ -2,7 +2,7 @@ package com.jalin.jalinappbackend.module.banking.service;
 
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
-import com.jalin.jalinappbackend.module.banking.service.model.CorporateResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.corporate.CorporateResponse;
 import com.jalin.jalinappbackend.module.banking.service.model.corporate.GetCorporateByIdResponse;
 import com.jalin.jalinappbackend.module.banking.service.model.corporate.GetCorporatesResponse;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
