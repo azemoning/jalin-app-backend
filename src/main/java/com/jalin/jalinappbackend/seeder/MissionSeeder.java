@@ -3,6 +3,7 @@ package com.jalin.jalinappbackend.seeder;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.service.MissionService;
+import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,6 +22,9 @@ public class MissionSeeder implements CommandLineRunner {
 
     @Autowired
     private MissionService missionService;
+
+    @Autowired
+    private UserMissionService userMissionService;
 
     @Override
     public void run(String... args) {
@@ -132,5 +136,7 @@ public class MissionSeeder implements CommandLineRunner {
 
             missionService.addMission(mission9);
         }
+
+        userMissionService.initiateUserMission();
     }
 }
