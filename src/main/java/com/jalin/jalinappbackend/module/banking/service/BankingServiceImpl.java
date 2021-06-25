@@ -169,7 +169,7 @@ public class BankingServiceImpl implements BankingService {
                     FundTransferDomesticResponse.class);
 
             Transaction transaction = modelMapperUtility.initialize()
-                    .map(response.getBody(), Transaction.class);
+                    .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);
             transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getSourceTransaction().getTransactionDate()));
             transaction.setCorporateId(getCorporateId(response.getBody().getSourceTransaction().getTransactionDescription()));
             transaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
