@@ -30,18 +30,27 @@ public class MissionServiceImpl implements MissionService {
     @Override
     public void addMission(Mission mission) {
         List<Mission> allMissions = missionRepository.findAll();
+
+        // replace lower case expiration with upper case
+        switch (mission.getExpiration()) {
+            case "weekly":
+                mission.setExpiration("WEEKLY");
+            case "biweekly":
+                mission.setExpiration("BIWEEKLY");
+            case "monthly":
+                mission.setExpiration("MONTHLY");
+        }
+
         if (!allMissions.isEmpty()) {
             for (Mission data : allMissions) {
                 if (mission.getActivity().equals(data.getActivity()) && mission.getFrequency().equals(data.getFrequency())
                 && mission.getMinAmount().equals(data.getMinAmount()) && mission.getExpiration().equals(data.getExpiration())
                 && mission.getPoint().equals(data.getPoint())) {
-                    throw new AddMissionFailedException("Mission with same detail value are already exists");
+                    throw new AddMissionFailedException("Mission with same detail are already exists");
                 }
             }
-            missionRepository.save(mission);
-        } else {
-            missionRepository.save(mission);
         }
+        missionRepository.save(mission);
     }
 
     @Override

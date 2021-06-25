@@ -18,9 +18,16 @@ public class UserMissionController {
 
     @PostMapping("mission")
     public ResponseEntity<Object> assignMission() {
-        userMissionService.assignUserMission();
+        userMissionService.initiateUserMission();
         return new ResponseEntity<>(new SuccessResponse(true, "Mission assigned to user"),
-                HttpStatus.CREATED);
+                HttpStatus.OK);
+    }
+
+    @PostMapping("mission/assign")
+    public ResponseEntity<Object> assignNewMission() {
+        userMissionService.assignUserMission();
+        return new ResponseEntity<>(new SuccessResponse(true, "Mission reassigned to user"),
+                HttpStatus.OK);
     }
 
     @GetMapping("mission")

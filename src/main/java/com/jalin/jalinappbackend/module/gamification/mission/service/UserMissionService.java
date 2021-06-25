@@ -12,4 +12,5 @@ public interface UserMissionService {
     void updateUserMissionProgress(UserMission userMission);
     Set<UserMissionDto> getUserMissions();
     void claimCompletedMissionPoint(UUID userMissionId);
+    void initiateUserMission();
 }

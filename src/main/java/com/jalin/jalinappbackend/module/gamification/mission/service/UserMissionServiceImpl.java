@@ -8,10 +8,8 @@ import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMission;
-import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMissionHistory;
 import com.jalin.jalinappbackend.module.gamification.mission.model.UserMissionDto;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionRepository;
-import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionHistoryRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.PointSourceEnum;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
@@ -25,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -32,9 +33,6 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Autowired
     private UserMissionRepository userMissionRepository;
-
-    @Autowired
-    private UserMissionHistoryRepository userMissionHistoryRepository;
 
     @Autowired
     private MissionRepository missionRepository;
@@ -52,9 +50,13 @@ public class UserMissionServiceImpl implements UserMissionService {
     private PointService pointService;
 
     @Override
-    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7.00")
+    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT+7.00")
     public void assignUserMission() {
         Random random = new Random();
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate today = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        LocalDate yesterday = today.minusDays(1);
 
         List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
         List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
@@ -63,123 +65,50 @@ public class UserMissionServiceImpl implements UserMissionService {
         List<User> users = userRepository.findAll();
 
         for (User user : users) {
-            if (userMissionHistoryRepository.count() == 0) {
-                // Weekly Mission
-                Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
-                UserMission userMissionWeekly = new UserMission();
-                initiateMission(randomWeeklyMission, user, userMissionWeekly);
+            List<UserMission> userInactiveMissions = userMissionRepository
+                    .findUserMissionsByUserAndIsActiveEquals(user, false);
 
-                // Biweekly Mission
-                Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
-                UserMission userMissionBiweekly = new UserMission();
-                initiateMission(randomBiweeklyMission, user, userMissionBiweekly);
-
-                // Monthly Mission
-                Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
-                UserMission userMissionMonthly = new UserMission();
-                initiateMission(randomMonthlyMission, user, userMissionMonthly);
-
-            } else if (userMissionHistoryRepository.count() >= 0) {
-                List<UserMissionHistory> userMissionHistories = userMissionHistoryRepository
-                        .findUserMissionHistoriesByUser(user);
-
-                List<Mission> randomWeeklyMission = new ArrayList<>();
-                List<Mission> randomBiweeklyMission = new ArrayList<>();
-                List<Mission> randomMonthlyMission = new ArrayList<>();
-
-                for (UserMissionHistory userMissionHistory : userMissionHistories) {
-
-                    // Weekly Mission
-                    for (Mission mission : weeklyMissions) {
-                        if (!userMissionHistory.getMission().equals(mission)) {
-                            randomWeeklyMission.add(mission);
-                        } else {
-                            if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) < 0) {
-                                break;
-                            } else if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) > 0){
-                                UserMissionHistory oldUserMissionWeeklyHistory = userMissionHistoryRepository
-                                        .findUserMissionHistoryByUserAndMission(user, mission);
-                                userMissionHistoryRepository.delete(oldUserMissionWeeklyHistory);
-
-                                UserMission userMissionWeekly = new UserMission();
-                                Mission newUserWeeklyMission = randomWeeklyMission
-                                        .get(random.nextInt(randomWeeklyMission.size()));
-
-                                initiateMission(
-                                        newUserWeeklyMission,
-                                        user,
-                                        userMissionWeekly
-                                );
-
-                                UserMissionHistory newUserMissionWeeklyHistory = new UserMissionHistory();
-                                newUserMissionWeeklyHistory.setUser(user);
-                                newUserMissionWeeklyHistory.setMission(newUserWeeklyMission);
-
-                                userMissionHistoryRepository.save(newUserMissionWeeklyHistory);
+            for (UserMission userInactiveMission : userInactiveMissions) {
+                if (userInactiveMission.getEndDate().equals(yesterday)) {
+                    switch (userInactiveMission.getMission().getExpiration()) {
+                        case "WEEKLY":
+                            List<Mission> weeklyMissionsWithExclusion = new ArrayList<>();
+                            for (Mission weeklyMission : weeklyMissions) {
+                                if (!weeklyMission.getId().equals(userInactiveMission.getMission().getId())) {
+                                    weeklyMissionsWithExclusion.add(weeklyMission);
+                                }
                             }
-                        }
-                    }
 
-                    // Biweekly Mission
-                    for (Mission mission : biweeklyMissions) {
-                        if (!userMissionHistory.getMission().equals(mission)) {
-                            randomBiweeklyMission.add(mission);
-                        } else {
-                            if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) < 0) {
-                                break;
-                            } else if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) > 0){
-                                UserMissionHistory oldUserMissionBiweeklyHistory = userMissionHistoryRepository
-                                        .findUserMissionHistoryByUserAndMission(user, mission);
-                                userMissionHistoryRepository.delete(oldUserMissionBiweeklyHistory);
+                            Mission getRandomWeeklyMission = weeklyMissionsWithExclusion
+                                    .get(random.nextInt(weeklyMissionsWithExclusion.size()));
 
-                                UserMission userMissionBiweekly = new UserMission();
-                                Mission newUserBiweeklyMission = randomBiweeklyMission
-                                        .get(random.nextInt(randomBiweeklyMission.size()));
+                            addUserMission(getRandomWeeklyMission, user);
 
-                                initiateMission(
-                                        newUserBiweeklyMission,
-                                        user,
-                                        userMissionBiweekly
-                                );
-
-                                UserMissionHistory newUserMissionBiweeklyHistory = new UserMissionHistory();
-                                newUserMissionBiweeklyHistory.setUser(user);
-                                newUserMissionBiweeklyHistory.setMission(newUserBiweeklyMission);
-
-                                userMissionHistoryRepository.save(newUserMissionBiweeklyHistory);
+                        case "BIWEEKLY":
+                            List<Mission> biweeklyMissionsWithExclusion = new ArrayList<>();
+                            for (Mission biweeklyMission : biweeklyMissions) {
+                                if (!biweeklyMission.getId().equals(userInactiveMission.getMission().getId())) {
+                                    biweeklyMissionsWithExclusion.add(biweeklyMission);
+                                }
                             }
-                        }
-                    }
 
-                    // Monthly Mission
-                    for (Mission mission : monthlyMissions) {
-                        if (!userMissionHistory.getMission().equals(mission)) {
-                            randomMonthlyMission.add(mission);
-                        } else {
-                            if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) < 0) {
-                                break;
-                            } else if (userMissionHistory.getUserMission().getEndDate().compareTo(LocalDate.now()) > 0){
-                                UserMissionHistory oldUserMissionMonthlyHistory = userMissionHistoryRepository
-                                        .findUserMissionHistoryByUserAndMission(user, mission);
-                                userMissionHistoryRepository.delete(oldUserMissionMonthlyHistory);
+                            Mission getRandomBiweeklyMission = biweeklyMissionsWithExclusion
+                                    .get(random.nextInt(biweeklyMissionsWithExclusion.size()));
 
-                                UserMission userMissionMonthly = new UserMission();
-                                Mission newUserMonthlyMission = randomMonthlyMission
-                                        .get(random.nextInt(randomMonthlyMission.size()));
+                            addUserMission(getRandomBiweeklyMission, user);
 
-                                initiateMission(
-                                        newUserMonthlyMission,
-                                        user,
-                                        userMissionMonthly
-                                );
-
-                                UserMissionHistory newUserMissionMonthlyHistory = new UserMissionHistory();
-                                newUserMissionMonthlyHistory.setUser(user);
-                                newUserMissionMonthlyHistory.setMission(newUserMonthlyMission);
-
-                                userMissionHistoryRepository.save(newUserMissionMonthlyHistory);
+                        case "MONTHLY":
+                            List<Mission> monthlyMissionsWithExclusion = new ArrayList<>();
+                            for (Mission monthlyMission : monthlyMissions) {
+                                if (!monthlyMission.getId().equals(userInactiveMission.getMission().getId())) {
+                                    monthlyMissionsWithExclusion.add(monthlyMission);
+                                }
                             }
-                        }
+
+                            Mission getRandomMonthlyMission = monthlyMissionsWithExclusion
+                                    .get(random.nextInt(monthlyMissionsWithExclusion.size()));
+
+                            addUserMission(getRandomMonthlyMission, user);
                     }
                 }
             }
@@ -209,43 +138,45 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Override
     public void updateUserMissionProgress(UserMission userMission) {
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalTime localTimeNow = LocalTime.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+
         Mission mission = missionService.getMissionById(userMission.getMission().getId());
         if (!userMission.getStatus().equals("COMPLETED")) {
             userMission.setMissionProgress(userMission.getMissionProgress() + 1);
 
             if (userMission.getMissionProgress().equals(mission.getFrequency())) {
                 userMission.setStatus("COMPLETED");
-                userMission.setCompletionTime(LocalTime.now());
+                userMission.setCompletionTime(localTimeNow);
             }
 
             userMissionRepository.save(userMission);
         }
     }
 
-    // Need to be refactored
     @Override
     public Set<UserMissionDto> getUserMissions() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         User signedInUser = getSignedInUser();
-        List<UserMission> userMissions = userMissionRepository.findUserMissionsByUser(signedInUser);
+        List<UserMission> userMissions = userMissionRepository
+                .findUserMissionsByUserAndIsActiveEquals(signedInUser, true);
         Set<UserMissionDto> userMissionData = new HashSet<>();
         for (UserMission userMission: userMissions) {
             Mission mission = missionService.getMissionById(userMission.getMission().getId());
-            if (userMission.getIsActive()) {
-                UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
+            UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
 
-                userMissionDto.setActivity(mission.getActivity());
-                userMissionDto.setMissionDescription(mission.getMissionDescription());
-                userMissionDto.setTncDescription(mission.getTncDescription());
-                userMissionDto.setFrequency(mission.getFrequency());
-                userMissionDto.setMinimumAmount(mission.getMinAmount());
-                userMissionDto.setExpiration(mission.getExpiration());
-                userMissionDto.setPoint(mission.getPoint());
+            userMissionDto.setActivity(mission.getActivity());
+            userMissionDto.setMissionDescription(mission.getMissionDescription());
+            userMissionDto.setTncDescription(mission.getTncDescription());
+            userMissionDto.setFrequency(mission.getFrequency());
+            userMissionDto.setMinimumAmount(mission.getMinAmount());
+            userMissionDto.setExpiration(mission.getExpiration());
+            userMissionDto.setPoint(mission.getPoint());
 
-                userMissionData.add(userMissionDto);
-            }
+            userMissionData.add(userMissionDto);
         }
         return userMissionData;
     }
@@ -269,6 +200,29 @@ public class UserMissionServiceImpl implements UserMissionService {
         }
     }
 
+    @Override
+    public void initiateUserMission() {
+        Random random = new Random();
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+
+        List<User> users = userRepository.findAll();
+
+        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
+        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
+        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+
+        Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
+        Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
+        Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
+
+        for (User user : users) {
+            addUserMission(randomWeeklyMission, user);
+            addUserMission(randomBiweeklyMission, user);
+            addUserMission(randomMonthlyMission, user);
+        }
+    }
+
     private User getSignedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getPrincipal().toString();
@@ -276,21 +230,27 @@ public class UserMissionServiceImpl implements UserMissionService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    private void initiateMission(Mission mission, User user, UserMission userMission) {
+    private void addUserMission(Mission mission, User user) {
+
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate localDateNow = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        UserMission userMission = new UserMission();
+
         userMission.setUser(user);
         userMission.setMission(mission);
-        userMission.setStartDate(LocalDate.now());
+        userMission.setStartDate(localDateNow);
 
         switch (mission.getExpiration()) {
             case "WEEKLY":
-            case "weekly":
-                userMission.setEndDate(LocalDate.now().plusWeeks(1));
+                userMission.setEndDate(localDateNow.plusWeeks(1));
+                break;
             case "BIWEEKLY":
-            case "biweekly":
-                userMission.setEndDate(LocalDate.now().plusWeeks(2));
+                userMission.setEndDate(localDateNow.plusWeeks(2));
+                break;
             case "MONTHLY":
-            case "monthly":
-                userMission.setEndDate(LocalDate.now().plusMonths(1));
+                userMission.setEndDate(localDateNow.plusMonths(1));
+                break;
         }
 
         userMission.setMissionProgress(0);
