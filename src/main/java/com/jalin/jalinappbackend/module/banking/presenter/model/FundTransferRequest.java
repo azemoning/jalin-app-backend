@@ -15,7 +15,10 @@ import java.math.BigDecimal;
 @Setter
 public class FundTransferRequest {
     @NotBlank
+    private String corporateId;
+    @NotBlank
     private String beneficiaryAccountNumber;
     @Positive
     private BigDecimal amount;
+    private String note;
 }
