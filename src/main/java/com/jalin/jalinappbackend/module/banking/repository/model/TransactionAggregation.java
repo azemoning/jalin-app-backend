@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class TransactionAggregation {
     private String transactionName;
-    private String corporateNumber;
+    private String corporateId;
     private String accountNumber;
     private Long count;
 }
