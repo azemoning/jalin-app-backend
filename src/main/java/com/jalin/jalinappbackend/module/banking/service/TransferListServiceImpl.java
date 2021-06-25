@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.banking.service;
 
+import com.jalin.jalinappbackend.exception.AddTransferListFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
@@ -10,13 +11,17 @@ import com.jalin.jalinappbackend.module.banking.service.model.GetCustomerFullNam
 import com.jalin.jalinappbackend.utility.FakerUtility;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -36,10 +41,27 @@ public class TransferListServiceImpl implements TransferListService {
     private UserRepository userRepository;
     @Autowired
     private TransferListRepository transferListRepository;
+    @Autowired
+    private CorporateService corporateService;
+
+    @Override
+    public List<TransferListDto> getTransferList() {
+        User user = getSignedInUser();
+        List<TransferList> transferListFound = transferListRepository.findByUser(user);
+        List<TransferListDto> transferListDto = new ArrayList<>();
+        for (TransferList transferList : transferListFound) {
+            TransferListDto transferListDtoMapped = modelMapperUtility.initialize()
+                    .map(transferList, TransferListDto.class);
+            transferListDto.add(transferListDtoMapped);
+        }
+        return transferListDto;
+    }
 
     @Override
     public TransferListDto addTransferList(String corporateId, String beneficiaryAccountNumber) {
         User user = getSignedInUser();
+        validateTransferList(user, corporateId, beneficiaryAccountNumber);
+
         if (!corporateId.equals("212")) {
             TransferList transferList = new TransferList();
             transferList.setCorporateId(corporateId);
@@ -67,11 +89,24 @@ public class TransferListServiceImpl implements TransferListService {
     }
 
     private String getCustomerFullName(String accountNumber) {
-        ResponseEntity<GetCustomerFullNameResponse> response = restTemplateUtility.initialize().getForEntity(
-                BASE_URL + FIND_CUSTOMER_ENDPOINT + "?" +
-                        FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER + "&" +
-                        FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER + accountNumber,
-                GetCustomerFullNameResponse.class);
-        return Objects.requireNonNull(response.getBody()).getFullName();
+        try {
+            ResponseEntity<GetCustomerFullNameResponse> response = restTemplateUtility.initialize().getForEntity(
+                    BASE_URL + FIND_CUSTOMER_ENDPOINT + "?" +
+                            FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER + "&" +
+                            FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER + accountNumber,
+                    GetCustomerFullNameResponse.class);
+            return Objects.requireNonNull(response.getBody()).getFullName();
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new AddTransferListFailedException(error);
+        }
+    }
+
+    private void validateTransferList(User user, String corporateId, String beneficiaryAccountNumber) {
+        corporateService.getCorporateByCorporateId(corporateId);
+        if (transferListRepository.findByUserAndCorporateIdAndAccountNumber(user, corporateId, beneficiaryAccountNumber).isPresent()) {
+            throw new AddTransferListFailedException("The bank account is already added in transfer list");
+        }
     }
 }
