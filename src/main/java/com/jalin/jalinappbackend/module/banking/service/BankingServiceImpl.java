@@ -58,7 +58,7 @@ public class BankingServiceImpl implements BankingService {
     }
 
     @Override
-    public TransactionDto fundTransfer(String beneficiaryAccountNumber, BigDecimal amount) {
+    public TransactionDto fundTransfer(String beneficiaryAccountNumber, BigDecimal amount, String transactionNote) {
         UserDetails userDetails = getSignedInUserDetails();
         FundTransferRequest request = new FundTransferRequest();
         request.setSourceAccountNumber(userDetails.getAccountNumber());
@@ -88,6 +88,7 @@ public class BankingServiceImpl implements BankingService {
             sourceTransaction.setCorporateId(getCorporateNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
             sourceTransaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
             sourceTransaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
+            sourceTransaction.setTransactionNote(transactionNote);
             sourceTransaction.setUser(sourceUserDetails.getUser());
 
             Transaction beneficiaryTransaction = modelMapperUtility.initialize()
@@ -96,6 +97,7 @@ public class BankingServiceImpl implements BankingService {
             beneficiaryTransaction.setCorporateId(getCorporateNumber(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
             beneficiaryTransaction.setAccountNumber(getAccountNumber(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
             beneficiaryTransaction.setTransactionMessage(getTransactionMessage(response.getBody().getBeneficiaryTransaction().getTransactionDescription()));
+            beneficiaryTransaction.setTransactionNote(transactionNote);
             beneficiaryTransaction.setUser(beneficiaryUserDetails.getUser());
 
             Transaction savedSourceTransaction = transactionRepository.save(sourceTransaction);
@@ -103,6 +105,7 @@ public class BankingServiceImpl implements BankingService {
 
             TransactionDto transactionDto = modelMapperUtility.initialize()
                     .map(savedSourceTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedSourceTransaction.getCorporateId()).getCorporateName());
             transactionDto.setTransactionTime(LocalTime.ofInstant(savedSourceTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
             return transactionDto;
         } catch (HttpClientErrorException exception) {
@@ -113,7 +116,7 @@ public class BankingServiceImpl implements BankingService {
     }
 
     @Override
-    public TransactionDto fundTransferDomestic(String corporateId, String beneficiaryAccountNumber, BigDecimal amount) {
+    public TransactionDto fundTransferDomestic(String corporateId, String beneficiaryAccountNumber, BigDecimal amount, String transactionNote) {
         UserDetails userDetails = getSignedInUserDetails();
         FundTransferDomesticRequest request = new FundTransferDomesticRequest();
         request.setSourceAccountNumber(userDetails.getAccountNumber());
@@ -134,6 +137,7 @@ public class BankingServiceImpl implements BankingService {
             transaction.setCorporateId(getCorporateNumber(response.getBody().getTransactionDescription()));
             transaction.setAccountNumber(getAccountNumber(response.getBody().getTransactionDescription()));
             transaction.setTransactionMessage(getTransactionMessage(response.getBody().getTransactionDescription()));
+            transaction.setTransactionNote(transactionNote);
             transaction.setUser(userDetails.getUser());
 
             Transaction savedTransaction = transactionRepository.save(transaction);

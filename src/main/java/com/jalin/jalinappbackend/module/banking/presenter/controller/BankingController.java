@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/banking")
@@ -42,13 +41,13 @@ public class BankingController {
 
     @GetMapping("/accounts/transactions")
     public ResponseEntity<Object> getAccountTransactions() {
-        Set<TransactionDto> transactionDto = transactionService.getAllTransactions();
+        List<TransactionDto> transactionDto = transactionService.getAllTransactions();
         return new ResponseEntity<>(transactionDto, HttpStatus.OK);
     }
 
     @GetMapping("/accounts/transactions/most")
     public ResponseEntity<Object> getAccountMostTransactions() {
-        Set<TransactionAggregation> transactionDto = transactionService.getMostFrequentTransactions();
+        List<TransactionAggregation> transactionDto = transactionService.getMostFrequentTransactions();
         return new ResponseEntity<>(transactionDto, HttpStatus.OK);
     }
 
@@ -67,11 +66,13 @@ public class BankingController {
             transactionDto = bankingService.fundTransferDomestic(
                     requestBody.getCorporateId(),
                     requestBody.getBeneficiaryAccountNumber(),
-                    requestBody.getAmount());
+                    requestBody.getAmount(),
+                    requestBody.getTransactionNote());
         } else {
             transactionDto = bankingService.fundTransfer(
                     requestBody.getBeneficiaryAccountNumber(),
-                    requestBody.getAmount());
+                    requestBody.getAmount(),
+                    requestBody.getTransactionNote());
         }
         return new ResponseEntity<>(
                 new SuccessDetailsResponse(true, "Fund successfully transferred", transactionDto),
