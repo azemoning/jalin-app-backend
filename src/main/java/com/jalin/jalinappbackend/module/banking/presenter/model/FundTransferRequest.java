@@ -20,5 +20,5 @@ public class FundTransferRequest {
     private String beneficiaryAccountNumber;
     @Positive
     private BigDecimal amount;
-    private String note;
+    private String transactionNote;
 }
