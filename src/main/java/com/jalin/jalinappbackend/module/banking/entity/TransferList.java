@@ -20,9 +20,11 @@ import java.util.UUID;
 @Setter
 public class TransferList {
     @Id
+    @GeneratedValue
     private UUID transferListId;
     private String corporateId;
     private String accountNumber;
+    private String fullName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
