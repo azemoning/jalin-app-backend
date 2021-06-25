@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +20,8 @@ public class TransactionResponse {
     private BigDecimal amount;
     private String transactionName;
     private String transactionDescription;
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount.setScale(2, RoundingMode.UNNECESSARY);
+    }
 }
