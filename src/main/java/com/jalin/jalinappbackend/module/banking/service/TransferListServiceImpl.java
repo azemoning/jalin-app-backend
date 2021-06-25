@@ -1,9 +1,7 @@
 package com.jalin.jalinappbackend.module.banking.service;
 
 import com.jalin.jalinappbackend.exception.AddTransferListFailedException;
-import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
-import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.TransferList;
 import com.jalin.jalinappbackend.module.banking.model.TransferListDto;
 import com.jalin.jalinappbackend.module.banking.repository.TransferListRepository;
@@ -11,12 +9,11 @@ import com.jalin.jalinappbackend.module.banking.service.model.GetCustomerFullNam
 import com.jalin.jalinappbackend.utility.FakerUtility;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -38,7 +35,7 @@ public class TransferListServiceImpl implements TransferListService {
     @Autowired
     private RestTemplateUtility restTemplateUtility;
     @Autowired
-    private UserRepository userRepository;
+    private UserUtility userUtility;
     @Autowired
     private TransferListRepository transferListRepository;
     @Autowired
@@ -46,7 +43,7 @@ public class TransferListServiceImpl implements TransferListService {
 
     @Override
     public List<TransferListDto> getTransferList() {
-        User user = getSignedInUser();
+        User user = userUtility.getSignedInUser();
         List<TransferList> transferListFound = transferListRepository.findByUser(user);
         List<TransferListDto> transferListDto = new ArrayList<>();
         for (TransferList transferList : transferListFound) {
@@ -59,7 +56,7 @@ public class TransferListServiceImpl implements TransferListService {
 
     @Override
     public TransferListDto addTransferList(String corporateId, String beneficiaryAccountNumber) {
-        User user = getSignedInUser();
+        User user = userUtility.getSignedInUser();
         validateTransferList(user, corporateId, beneficiaryAccountNumber);
 
         if (!corporateId.equals("212")) {
@@ -79,13 +76,6 @@ public class TransferListServiceImpl implements TransferListService {
             return modelMapperUtility.initialize()
                     .map(transferListRepository.save(transferList), TransferListDto.class);
         }
-    }
-
-    private User getSignedInUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private String getCustomerFullName(String accountNumber) {
