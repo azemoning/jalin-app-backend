@@ -49,6 +49,8 @@ public class TransferListServiceImpl implements TransferListService {
         for (TransferList transferList : transferListFound) {
             TransferListDto transferListDtoMapped = modelMapperUtility.initialize()
                     .map(transferList, TransferListDto.class);
+            transferListDtoMapped.setCorporateName(
+                    corporateService.getCorporateByCorporateId(transferList.getCorporateId()).getCorporateName());
             transferListDto.add(transferListDtoMapped);
         }
         return transferListDto;
@@ -65,16 +67,26 @@ public class TransferListServiceImpl implements TransferListService {
             transferList.setAccountNumber(beneficiaryAccountNumber);
             transferList.setFullName(fakerUtility.initialize().name().fullName());
             transferList.setUser(user);
-            return modelMapperUtility.initialize()
-                    .map(transferListRepository.save(transferList), TransferListDto.class);
+            TransferList savedTransferList = transferListRepository.save(transferList);
+
+            TransferListDto transferListDto = modelMapperUtility.initialize()
+                    .map(savedTransferList, TransferListDto.class);
+            transferListDto.setCorporateName(
+                    corporateService.getCorporateByCorporateId(savedTransferList.getCorporateId()).getCorporateName());
+            return transferListDto;
         } else {
             TransferList transferList = new TransferList();
             transferList.setCorporateId(corporateId);
             transferList.setAccountNumber(beneficiaryAccountNumber);
             transferList.setFullName(getCustomerFullName(beneficiaryAccountNumber));
             transferList.setUser(user);
-            return modelMapperUtility.initialize()
-                    .map(transferListRepository.save(transferList), TransferListDto.class);
+            TransferList savedTransferList = transferListRepository.save(transferList);
+
+            TransferListDto transferListDto = modelMapperUtility.initialize()
+                    .map(savedTransferList, TransferListDto.class);
+            transferListDto.setCorporateName(
+                    corporateService.getCorporateByCorporateId(savedTransferList.getCorporateId()).getCorporateName());
+            return transferListDto;
         }
     }
 
