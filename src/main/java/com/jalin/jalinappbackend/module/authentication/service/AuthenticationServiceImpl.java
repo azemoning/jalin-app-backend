@@ -15,6 +15,7 @@ import com.jalin.jalinappbackend.module.authentication.service.model.AddNewBankA
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerRequest;
 import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCustomerResponse;
 import com.jalin.jalinappbackend.module.gamification.checkin.service.CheckInService;
+import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
@@ -62,6 +63,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private PointService pointService;
     @Autowired
     private CheckInService checkInService;
+    @Autowired
+    private UserMissionService userMissionService;
 
     @Override
     @Transactional
@@ -99,6 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         pointService.initiateUserPoint(newUser);
         checkInService.initiateCheckInCounter(newUser);
+        userMissionService.initiateUserMission(newUser);
     }
 
     @Override

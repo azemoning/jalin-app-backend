@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-@Order(value = 3)
+@Order(value = 2)
 @Slf4j
 public class MissionSeeder implements CommandLineRunner {
 
@@ -136,7 +136,5 @@ public class MissionSeeder implements CommandLineRunner {
 
             missionService.addMission(mission9);
         }
-
-        userMissionService.initiateUserMission();
     }
 }

@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.mission.service;
 
+import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMission;
 import com.jalin.jalinappbackend.module.gamification.mission.model.UserMissionDto;
 
@@ -12,5 +13,5 @@ public interface UserMissionService {
     void updateUserMissionProgress(UserMission userMission);
     Set<UserMissionDto> getUserMissions();
     void claimCompletedMissionPoint(UUID userMissionId);
-    void initiateUserMission();
+    void initiateUserMission(User user);
 }

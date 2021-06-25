@@ -83,6 +83,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                                     .get(random.nextInt(weeklyMissionsWithExclusion.size()));
 
                             addUserMission(getRandomWeeklyMission, user);
+                            break;
 
                         case "BIWEEKLY":
                             List<Mission> biweeklyMissionsWithExclusion = new ArrayList<>();
@@ -96,6 +97,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                                     .get(random.nextInt(biweeklyMissionsWithExclusion.size()));
 
                             addUserMission(getRandomBiweeklyMission, user);
+                            break;
 
                         case "MONTHLY":
                             List<Mission> monthlyMissionsWithExclusion = new ArrayList<>();
@@ -109,6 +111,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                                     .get(random.nextInt(monthlyMissionsWithExclusion.size()));
 
                             addUserMission(getRandomMonthlyMission, user);
+                            break;
                     }
                 }
             }
@@ -201,12 +204,9 @@ public class UserMissionServiceImpl implements UserMissionService {
     }
 
     @Override
-    public void initiateUserMission() {
+    public void initiateUserMission(User user) {
         Random random = new Random();
-        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
-        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
 
-        List<User> users = userRepository.findAll();
 
         List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
         List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
@@ -216,11 +216,9 @@ public class UserMissionServiceImpl implements UserMissionService {
         Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
         Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
 
-        for (User user : users) {
-            addUserMission(randomWeeklyMission, user);
-            addUserMission(randomBiweeklyMission, user);
-            addUserMission(randomMonthlyMission, user);
-        }
+        addUserMission(randomWeeklyMission, user);
+        addUserMission(randomBiweeklyMission, user);
+        addUserMission(randomMonthlyMission, user);
     }
 
     private User getSignedInUser() {

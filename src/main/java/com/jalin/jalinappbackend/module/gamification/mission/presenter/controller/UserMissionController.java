@@ -16,13 +16,6 @@ public class UserMissionController {
     @Autowired
     private UserMissionService userMissionService;
 
-    @PostMapping("mission")
-    public ResponseEntity<Object> assignMission() {
-        userMissionService.initiateUserMission();
-        return new ResponseEntity<>(new SuccessResponse(true, "Mission assigned to user"),
-                HttpStatus.OK);
-    }
-
     @PostMapping("mission/assign")
     public ResponseEntity<Object> assignNewMission() {
         userMissionService.assignUserMission();

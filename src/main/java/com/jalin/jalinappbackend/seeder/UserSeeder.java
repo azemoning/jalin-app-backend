@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 @Component
-@Order(value = 2)
+@Order(value = 3)
 @Slf4j
 public class UserSeeder implements CommandLineRunner {
     @Autowired
