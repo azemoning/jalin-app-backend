@@ -5,9 +5,7 @@ import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 
 import java.math.BigDecimal;
 
-public interface BankingService {
-    BigDecimal getAccountBalance();
+public interface TopUpService {
     ConfirmTransferDto confirmTransfer(String corporateId, String beneficiaryAccountNumber, BigDecimal amount);
-    TransactionDto fundTransfer(String beneficiaryAccountNumber, BigDecimal amount, String transactionNote);
-    TransactionDto fundTransferDomestic(String corporateId, String beneficiaryAccountNumber, BigDecimal amount, String transactionNote);
+    TransactionDto fundTransferVirtual(String corporateId, String beneficiaryAccountNumber, BigDecimal amount, String transactionNote);
 }

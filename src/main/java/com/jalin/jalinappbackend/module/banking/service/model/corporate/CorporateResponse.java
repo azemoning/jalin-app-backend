@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.banking.repository.model;
+package com.jalin.jalinappbackend.module.banking.service.model.corporate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TransactionAggregation {
-    private String transactionName;
+public class CorporateResponse {
     private String corporateId;
-    private String accountNumber;
-    private Long count;
+    private String corporateName;
 }

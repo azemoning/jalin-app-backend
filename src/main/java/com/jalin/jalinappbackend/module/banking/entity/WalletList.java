@@ -6,34 +6,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "wallet_list")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Transaction {
+public class WalletList {
     @Id
-    private String transactionId;
-    private LocalDate transactionDate;
-    private String transactionType;
-    private String currency;
-    private BigDecimal amount;
+    @GeneratedValue
+    private UUID walletListId;
     private String corporateId;
     private String accountNumber;
-    private String transactionName;
-    private String transactionDescription;
-    private String transactionMessage;
-    private String transactionNote;
+    private String fullName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
     @CreationTimestamp
     private Instant createdDate;
+    @UpdateTimestamp
+    private Instant modifiedDate;
 }

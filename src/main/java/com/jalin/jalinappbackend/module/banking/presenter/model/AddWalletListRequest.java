@@ -6,19 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class FundTransferRequest {
+public class AddWalletListRequest {
     @NotBlank
     private String corporateId;
     @NotBlank
-    private String beneficiaryAccountNumber;
-    @Positive
-    private BigDecimal amount;
-    private String transactionNote;
+    private String accountNumber;
 }

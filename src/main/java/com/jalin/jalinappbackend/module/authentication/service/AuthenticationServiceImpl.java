@@ -42,7 +42,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String BASE_URL;
     private static final String ADD_NEW_CUSTOMER_ENDPOINT = "/api/v1/customers";
     private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts?customerId=";
-    private static final String FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT = "/api/v1/customers/find?idCardNumber=";
+    private static final String FIND_CUSTOMER_ENDPOINT = "/api/v1/customers/find";
+    private static final String FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER = "idCardNumber=";
+    private static final String FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER = "accountNumber=";
     private static final String IDR_CURRENCY = "IDR";
     private static final Integer INITIAL_BALANCE = 1000000000;
     @Autowired
@@ -119,7 +121,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Boolean isIdCardRegisteredAtServer(String idCardNumber) {
         try {
             restTemplateUtility.initialize().getForObject(
-                    BASE_URL + FIND_CUSTOMER_BY_ID_CARD_NUMBER_ENDPOINT + idCardNumber,
+                    BASE_URL + FIND_CUSTOMER_ENDPOINT + "?" +
+                            FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER + idCardNumber + "&" +
+                            FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER,
                     Object.class);
         } catch (HttpClientErrorException exception) {
             return false;

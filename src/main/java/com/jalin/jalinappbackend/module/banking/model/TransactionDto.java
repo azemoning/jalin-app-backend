@@ -15,7 +15,8 @@ import java.time.LocalTime;
 @Setter
 public class TransactionDto {
     private String transactionName;
-    private String corporateNumber;
+    private String corporateId;
+    private String corporateName;
     private String accountNumber;
     private LocalDate transactionDate;
     private LocalTime transactionTime;
@@ -23,4 +24,5 @@ public class TransactionDto {
     private String currency;
     private BigDecimal amount;
     private String transactionMessage;
+    private String transactionNote;
 }

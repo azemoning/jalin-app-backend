@@ -11,13 +11,13 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
-    List<Transaction> findByUser(User user);
+    List<Transaction> findByUserOrderByCreatedDateAsc(User user);
     @Query("SELECT new com.jalin.jalinappbackend.module.banking.repository.model.TransactionAggregation(" +
-            "t.transactionName, t.corporateNumber, t.accountNumber, COUNT(*)) " +
+            "t.transactionName, t.corporateId, t.accountNumber, COUNT(*)) " +
             "FROM Transaction t " +
             "WHERE t.user = :user " +
             "AND t.transactionType = 'C' " +
-            "GROUP BY t.transactionName, t.corporateNumber, t.accountNumber " +
+            "GROUP BY t.transactionName, t.corporateId, t.accountNumber " +
             "ORDER BY COUNT(*) DESC")
     List<TransactionAggregation> findMostFrequentTransactions(User user);
 
