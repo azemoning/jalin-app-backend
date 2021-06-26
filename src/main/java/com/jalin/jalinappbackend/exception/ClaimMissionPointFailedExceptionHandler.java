@@ -11,7 +11,7 @@ public class ClaimMissionPointFailedExceptionHandler {
     @ExceptionHandler(ClaimMissionPointFailedException.class)
     public ResponseEntity<Object> handleException(ClaimMissionPointFailedException exception) {
         return new ResponseEntity<>(
-                new ErrorResponse(true, exception.getMessage()),
+                new ErrorResponse(false, exception.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
     }
