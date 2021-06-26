@@ -11,7 +11,7 @@ public class AddMissionFailedExceptionHandler {
     @ExceptionHandler(AddMissionFailedException.class)
     public ResponseEntity<Object> handleException(AddMissionFailedException exception) {
         return new ResponseEntity<>(
-                new ErrorResponse(true, exception.getMessage()),
+                new ErrorResponse(false, exception.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
     }
