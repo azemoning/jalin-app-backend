@@ -23,9 +23,6 @@ public class MissionSeeder implements CommandLineRunner {
     @Autowired
     private MissionService missionService;
 
-    @Autowired
-    private UserMissionService userMissionService;
-
     @Override
     public void run(String... args) {
         try {
@@ -38,7 +35,7 @@ public class MissionSeeder implements CommandLineRunner {
     private void seed() {
         if (missionRepository.count() == 0) {
             Mission mission1 = new Mission();
-            mission1.setActivity("TOPUP");
+            mission1.setActivity("TOP_UP");
             mission1.setMissionDescription("Top up e-wallet");
             mission1.setTncDescription("Minimal transaksi Rp 50.000");
             mission1.setFrequency(5);
@@ -60,7 +57,7 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission2);
 
             Mission mission3 = new Mission();
-            mission3.setActivity("TRANSFERDB");
+            mission3.setActivity("TRANSFER_DOMESTIC");
             mission3.setMissionDescription("Transfer ke bank berbeda");
             mission3.setTncDescription("Minimal transaksi Rp 50.000");
             mission3.setFrequency(4);
@@ -71,7 +68,7 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission3);
 
             Mission mission4 = new Mission();
-            mission4.setActivity("PAYMENT");
+            mission4.setActivity("PAYMENT_BILL");
             mission4.setMissionDescription("Bayar tagihan (elektrik, air, telpon, internet)");
             mission4.setTncDescription("Tanpa minimal transaksi");
             mission4.setFrequency(2);
@@ -82,8 +79,8 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission4);
 
             Mission mission5 = new Mission();
-            mission5.setActivity("TOPUPCREDIT");
-            mission5.setMissionDescription("Isi pulsa atau internet quota");
+            mission5.setActivity("PAYMENT_MOBILE_PHONE_DATA");
+            mission5.setMissionDescription("Isi internet quota");
             mission5.setTncDescription("Minimal transaksi Rp 20.000");
             mission5.setFrequency(2);
             mission5.setExpiration("WEEKLY");
@@ -93,8 +90,8 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission5);
 
             Mission mission6 = new Mission();
-            mission6.setActivity("TOPUPCREDIT");
-            mission6.setMissionDescription("Isi pulsa atau internet quota");
+            mission6.setActivity("PAYMENT_MOBILE_PHONE_CREDIT");
+            mission6.setMissionDescription("Isi pulsa");
             mission6.setTncDescription("Minimal transaksi Rp 20.000");
             mission6.setFrequency(8);
             mission6.setExpiration("MONTHLY");
@@ -104,7 +101,7 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission6);
 
             Mission mission7 = new Mission();
-            mission7.setActivity("PAYMENTQR");
+            mission7.setActivity("PAYMENT_QR");
             mission7.setMissionDescription("Payment QR with Jalin when shopping in merchant partner");
             mission7.setTncDescription("Minimal transaksi Rp 20.000");
             mission7.setFrequency(5);
@@ -115,7 +112,7 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission7);
 
             Mission mission8 = new Mission();
-            mission8.setActivity("PAYMENTQR");
+            mission8.setActivity("PAYMENT_QR");
             mission8.setMissionDescription("Payment QR with Jalin when shopping in merchant partner");
             mission8.setTncDescription("Minimal transaksi Rp 20.000");
             mission8.setFrequency(15);
@@ -126,7 +123,7 @@ public class MissionSeeder implements CommandLineRunner {
             missionService.addMission(mission8);
 
             Mission mission9 = new Mission();
-            mission9.setActivity("PAYMENTQR");
+            mission9.setActivity("PAYMENT_QR");
             mission9.setMissionDescription("Payment QR with Jalin when shopping in merchant partner");
             mission9.setTncDescription("Minimal transaksi Rp 20.000");
             mission9.setFrequency(30);
