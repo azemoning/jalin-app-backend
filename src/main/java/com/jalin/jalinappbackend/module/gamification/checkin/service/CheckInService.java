@@ -7,4 +7,5 @@ public interface CheckInService {
     void initiateCheckInCounter(User user);
     CheckInDto getCheckInStatus();
     void checkIn();
+    void runCronJob();
 }

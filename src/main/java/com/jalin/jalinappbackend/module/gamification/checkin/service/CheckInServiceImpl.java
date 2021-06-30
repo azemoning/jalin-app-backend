@@ -81,6 +81,11 @@ public class CheckInServiceImpl implements CheckInService {
         increasePoint(checkInEntity.getCheckInId(), getCurrentCounter(signedInUser));
     }
 
+    @Override
+    public void runCronJob() {
+        executeCheckInCronJob();
+    }
+
     @Scheduled(cron = "0 0 17 * * ?", zone="GMT+7.00")
     private void executeCheckInCronJob() {
         resetCounterAllNotCheckedInUsers();
