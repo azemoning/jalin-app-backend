@@ -30,4 +30,12 @@ public class CheckInController {
                 new SuccessResponse(true, "User successfully checked-in"),
                 HttpStatus.CREATED);
     }
+
+    @PostMapping("/check-in/reset")
+    public ResponseEntity<Object> resetCheckIn() {
+        checkInService.runCronJob();
+        return new ResponseEntity<>(
+                new SuccessResponse(true, "Cron job successfully executed"),
+                HttpStatus.OK);
+    }
 }
