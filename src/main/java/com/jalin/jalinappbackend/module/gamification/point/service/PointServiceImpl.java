@@ -6,18 +6,26 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserRepository
 import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckIn;
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.*;
+import com.jalin.jalinappbackend.module.gamification.point.model.PointDetailDto;
+import com.jalin.jalinappbackend.module.gamification.point.model.PointDto;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointDetailRepository;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointSourceRepository;
+import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class PointServiceImpl implements PointService {
+
+    @Autowired
+    private ModelMapperUtility modelMapperUtility;
 
     @Autowired
     private UserRepository userRepository;
@@ -54,11 +62,31 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public Integer getUserPoint() {
+    public PointDto getUserPoint() {
         User user = getSignedInUser();
         Point point = pointRepository.findByUser(user)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return point.getTotalPoints();
+                .orElseThrow(() -> new ResourceNotFoundException("User's point not found"));
+        return new PointDto(point.getTotalPoints());
+    }
+
+    @Override
+    public List<PointDetailDto> getUserPointDetails() {
+        User user = getSignedInUser();
+        Point point = pointRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("User's point not found"));
+        List<PointDetail> pointDetailList = pointDetailRepository.findByPoint(point);
+
+        List<PointDetailDto> pointDetailDtoList = new ArrayList<>();
+        for (PointDetail pointDetail : pointDetailList) {
+            PointSource pointSource = pointSourceRepository.findById(pointDetail.getPointDetailId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Point source not found"));
+            PointDetailDto pointDetailDto = modelMapperUtility.initialize()
+                    .map(pointDetail, PointDetailDto.class);
+            pointDetailDto.setSourceName(pointSource.getSourceName().name());
+            pointDetailDtoList.add(pointDetailDto);
+        }
+
+        return pointDetailDtoList;
     }
 
     private User getSignedInUser() {
