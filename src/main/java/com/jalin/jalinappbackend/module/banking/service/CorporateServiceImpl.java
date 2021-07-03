@@ -24,6 +24,7 @@ public class CorporateServiceImpl implements CorporateService {
     private String BASE_URL;
     private static final String GET_BANK_CORPORATES_ENDPOINT = "/api/v1/corporates/bank";
     private static final String GET_DIGITAL_WALLET_CORPORATES_ENDPOINT = "/api/v1/corporates/wallet";
+    private static final String GET_MERCHANT_CORPORATES_ENDPOINT = "/api/v1/corporates/merchant";
     private static final String GET_CORPORATE_BY_CORPORATE_ID = "/api/v1/corporates/";
     @Autowired
     private ModelMapperUtility modelMapperUtility;
@@ -50,6 +51,22 @@ public class CorporateServiceImpl implements CorporateService {
     public List<CorporateDto> getDigitalWalletCorporates() {
         ResponseEntity<GetCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
                 BASE_URL + GET_DIGITAL_WALLET_CORPORATES_ENDPOINT,
+                GetCorporatesResponse.class);
+
+        List<CorporateResponse> corporateResponseList = Objects.requireNonNull(response.getBody()).getCorporateList();
+        List<CorporateDto> corporateDtoList = new ArrayList<>();
+        for (CorporateResponse corporateResponse : corporateResponseList) {
+            CorporateDto corporateDto = modelMapperUtility.initialize()
+                    .map(corporateResponse, CorporateDto.class);
+            corporateDtoList.add(corporateDto);
+        }
+        return corporateDtoList;
+    }
+
+    @Override
+    public List<CorporateDto> getMerchantCorporates() {
+        ResponseEntity<GetCorporatesResponse> response = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_MERCHANT_CORPORATES_ENDPOINT,
                 GetCorporatesResponse.class);
 
         List<CorporateResponse> corporateResponseList = Objects.requireNonNull(response.getBody()).getCorporateList();
