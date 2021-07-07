@@ -1,7 +1,8 @@
-package com.jalin.jalinappbackend.module.banking.service.model;
+package com.jalin.jalinappbackend.module.banking.service.model.payment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jalin.jalinappbackend.module.banking.service.model.TransactionResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
