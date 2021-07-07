@@ -8,8 +8,8 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRep
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.model.*;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
-import com.jalin.jalinappbackend.module.banking.service.model.PaymentQrRequest;
-import com.jalin.jalinappbackend.module.banking.service.model.PaymentQrResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.PaymentQrRequest;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.PaymentQrResponse;
 import com.jalin.jalinappbackend.module.banking.service.model.payment.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;

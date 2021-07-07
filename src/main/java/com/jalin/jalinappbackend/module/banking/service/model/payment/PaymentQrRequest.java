@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.banking.service.model;
+package com.jalin.jalinappbackend.module.banking.service.model.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
