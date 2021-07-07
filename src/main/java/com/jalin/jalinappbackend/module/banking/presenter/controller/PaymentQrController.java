@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/banking")
-public class PaymentController {
+public class PaymentQrController {
     @Autowired
     private CorporateService corporateService;
     @Autowired
@@ -45,7 +45,7 @@ public class PaymentController {
             path = "/payment/qr/confirm",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> confirmPayWithQr(@Valid @ModelAttribute ConfirmPaymentRequest requestBody) {
-        ConfirmPaymentDto confirmPayment = paymentService.confirmPayment(
+        ConfirmPaymentDto confirmPayment = paymentService.confirmPaymentQr(
                 requestBody.getCorporateId(),
                 requestBody.getAmount());
         return new ResponseEntity<>(confirmPayment, HttpStatus.OK);
