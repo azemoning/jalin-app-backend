@@ -28,4 +28,23 @@ public class UserMissionController {
                 HttpStatus.OK);
     }
 
+    @PostMapping("mission/forceAssign")
+    public ResponseEntity<Object> forceAssignUserMission(@RequestParam(name = "expiration") String expiration) {
+        userMissionService.forceAssignUserMission(expiration);
+        return new ResponseEntity<>(new SuccessResponse(
+                true,
+                "User mission reasigned"
+        ), HttpStatus.OK);
+    }
+
+    @PostMapping("mission/forceComplete")
+    public ResponseEntity<Object> forceCompleteUserMission(@RequestParam(name = "expiration") String expiration) {
+        userMissionService.forceCompleteUserMission(expiration);
+        return new ResponseEntity<>(new SuccessResponse(
+                true,
+                "Successfully forcing user mission to complete"),
+                HttpStatus.OK
+        );
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.jalin.jalinappbackend.module.gamification.mission.service;
 
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
+import com.jalin.jalinappbackend.exception.ForceCompleteUserMissionFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
@@ -191,15 +192,15 @@ public class UserMissionServiceImpl implements UserMissionService {
 
         Mission mission = missionService.getMissionById(userMission.getMission().getId());
 
-        if (userMission.getStatus().equals("COMPLETED")) {
+        if (userMission.getIsClaimed().equals(true)) {
+            throw new ClaimMissionPointFailedException("Mission point already claimed");
+        } else if (userMission.getStatus().equals("INCOMPLETE")){
+            throw new ClaimMissionPointFailedException("Mission not completed yet");
+        } else if (userMission.getStatus().equals("COMPLETED")) {
             userMission.setIsClaimed(true);
             userMission.setIsActive(false);
             userMissionRepository.save(userMission);
             pointService.addUserPoint(PointSourceEnum.MISSION, mission.getId(), mission.getPoint());
-        } else if (userMission.getStatus().equals("INCOMPLETE")){
-            throw new ClaimMissionPointFailedException("Mission not completed yet");
-        } else if (userMission.getIsClaimed().equals(true)) {
-            throw new ClaimMissionPointFailedException("Mission point already claimed");
         }
     }
 
@@ -219,6 +220,102 @@ public class UserMissionServiceImpl implements UserMissionService {
         addUserMission(randomWeeklyMission, user);
         addUserMission(randomBiweeklyMission, user);
         addUserMission(randomMonthlyMission, user);
+    }
+
+    @Override
+    public void forceCompleteUserMission(String expiration) {
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalTime localTimeNow = LocalTime.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+
+        User user = getSignedInUser();
+        List<UserMission> userMissions = userMissionRepository.findUserMissionsByUserAndIsActiveEquals(
+                user,
+                true
+        );
+
+        for (UserMission userMission : userMissions) {
+            if (userMission.getMission().getExpiration().equals(expiration)) {
+                userMission.setStatus("COMPLETED");
+                userMission.setMissionProgress(userMission.getMission().getFrequency());
+                userMission.setCompletionTime(localTimeNow);
+                userMissionRepository.save(userMission);
+            }
+        }
+    }
+
+    @Override
+    public void forceAssignUserMission(String expiration) {
+        Random random = new Random();
+        ZoneId zoneId = ZoneId.of("Asia/Jakarta");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate today = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
+        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
+        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+
+        User user = getSignedInUser();
+
+        List<UserMission> inactiveUserMissions = userMissionRepository
+                .findUserMissionsByUserAndIsActiveEquals(user, false);
+
+        Mission userLatestCompletedMission = new Mission();
+
+        for (UserMission latestInactiveUserMission : inactiveUserMissions) {
+            if (
+                    latestInactiveUserMission.getEndDate().compareTo(today) > 0 &&
+                            latestInactiveUserMission.getMission().getExpiration().equals(expiration)
+            ) {
+                userLatestCompletedMission = latestInactiveUserMission.getMission();
+            }
+        }
+
+        switch (expiration) {
+            case "WEEKLY":
+                List<Mission> weeklyMissionsWithExclusion = new ArrayList<>();
+                for (Mission weeklyMission : weeklyMissions) {
+                    if (!weeklyMission.getId().equals(userLatestCompletedMission.getId())) {
+                        weeklyMissionsWithExclusion.add(weeklyMission);
+                    }
+                }
+
+                Mission getRandomWeeklyMission = weeklyMissionsWithExclusion
+                        .get(random.nextInt(weeklyMissionsWithExclusion.size()));
+
+                addUserMission(getRandomWeeklyMission, user);
+                break;
+
+            case "BIWEEKLY":
+                List<Mission> biweeklyMissionsWithExclusion = new ArrayList<>();
+                for (Mission biweeklyMission : biweeklyMissions) {
+                    if (!biweeklyMission.getId().equals(userLatestCompletedMission.getId())) {
+                        biweeklyMissionsWithExclusion.add(biweeklyMission);
+                    }
+                }
+
+                Mission getRandomBiweeklyMission = biweeklyMissionsWithExclusion
+                        .get(random.nextInt(biweeklyMissionsWithExclusion.size()));
+
+                addUserMission(getRandomBiweeklyMission, user);
+                break;
+
+            case "MONTHLY":
+                List<Mission> monthlyMissionsWithExclusion = new ArrayList<>();
+                for (Mission monthlyMission : monthlyMissions) {
+                    if (!monthlyMission.getId().equals(userLatestCompletedMission.getId())) {
+                        monthlyMissionsWithExclusion.add(monthlyMission);
+                    }
+                }
+
+                Mission getRandomMonthlyMission = monthlyMissionsWithExclusion
+                        .get(random.nextInt(monthlyMissionsWithExclusion.size()));
+
+                addUserMission(getRandomMonthlyMission, user);
+                break;
+        }
+
+
     }
 
     private User getSignedInUser() {
