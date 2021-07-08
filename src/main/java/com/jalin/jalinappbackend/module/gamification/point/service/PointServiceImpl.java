@@ -94,6 +94,26 @@ public class PointServiceImpl implements PointService {
         return pointDetailDtoList;
     }
 
+    @Override
+    public void addUserPointQa(Integer amount) {
+        User user = getSignedInUser();
+        Point point = pointRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("User point not found"));
+
+        point.setTotalPoints(amount);
+        pointRepository.save(point);
+    }
+
+    @Override
+    public void resetUserPointQa() {
+        User user = getSignedInUser();
+        Point point = pointRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("User point not found"));
+
+        point.setTotalPoints(0);
+        pointRepository.save(point);
+    }
+
     private User getSignedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getPrincipal().toString();
