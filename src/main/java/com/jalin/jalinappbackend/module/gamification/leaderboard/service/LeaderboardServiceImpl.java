@@ -5,7 +5,7 @@ import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.authentication.service.UserService;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.LeaderboardRepository;
-import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.model.PointDto;
+import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
 import com.jalin.jalinappbackend.module.gamification.point.repository.PointRepository;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
@@ -14,10 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.Tuple;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LeaderboardServiceImpl implements LeaderboardService{
@@ -32,7 +32,6 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
     @Autowired
     private LeaderboardRepository leaderboardRepository;
-
     @Autowired
     private ModelMapperUtility mapperUtility;
 
@@ -46,23 +45,16 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
         Map<Object, Object> leaderboard = new HashMap<>();
 
-        leaderboard.put("current_rank", "point");
+//        leaderboard.put("current_rank", userRepository.findById(getSignedInUser().getUserId()) );
         leaderboard.put("total_point", pointUser);
         leaderboard.put("leaderboard", getListLeaderboard());
 
         return leaderboard;
     }
 
-    private List<PointDto> getListLeaderboard() {
-        List<Point> pointList = pointRepository.findAll();
-        List<PointDto> pointDTOS = new ArrayList<>();
-        for (Point det : pointList){
-            PointDto pointDto = mapperUtility.initialize().map(det, PointDto.class);
-            pointDto.setFullName(userService.getUserDetails().getFullName());
-            pointDTOS.add(pointDto);
-        }
-
-        return pointDTOS;
+    @Override
+    public List<ListPointRankDto> getListLeaderboard() {
+        return leaderboardRepository.findUsersLeaderboard();
     }
 
     private User getSignedInUser() {

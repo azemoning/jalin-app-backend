@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.presenter.controller;
 
+import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.LeaderboardRepository;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.service.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
