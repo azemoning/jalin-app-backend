@@ -45,16 +45,24 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
         Map<Object, Object> leaderboard = new HashMap<>();
 
-//        leaderboard.put("current_rank", userRepository.findById(getSignedInUser().getUserId()) );
-        leaderboard.put("total_point", pointUser);
+        leaderboard.put("userTotalPoint", pointUser);
+        leaderboard.put("topThree", getTopThree());
         leaderboard.put("leaderboard", getListLeaderboard());
 
         return leaderboard;
     }
 
     @Override
-    public List<ListPointRankDto> getListLeaderboard() {
+    public List<ListPointRankDto> findUserRank(String fullName){
+        return (List<ListPointRankDto>) leaderboardRepository.findUserRank(fullName).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private List<ListPointRankDto> getListLeaderboard() {
         return leaderboardRepository.findUsersLeaderboard();
+    }
+
+    private List<ListPointRankDto> getTopThree(){
+        return leaderboardRepository.findUserLeaderBoardTop3();
     }
 
     private User getSignedInUser() {
