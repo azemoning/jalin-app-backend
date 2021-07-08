@@ -5,6 +5,8 @@ import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.gamification.checkin.entity.CheckIn;
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInRepository;
+import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
+import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.*;
 import com.jalin.jalinappbackend.module.gamification.point.model.PointDetailDto;
 import com.jalin.jalinappbackend.module.gamification.point.model.PointDto;
@@ -41,6 +43,9 @@ public class PointServiceImpl implements PointService {
 
     @Autowired
     private CheckInRepository checkInRepository;
+
+    @Autowired
+    private MissionRepository missionRepository;
 
     @Override
     public void initiateUserPoint(User user) {
@@ -113,6 +118,14 @@ public class PointServiceImpl implements PointService {
             pointSource.setPointDetail(pointDetail);
             pointSource.setSourceName(sourceName);
             pointSource.setCheckIn(checkIn);
+            pointSourceRepository.save(pointSource);
+        } else if (sourceName == PointSourceEnum.MISSION) {
+            Mission mission = missionRepository.findById(sourceId).
+                    orElseThrow(() -> new ResourceNotFoundException("Mission id not found"));
+
+            pointSource.setPointDetail(pointDetail);
+            pointSource.setSourceName(sourceName);
+            pointSource.setMission(mission);
             pointSourceRepository.save(pointSource);
         }
     }
