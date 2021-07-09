@@ -1,9 +1,7 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
-import com.jalin.jalinappbackend.module.banking.model.ConfirmTransferDto;
-import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
-import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
-import com.jalin.jalinappbackend.module.banking.model.TransferListDto;
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
+import com.jalin.jalinappbackend.module.banking.model.*;
 import com.jalin.jalinappbackend.module.banking.presenter.model.AddTransferListRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmTransferRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.FundTransferRequest;
@@ -36,8 +34,10 @@ public class BankingController {
 
     @GetMapping("/accounts/balance")
     public ResponseEntity<Object> getAccountBalance() {
-        BigDecimal accountBalance = bankingService.getAccountBalance();
-        return new ResponseEntity<>(accountBalance, HttpStatus.OK);
+        BalanceDto balanceDto = bankingService.getAccountBalance();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account balance successfully found", balanceDto),
+                HttpStatus.OK);
     }
 
     @GetMapping("/accounts/transactions")
