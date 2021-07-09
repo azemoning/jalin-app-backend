@@ -9,5 +9,6 @@ public interface MissionService {
     List<Mission> getAllMissions();
     Mission getMissionById(UUID missionId);
     void addMission(Mission mission);
+    void updateMission(UUID missionId, Mission mission);
     void deleteMission(UUID missionId);
 }

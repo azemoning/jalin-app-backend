@@ -41,6 +41,7 @@ public class UserMission {
 
     @Column(name = "mission_progress")
     private Integer missionProgress;
+    private LocalDate completionDate;
     private LocalTime completionTime;
     private Boolean isClaimed;
     private Boolean isActive;

@@ -41,16 +41,53 @@ public class MissionServiceImpl implements MissionService {
                 mission.setExpiration("MONTHLY");
         }
 
-        if (!allMissions.isEmpty()) {
-            for (Mission data : allMissions) {
-                if (mission.getActivity().equals(data.getActivity()) && mission.getFrequency().equals(data.getFrequency())
-                && mission.getMinAmount().equals(data.getMinAmount()) && mission.getExpiration().equals(data.getExpiration())
-                && mission.getPoint().equals(data.getPoint())) {
-                    throw new AddMissionFailedException("Mission with same detail are already exists");
+        for (Mission data : allMissions) {
+            if (mission.getActivity().equals(data.getActivity())) {
+                if (mission.getFrequency().equals(data.getFrequency())) {
+                    if (mission.getMinAmount().compareTo(data.getMinAmount()) == 0) {
+                        if (mission.getExpiration().equals(data.getExpiration())) {
+                            if (mission.getPoint().equals(data.getPoint())) {
+                                throw new AddMissionFailedException("Mission with same detail are already exists");
+                            }
+                        }
+                    }
                 }
             }
         }
+
         missionRepository.save(mission);
+    }
+
+    @Override
+    public void updateMission(UUID missionId, Mission mission) {
+        Mission findMission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
+
+        List<Mission> allMissions = missionRepository.findAll();
+
+        for (Mission data : allMissions) {
+            if (mission.getActivity().equals(data.getActivity())) {
+                if (mission.getFrequency().equals(data.getFrequency())) {
+                    if (mission.getMinAmount().compareTo(data.getMinAmount()) == 0) {
+                        if (mission.getExpiration().equals(data.getExpiration())) {
+                            if (mission.getPoint().equals(data.getPoint())) {
+                                throw new AddMissionFailedException("Mission with same detail are already exists");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        findMission.setActivity(mission.getActivity());
+        findMission.setMissionDescription(mission.getMissionDescription());
+        findMission.setTncDescription(mission.getTncDescription());
+        findMission.setFrequency(mission.getFrequency());
+        findMission.setMinAmount(mission.getMinAmount());
+        findMission.setExpiration(mission.getExpiration());
+        findMission.setPoint(mission.getPoint());
+
+        missionRepository.save(findMission);
     }
 
     @Override

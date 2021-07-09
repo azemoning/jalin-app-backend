@@ -144,6 +144,7 @@ public class UserMissionServiceImpl implements UserMissionService {
     public void updateUserMissionProgress(UserMission userMission) {
         ZoneId zoneId = ZoneId.of("Asia/Jakarta");
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate localDateNow = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
         LocalTime localTimeNow = LocalTime.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
         Mission mission = missionService.getMissionById(userMission.getMission().getId());
@@ -152,6 +153,7 @@ public class UserMissionServiceImpl implements UserMissionService {
 
             if (userMission.getMissionProgress().equals(mission.getFrequency())) {
                 userMission.setStatus("COMPLETED");
+                userMission.setCompletionDate(localDateNow);
                 userMission.setCompletionTime(localTimeNow);
             }
 
