@@ -1,10 +1,12 @@
 package com.jalin.jalinappbackend.module.authentication.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.model.SuccessResponse;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetailsImpl;
 import com.jalin.jalinappbackend.module.authentication.jwt.JwtTokenUtility;
+import com.jalin.jalinappbackend.module.authentication.model.LoginDto;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.LoginRequest;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.RegisterRequest;
 import com.jalin.jalinappbackend.module.authentication.service.AuthenticationService;
@@ -50,10 +52,12 @@ public class AuthenticationController {
             path = "/login",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> login(@Valid @ModelAttribute LoginRequest requestBody) {
-        authenticationService.login(requestBody.getEmail(), requestBody.getPassword());
+        LoginDto loginDto = authenticationService.login(requestBody.getEmail(), requestBody.getPassword());
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String token = jwtTokenUtility.generateToken(userDetails);
+        loginDto.setToken(token);
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenUtility.generateToken(userDetails))
-                .body(new SuccessResponse(true, "Login successful"));
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(new SuccessDetailsResponse(true, "Login successful", loginDto));
     }
 }
