@@ -1,9 +1,7 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
-import com.jalin.jalinappbackend.module.banking.model.ConfirmTransferDto;
-import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
-import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
-import com.jalin.jalinappbackend.module.banking.model.TransferListDto;
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
+import com.jalin.jalinappbackend.module.banking.model.*;
 import com.jalin.jalinappbackend.module.banking.presenter.model.AddTransferListRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmTransferRequest;
 import com.jalin.jalinappbackend.module.banking.presenter.model.FundTransferRequest;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -36,26 +33,34 @@ public class BankingController {
 
     @GetMapping("/accounts/balance")
     public ResponseEntity<Object> getAccountBalance() {
-        BigDecimal accountBalance = bankingService.getAccountBalance();
-        return new ResponseEntity<>(accountBalance, HttpStatus.OK);
+        BalanceDto balanceDto = bankingService.getAccountBalance();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account balance successfully found", balanceDto),
+                HttpStatus.OK);
     }
 
     @GetMapping("/accounts/transactions")
     public ResponseEntity<Object> getAccountTransactions() {
-        List<TransactionDto> transactionDto = transactionService.getAllTransactions();
-        return new ResponseEntity<>(transactionDto, HttpStatus.OK);
+        List<TransactionDto> transactionDtoList = transactionService.getAllTransactions();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account transactions successfully found", transactionDtoList),
+                HttpStatus.OK);
     }
 
     @GetMapping("/accounts/transactions/most")
     public ResponseEntity<Object> getAccountMostTransactions() {
-        List<TransactionAggregation> transactionDto = transactionService.getMostFrequentTransactions();
-        return new ResponseEntity<>(transactionDto, HttpStatus.OK);
+        List<TransactionAggregation> transactionAggregationList = transactionService.getMostFrequentTransactions();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account most transactions successfully found", transactionAggregationList),
+                HttpStatus.OK);
     }
 
     @GetMapping("/transfers")
     public ResponseEntity<Object> getTransferList() {
         List<TransferListDto> transferListDto = transferListService.getTransferList();
-        return new ResponseEntity<>(transferListDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Transfer list successfully found", transferListDto),
+                HttpStatus.OK);
     }
 
     @PostMapping(
@@ -64,7 +69,9 @@ public class BankingController {
     public ResponseEntity<Object> confirmTransfer(@Valid @ModelAttribute ConfirmTransferRequest requestBody) {
         ConfirmTransferDto confirmTransferDto = bankingService.confirmTransfer(
                 requestBody.getCorporateId(), requestBody.getAccountNumber(), requestBody.getAmount());
-        return new ResponseEntity<>(confirmTransferDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Please confirm the transfer details", confirmTransferDto),
+                HttpStatus.OK);
     }
 
     @PostMapping(
@@ -84,7 +91,9 @@ public class BankingController {
                     requestBody.getAmount(),
                     requestBody.getTransactionNote());
         }
-        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Fund successfully transferred", transactionDto),
+                HttpStatus.CREATED);
     }
 
     @PostMapping(
@@ -92,12 +101,16 @@ public class BankingController {
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> addTransferList(@Valid @ModelAttribute AddTransferListRequest requestBody) {
         TransferListDto transferListDto = transferListService.addTransferList(requestBody.getCorporateId(), requestBody.getAccountNumber());
-        return new ResponseEntity<>(transferListDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Transfer list successfully added", transferListDto),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("/transfers/corporates/bank")
     public ResponseEntity<Object> getBankCorporates() {
         List<CorporateDto> corporateDtoList = corporateService.getBankCorporates();
-        return new ResponseEntity<>(corporateDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Bank corporates successfully found", corporateDtoList),
+                HttpStatus.OK);
     }
 }

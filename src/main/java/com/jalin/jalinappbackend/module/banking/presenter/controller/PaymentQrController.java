@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDto;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
@@ -27,7 +28,9 @@ public class PaymentQrController {
     @GetMapping("/payment/qr/{corporateId}")
     public ResponseEntity<Object> getCorporateWithQr(@PathVariable String corporateId) {
         CorporateDto corporateDto = corporateService.getCorporateByCorporateId(corporateId);
-        return new ResponseEntity<>(corporateDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Merchant details successfully found", corporateDto),
+                HttpStatus.OK);
     }
 
     @PostMapping(
@@ -38,7 +41,9 @@ public class PaymentQrController {
                 requestBody.getCorporateId(),
                 requestBody.getAmount(),
                 requestBody.getTransactionNote());
-        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Payment successful", transactionDto),
+                HttpStatus.CREATED);
     }
 
     @PostMapping(
@@ -48,12 +53,16 @@ public class PaymentQrController {
         ConfirmPaymentDto confirmPayment = paymentService.confirmPaymentQr(
                 requestBody.getCorporateId(),
                 requestBody.getAmount());
-        return new ResponseEntity<>(confirmPayment, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Please confirm the payment details", confirmPayment),
+                HttpStatus.OK);
     }
 
     @GetMapping("/payment/corporates/merchant")
     public ResponseEntity<Object> getMerchantCorporates() {
         List<CorporateDto> corporateDtoList = corporateService.getMerchantCorporates();
-        return new ResponseEntity<>(corporateDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Merchants successfully found", corporateDtoList),
+                HttpStatus.OK);
     }
 }
