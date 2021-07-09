@@ -48,6 +48,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private BigDecimal getAccountBalance() {
-        return bankingService.getAccountBalance();
+        return bankingService.getAccountBalance().getBalance();
     }
 }
