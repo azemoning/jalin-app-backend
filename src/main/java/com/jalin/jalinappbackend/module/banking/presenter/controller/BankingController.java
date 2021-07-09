@@ -42,14 +42,18 @@ public class BankingController {
 
     @GetMapping("/accounts/transactions")
     public ResponseEntity<Object> getAccountTransactions() {
-        List<TransactionDto> transactionDto = transactionService.getAllTransactions();
-        return new ResponseEntity<>(transactionDto, HttpStatus.OK);
+        List<TransactionDto> transactionDtoList = transactionService.getAllTransactions();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account transactions successfully found", transactionDtoList),
+                HttpStatus.OK);
     }
 
     @GetMapping("/accounts/transactions/most")
     public ResponseEntity<Object> getAccountMostTransactions() {
-        List<TransactionAggregation> transactionDto = transactionService.getMostFrequentTransactions();
-        return new ResponseEntity<>(transactionDto, HttpStatus.OK);
+        List<TransactionAggregation> transactionAggregationList = transactionService.getMostFrequentTransactions();
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Account most transactions successfully found", transactionAggregationList),
+                HttpStatus.OK);
     }
 
     @GetMapping("/transfers")
