@@ -7,6 +7,7 @@ import com.jalin.jalinappbackend.module.authentication.entity.Role;
 import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.model.LoginDto;
 import com.jalin.jalinappbackend.module.authentication.repository.RoleRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
@@ -19,6 +20,7 @@ import com.jalin.jalinappbackend.module.gamification.mission.service.UserMission
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -51,6 +53,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private ModelMapperUtility modelMapperUtility;
     @Autowired
     private RestTemplateUtility restTemplateUtility;
+    @Autowired
+    private UserUtility userUtility;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -108,11 +112,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void login(String email, String password) {
+    public LoginDto login(String email, String password) {
         try {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(email, password));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            UserDetails userDetails = userDetailsRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+            LoginDto loginDto = new LoginDto();
+            loginDto.setFullName(userDetails.getFullName());
+            loginDto.setEmail(user.getEmail());
+            loginDto.setRole(user.getRole().getRoleName().name());
+            return loginDto;
         } catch (BadCredentialsException exception) {
             throw new AuthenticateFailedException("Incorrect email or password");
         }
