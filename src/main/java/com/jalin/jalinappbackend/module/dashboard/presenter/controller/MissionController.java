@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.gamification.mission.presenter.controller;
+package com.jalin.jalinappbackend.module.dashboard.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessResponse;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
@@ -22,12 +22,26 @@ public class MissionController {
         return new ResponseEntity<>(missionService.getAllMissions(), HttpStatus.OK);
     }
 
+    @GetMapping("mission/{missionId}")
+    public ResponseEntity<Object> getMissionById(@PathVariable UUID missionId) {
+        return new ResponseEntity<>(missionService.getMissionById(missionId), HttpStatus.OK);
+    }
+
     @PostMapping("mission")
     public ResponseEntity<Object> addMission(@RequestBody Mission mission) {
         missionService.addMission(mission);
         return new ResponseEntity<>(
                 new SuccessResponse(true, "Mission added successfully"),
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("mission/{missionId}")
+    public ResponseEntity<Object> updateMission(@PathVariable UUID missionId, @RequestBody Mission mission) {
+        missionService.updateMission(missionId, mission);
+        return new ResponseEntity<>(
+                new SuccessResponse(true, "Mission updated successfully"),
+                HttpStatus.OK
         );
     }
 

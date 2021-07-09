@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.gamification.voucher.presenter.controller;
+package com.jalin.jalinappbackend.module.dashboard.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessResponse;
 import com.jalin.jalinappbackend.module.gamification.voucher.entity.Voucher;

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -19,12 +20,23 @@ public class Voucher {
     @Id
     @GeneratedValue
     private UUID id;
+
+    @NotNull
     private String category;
+
+    @NotNull
     private String usage;
+
+    @NotNull
     private Integer quota;
 
     @Column(name = "tnc_description")
+    @NotNull
     private String tncDescription;
+
+    @NotNull
     private Integer points;
+
+    @NotNull
     private LocalDate validity;
 }
