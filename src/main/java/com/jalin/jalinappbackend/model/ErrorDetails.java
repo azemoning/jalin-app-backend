@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ErrorResponse {
-    private Boolean success;
+public class ErrorDetails {
+    private String fieldName;
     private String message;
 }
