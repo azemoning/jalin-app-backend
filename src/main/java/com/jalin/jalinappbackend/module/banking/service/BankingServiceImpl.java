@@ -6,6 +6,7 @@ import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.entity.TransferList;
+import com.jalin.jalinappbackend.module.banking.model.BalanceDto;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmTransferDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
@@ -58,14 +59,14 @@ public class BankingServiceImpl implements BankingService {
     private UserMissionService userMissionService;
 
     @Override
-    public BigDecimal getAccountBalance() {
+    public BalanceDto getAccountBalance() {
         UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
                 .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
 
         ResponseEntity<GetBankAccountResponse> response = restTemplateUtility.initialize().getForEntity(
                 BASE_URL + GET_BANK_ACCOUNT_ENDPOINT + userDetails.getAccountNumber(),
                 GetBankAccountResponse.class);
-        return Objects.requireNonNull(response.getBody()).getBalance();
+        return new BalanceDto(Objects.requireNonNull(response.getBody()).getBalance());
     }
 
     @Override
