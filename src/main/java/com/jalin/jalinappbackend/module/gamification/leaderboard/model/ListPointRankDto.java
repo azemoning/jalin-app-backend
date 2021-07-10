@@ -13,7 +13,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ListPointRankDto {
-    private UUID userId;
     private String fullName;
     private Integer totalPoints;
     private BigInteger rank;

@@ -12,7 +12,6 @@ import java.math.BigInteger;
 @Getter
 @Setter
 public class UserRankDto {
-    private String email;
     private Integer totalPoints;
     private BigInteger rank;
 }
