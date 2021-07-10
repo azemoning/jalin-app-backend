@@ -25,9 +25,9 @@ public class PaymentQrController {
     @Autowired
     private PaymentService paymentService;
 
-    @GetMapping("/payment/qr/{corporateId}")
-    public ResponseEntity<Object> getCorporateWithQr(@PathVariable String corporateId) {
-        CorporateDto corporateDto = corporateService.getCorporateByCorporateId(corporateId);
+    @GetMapping("/payment/qr/find")
+    public ResponseEntity<Object> getCorporateWithQr(@RequestParam String merchantId) {
+        CorporateDto corporateDto = corporateService.getCorporateByCorporateId(merchantId);
         return new ResponseEntity<>(
                 new SuccessDetailsResponse(true, "Merchant details successfully found", corporateDto),
                 HttpStatus.OK);
