@@ -1,12 +1,14 @@
 package com.jalin.jalinappbackend.module.authentication.service;
 
 import com.jalin.jalinappbackend.exception.AuthenticateFailedException;
+import com.jalin.jalinappbackend.exception.ForbiddenException;
 import com.jalin.jalinappbackend.exception.RegisterFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.Role;
 import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.model.LoginAdminDto;
 import com.jalin.jalinappbackend.module.authentication.model.LoginDto;
 import com.jalin.jalinappbackend.module.authentication.repository.RoleRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
@@ -120,14 +122,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             User user = userRepository.findByEmail(authentication.getName())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            UserDetails userDetails = userDetailsRepository.findByUser(user)
-                    .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+            if (user.getRole().getRoleName().name().equals(RoleEnum.USER.name())) {
+                UserDetails userDetails = userDetailsRepository.findByUser(user)
+                        .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
 
-            LoginDto loginDto = new LoginDto();
-            loginDto.setFullName(userDetails.getFullName());
-            loginDto.setEmail(user.getEmail());
-            loginDto.setRole(user.getRole().getRoleName().name());
-            return loginDto;
+                LoginDto loginDto = new LoginDto();
+                loginDto.setFullName(userDetails.getFullName());
+                loginDto.setEmail(user.getEmail());
+                loginDto.setRole(user.getRole().getRoleName().name());
+                return loginDto;
+            } else {
+                throw new ForbiddenException("Forbidden");
+            }
+        } catch (BadCredentialsException exception) {
+            throw new AuthenticateFailedException("Incorrect email or password");
+        }
+    }
+
+    @Override
+    public LoginAdminDto loginAdmin(String email, String password) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            if (user.getRole().getRoleName().name().equals(RoleEnum.ADMIN.name())) {
+                LoginAdminDto loginAdminDto = new LoginAdminDto();
+                loginAdminDto.setEmail(user.getEmail());
+                loginAdminDto.setRole(user.getRole().getRoleName().name());
+                return loginAdminDto;
+            } else {
+                throw new ForbiddenException("Forbidden");
+            }
         } catch (BadCredentialsException exception) {
             throw new AuthenticateFailedException("Incorrect email or password");
         }
