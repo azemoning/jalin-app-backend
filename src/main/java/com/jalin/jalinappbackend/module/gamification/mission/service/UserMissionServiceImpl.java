@@ -1,7 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.mission.service;
 
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
-import com.jalin.jalinappbackend.exception.ForceCompleteUserMissionFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
@@ -125,7 +124,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                 .findTopByUserAndTransactionTypeEqualsOrderByCreatedDateDesc(
                         getSignedInUser(),
                         "C");
-        Set<UserMissionDto> userMissionDtos = getUserMissions();
+        Set<UserMissionDto> userMissionDtos = getUserMissions("ALL");
 
         for (UserMissionDto userMission : userMissionDtos) {
             if (userMission.getActivity().equals(transaction.getTransactionName())) {
@@ -162,7 +161,7 @@ public class UserMissionServiceImpl implements UserMissionService {
     }
 
     @Override
-    public Set<UserMissionDto> getUserMissions() {
+    public Set<UserMissionDto> getUserMissions(String expiration) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -170,20 +169,35 @@ public class UserMissionServiceImpl implements UserMissionService {
         List<UserMission> userMissions = userMissionRepository
                 .findUserMissionsByUserAndIsActiveEquals(signedInUser, true);
         Set<UserMissionDto> userMissionData = new HashSet<>();
+
         for (UserMission userMission: userMissions) {
             Mission mission = missionService.getMissionById(userMission.getMission().getId());
             UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
 
-            userMissionDto.setActivity(mission.getActivity());
-            userMissionDto.setMissionDescription(mission.getMissionDescription());
-            userMissionDto.setTncDescription(mission.getTncDescription());
-            userMissionDto.setFrequency(mission.getFrequency());
-            userMissionDto.setMinimumAmount(mission.getMinAmount());
-            userMissionDto.setExpiration(mission.getExpiration());
-            userMissionDto.setPoint(mission.getPoint());
+            if (expiration.equalsIgnoreCase("all")) {
+                userMissionDto.setActivity(mission.getActivity());
+                userMissionDto.setMissionDescription(mission.getMissionDescription());
+                userMissionDto.setTncDescription(mission.getTncDescription());
+                userMissionDto.setFrequency(mission.getFrequency());
+                userMissionDto.setMinimumAmount(mission.getMinAmount());
+                userMissionDto.setExpiration(mission.getExpiration());
+                userMissionDto.setPoint(mission.getPoint());
 
-            userMissionData.add(userMissionDto);
+                userMissionData.add(userMissionDto);
+            }
+            else if (mission.getExpiration().equalsIgnoreCase(expiration)) {
+                userMissionDto.setActivity(mission.getActivity());
+                userMissionDto.setMissionDescription(mission.getMissionDescription());
+                userMissionDto.setTncDescription(mission.getTncDescription());
+                userMissionDto.setFrequency(mission.getFrequency());
+                userMissionDto.setMinimumAmount(mission.getMinAmount());
+                userMissionDto.setExpiration(mission.getExpiration());
+                userMissionDto.setPoint(mission.getPoint());
+
+                userMissionData.add(userMissionDto);
+            }
         }
+
         return userMissionData;
     }
 
