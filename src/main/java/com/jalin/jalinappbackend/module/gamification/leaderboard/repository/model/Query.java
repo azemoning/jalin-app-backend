@@ -26,14 +26,6 @@ import java.util.UUID;
                         "\tINNER JOIN user_details ON points.user_id = user_details.user_id ) AS usera\n" +
                         "INNER JOIN users\n" +
                         "ON users.user_id=usera.userId\n" +
-//                "SELECT " +
-//                        "points.user_id AS userId, " +
-//                        "email " +
-//                        "full_name AS fullName, " +
-//                        "total_points AS totalPoints, " +
-//                        "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
-//                        "FROM points " +
-//                        "INNER JOIN user_details ON points.user_id = user_details.user_id "+
                         "WHERE email LIKE CONCAT ('%',:email,'%')",
         resultSetMapping = "findUserRankDto"
 )
