@@ -54,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .mvcMatchers("/api/register", "/api/login").permitAll()
+                .mvcMatchers("/api/register", "/api/login", "/api/admin/login").permitAll()
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated();
