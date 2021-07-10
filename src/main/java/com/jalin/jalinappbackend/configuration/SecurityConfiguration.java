@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.configuration;
 
+import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .mvcMatchers("/api/register", "/api/login", "/api/admin/login").permitAll()
+                .antMatchers("/api/admin/v1/**").hasRole(RoleEnum.ADMIN.name())
+                .antMatchers("/api/v1/**").hasRole(RoleEnum.USER.name())
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated();
