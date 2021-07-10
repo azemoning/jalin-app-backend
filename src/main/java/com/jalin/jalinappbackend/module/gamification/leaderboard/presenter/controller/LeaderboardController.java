@@ -23,7 +23,7 @@ public class LeaderboardController {
     }
 
     @GetMapping("/leaderboard/search")
-    public ResponseEntity<Object> searchUserRank(@RequestParam String fullName){
-        return new ResponseEntity<>(leaderboardService.findUserRank(fullName), HttpStatus.OK);
+    public ResponseEntity<Object> searchUserRank(@RequestParam (value = "name", required = false) String name){
+        return new ResponseEntity<>(leaderboardService.findUserRank(name), HttpStatus.OK);
     }
 }

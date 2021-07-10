@@ -8,5 +8,5 @@ import java.util.Map;
 public interface LeaderboardService {
     Map<Object, Object> getUserPointOnLeaderboard();
 
-    List<ListPointRankDto> findUserRank(String fullName);
+    List<ListPointRankDto> findUserRank(String name);
 }

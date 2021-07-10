@@ -4,6 +4,7 @@ import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.authentication.service.UserService;
+import com.jalin.jalinappbackend.module.gamification.leaderboard.model.UserRankDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.LeaderboardRepository;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
@@ -14,10 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Tuple;
-import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class LeaderboardServiceImpl implements LeaderboardService{
@@ -45,24 +43,30 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
         Map<Object, Object> leaderboard = new HashMap<>();
 
-        leaderboard.put("userTotalPoint", pointUser);
+        leaderboard.put("userPointAndRank", getUserRankAndPoint());
         leaderboard.put("topThree", getTopThree());
-        leaderboard.put("leaderboard", getListLeaderboard());
+        leaderboard.put("listLeaderboard", getListLeaderboard());
+        System.out.println(user.getEmail());
 
         return leaderboard;
     }
 
     @Override
-    public List<ListPointRankDto> findUserRank(String fullName){
-        return (List<ListPointRankDto>) leaderboardRepository.findUserRank(fullName).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public List<ListPointRankDto> findUserRank(String name){
+        return  leaderboardRepository.findUserInLeadrrboard(name);
     }
 
     private List<ListPointRankDto> getListLeaderboard() {
-        return leaderboardRepository.findUsersLeaderboard();
+        return leaderboardRepository.getUsersLeaderboard();
+    }
+
+    private Optional<UserRankDto> getUserRankAndPoint(){
+        String user = getSignedInUser().getEmail();
+        return leaderboardRepository.getUserRankAndPoint(user);
     }
 
     private List<ListPointRankDto> getTopThree(){
-        return leaderboardRepository.findUserLeaderBoardTop3();
+        return leaderboardRepository.getUserLeaderBoardTop3();
     }
 
     private User getSignedInUser() {
