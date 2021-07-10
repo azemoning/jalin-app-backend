@@ -17,19 +17,24 @@ public class UserMissionController {
     private UserMissionService userMissionService;
 
     @GetMapping("mission")
-    public ResponseEntity<Object> getUserMissions() {
-        return new ResponseEntity<>(userMissionService.getUserMissions(), HttpStatus.OK);
+    public ResponseEntity<Object> getUserMissions(
+            @RequestParam(name = "expiration", defaultValue = "all") String expiration
+    ) {
+        return new ResponseEntity<>(userMissionService.getUserMissions(expiration), HttpStatus.OK);
     }
 
     @PostMapping("mission/claim/{userMissionId}")
-    public ResponseEntity<Object> claimUserompletedMissionPoint(@PathVariable UUID userMissionId) {
+    public ResponseEntity<Object> claimUserCompletedMissionPoint(@PathVariable UUID userMissionId) {
         userMissionService.claimCompletedMissionPoint(userMissionId);
-        return new ResponseEntity<>(new SuccessResponse(true, "Mission point claimed successfully"),
+        return new ResponseEntity<>(
+                new SuccessResponse(true, "Mission point claimed successfully"),
                 HttpStatus.OK);
     }
 
     @PostMapping("mission/forceAssign")
-    public ResponseEntity<Object> forceAssignUserMission(@RequestParam(name = "expiration") String expiration) {
+    public ResponseEntity<Object> forceAssignUserMission(
+            @RequestParam(name = "expiration") String expiration
+    ) {
         userMissionService.forceAssignUserMission(expiration);
         return new ResponseEntity<>(new SuccessResponse(
                 true,
@@ -38,7 +43,9 @@ public class UserMissionController {
     }
 
     @PostMapping("mission/forceComplete")
-    public ResponseEntity<Object> forceCompleteUserMission(@RequestParam(name = "expiration") String expiration) {
+    public ResponseEntity<Object> forceCompleteUserMission(
+            @RequestParam(name = "expiration") String expiration
+    ) {
         userMissionService.forceCompleteUserMission(expiration);
         return new ResponseEntity<>(new SuccessResponse(
                 true,

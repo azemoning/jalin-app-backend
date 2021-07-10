@@ -11,7 +11,7 @@ public interface UserMissionService {
     void assignUserMission();
     void checkUserMissionProgress();
     void updateUserMissionProgress(UserMission userMission);
-    Set<UserMissionDto> getUserMissions();
+    Set<UserMissionDto> getUserMissions(String expiration);
     void claimCompletedMissionPoint(UUID userMissionId);
     void initiateUserMission(User user);
     void forceCompleteUserMission(String expiration);
