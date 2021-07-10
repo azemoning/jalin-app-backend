@@ -1,6 +1,5 @@
 package com.jalin.jalinappbackend.module.authentication.model;
 
-import com.jalin.jalinappbackend.module.authentication.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
