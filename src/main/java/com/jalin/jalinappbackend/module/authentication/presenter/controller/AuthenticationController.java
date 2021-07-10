@@ -6,6 +6,7 @@ import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetailsImpl;
 import com.jalin.jalinappbackend.module.authentication.jwt.JwtTokenUtility;
+import com.jalin.jalinappbackend.module.authentication.model.LoginAdminDto;
 import com.jalin.jalinappbackend.module.authentication.model.LoginDto;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.LoginRequest;
 import com.jalin.jalinappbackend.module.authentication.presenter.model.RegisterRequest;
@@ -59,5 +60,18 @@ public class AuthenticationController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body(new SuccessDetailsResponse(true, "Login successful", loginDto));
+    }
+
+    @PostMapping(
+            path = "/admin/login",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> loginAdmin(@Valid @ModelAttribute LoginRequest requestBody) {
+        LoginAdminDto loginAdminDto = authenticationService.loginAdmin(requestBody.getEmail(), requestBody.getPassword());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String token = jwtTokenUtility.generateToken(userDetails);
+        loginAdminDto.setToken(token);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(new SuccessDetailsResponse(true, "Login successful", loginAdminDto));
     }
 }

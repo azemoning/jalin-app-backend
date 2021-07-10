@@ -13,6 +13,7 @@ import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInL
 import com.jalin.jalinappbackend.module.gamification.checkin.repository.CheckInRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.PointSourceEnum;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +35,8 @@ public class CheckInServiceImpl implements CheckInService {
     private final static Integer FIVE_DAYS_STREAK_POINTS = 25;
     private final static Integer SIX_DAYS_STREAK_POINTS = 30;
     private final static Integer SEVEN_DAYS_STREAK_POINTS = 50;
+    @Autowired
+    private UserUtility userUtility;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -157,7 +160,7 @@ public class CheckInServiceImpl implements CheckInService {
     }
 
     private void resetCounterAllNotCheckedInUsers () {
-        List<User> userList = userRepository.findAll();
+        List<User> userList = userUtility.getAllUsers();
         for (User user : userList) {
             if (checkInLogRepository.findByUser(user).isEmpty()) {
                 resetCounter(user);
