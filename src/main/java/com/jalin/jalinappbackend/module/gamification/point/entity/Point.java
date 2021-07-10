@@ -1,6 +1,7 @@
 package com.jalin.jalinappbackend.module.gamification.point.entity;
 
 import com.jalin.jalinappbackend.module.authentication.entity.User;
+import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,6 +28,7 @@ public class Point {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+
     private User user;
 
     @CreationTimestamp
