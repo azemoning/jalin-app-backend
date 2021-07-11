@@ -2,6 +2,7 @@ package com.jalin.jalinappbackend.module.dashboard.presenter.controller;
 
 import com.jalin.jalinappbackend.module.dashboard.model.TransactionDetailsDto;
 import com.jalin.jalinappbackend.module.dashboard.model.TransactionDto;
+import com.jalin.jalinappbackend.module.dashboard.model.TransactionMostFrequentDto;
 import com.jalin.jalinappbackend.module.dashboard.service.TransactionDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,11 @@ public class TransactionDashboardController {
     public ResponseEntity<Object> getTransactionByTransactionId(@PathVariable String transactionId) {
         TransactionDetailsDto transactionDetailsDto = transactionDashboardService.getTransactionById(transactionId);
         return new ResponseEntity<>(transactionDetailsDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/transactions/most")
+    public ResponseEntity<Object> getMostFrequentTransactions() {
+        TransactionMostFrequentDto transactionMostFrequentDto = transactionDashboardService.getMostFrequentTransactions();
+        return new ResponseEntity<>(transactionMostFrequentDto, HttpStatus.OK);
     }
 }

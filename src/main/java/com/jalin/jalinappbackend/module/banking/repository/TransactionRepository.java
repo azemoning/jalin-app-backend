@@ -29,4 +29,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
 
     @NotNull
     Page<Transaction> findAll(@NotNull Pageable pageable);
+    Long countByTransactionName(String transactionName);
 }
