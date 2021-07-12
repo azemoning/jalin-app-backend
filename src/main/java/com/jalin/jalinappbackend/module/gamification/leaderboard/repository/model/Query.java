@@ -45,7 +45,7 @@ import java.util.UUID;
         name = "find_rank_top3",
         query =
                 "SELECT " +
-                        "full_name AS fullName, " +
+                        "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
                         "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
@@ -58,7 +58,7 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
-                        @ColumnResult(name = "fullName", type = String.class),
+                        @ColumnResult(name = "jalinId", type = String.class),
                         @ColumnResult(name = "totalPoints", type = Integer.class),
                         @ColumnResult(name = "rank", type = BigInteger.class)
                 }
@@ -70,7 +70,7 @@ import java.util.UUID;
         name = "find_rank",
         query =
                 "SELECT " +
-                        "full_name AS fullName, " +
+                        "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
                         "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
@@ -83,7 +83,7 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
-                        @ColumnResult(name = "fullName", type = String.class),
+                        @ColumnResult(name = "jalinId", type = String.class),
                         @ColumnResult(name = "totalPoints", type = Integer.class),
                         @ColumnResult(name = "rank", type = BigInteger.class)
                 }
@@ -95,7 +95,7 @@ import java.util.UUID;
         name = "findUser",
         query =
                 "SELECT " +
-                        "full_name AS fullName, " +
+                        "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
                         "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
@@ -108,7 +108,7 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
-                        @ColumnResult(name = "fullName", type = String.class),
+                        @ColumnResult(name = "jalinId", type = String.class),
                         @ColumnResult(name = "totalPoints", type = Integer.class),
                         @ColumnResult(name = "rank", type = BigInteger.class)
                 }

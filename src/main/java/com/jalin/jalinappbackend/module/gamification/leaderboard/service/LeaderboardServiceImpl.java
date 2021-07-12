@@ -21,13 +21,10 @@ import java.util.*;
 public class LeaderboardServiceImpl implements LeaderboardService{
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private PointRepository pointRepository;
-
     @Autowired
     private LeaderboardRepository leaderboardRepository;
     @Autowired
@@ -46,7 +43,6 @@ public class LeaderboardServiceImpl implements LeaderboardService{
         leaderboard.put("userPointAndRank", getUserRankAndPoint());
         leaderboard.put("topThree", getTopThree());
         leaderboard.put("listLeaderboard", getListLeaderboard());
-        System.out.println(user.getEmail());
 
         return leaderboard;
     }

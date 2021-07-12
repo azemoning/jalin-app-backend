@@ -1,6 +1,5 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.repository;
 
-import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.UserRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;

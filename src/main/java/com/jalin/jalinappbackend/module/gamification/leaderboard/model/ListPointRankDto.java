@@ -6,14 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigInteger;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class ListPointRankDto {
-    private String fullName;
+    private String jalinId;
     private Integer totalPoints;
     private BigInteger rank;
 }
