@@ -1,7 +1,7 @@
 package com.jalin.jalinappbackend.module.dashboard.presenter.controller;
 
+import com.jalin.jalinappbackend.module.dashboard.model.TransactionAllDto;
 import com.jalin.jalinappbackend.module.dashboard.model.TransactionDetailsDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionDto;
 import com.jalin.jalinappbackend.module.dashboard.model.TransactionMostFrequentDto;
 import com.jalin.jalinappbackend.module.dashboard.service.TransactionDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/v1")
@@ -19,10 +19,15 @@ public class TransactionDashboardController {
 
     @GetMapping("/transactions")
     public ResponseEntity<Object> getAllTransactions(
+            @RequestParam String start,
+            @RequestParam String end,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "4") Integer size) {
-        List<TransactionDto> transactionDtoList = transactionDashboardService.getAllTransactions(page, size);
-        return new ResponseEntity<>(transactionDtoList, HttpStatus.OK);
+            @RequestParam(defaultValue = "4") Integer size,
+            @RequestParam(defaultValue = "transactionId,desc") String[] sort) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        TransactionAllDto transactionAllDto = transactionDashboardService.getAllTransactions(startDate, endDate, page, size, sort);
+        return new ResponseEntity<>(transactionAllDto, HttpStatus.OK);
     }
 
     @GetMapping("/transactions/{transactionId}")

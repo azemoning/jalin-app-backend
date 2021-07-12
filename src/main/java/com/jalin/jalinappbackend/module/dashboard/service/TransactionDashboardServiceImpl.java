@@ -6,10 +6,7 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRep
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.banking.service.CorporateService;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionCountDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionDetailsDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionMostFrequentDto;
+import com.jalin.jalinappbackend.module.dashboard.model.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -42,9 +40,24 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private CorporateService corporateService;
 
     @Override
-    public List<TransactionDto> getAllTransactions(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Transaction> transactionPage = transactionRepository.findAll(pageable);
+    public TransactionAllDto getAllTransactions(LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort)  {
+        List<Sort.Order> orders = new ArrayList<>();
+
+        if (sort[0].contains(",")) {
+            for (String sortOrder : sort) {
+                String[] _sort = sortOrder.split(",");
+                orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
+            }
+        } else {
+            orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
+        Page<Transaction> transactionPage = transactionRepository.findByTransactionDateBetween(startDate, endDate, pageable);
+
+        Long totalEntries = transactionPage.getTotalElements();
+        Integer currentPage = transactionPage.getPageable().getPageNumber();
+        Integer totalPages = transactionPage.getTotalPages();
         List<Transaction> transactionList = transactionPage.getContent();
 
         List<TransactionDto> transactionDtoList = new ArrayList<>();
@@ -55,10 +68,18 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
                     .getCorporateByCorporateId(transaction.getCorporateId())
                     .getCorporateName());
             transactionDto.setTransactionTime(
-                    LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+                    LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Jakarta")));
             transactionDtoList.add(transactionDto);
         }
-        return transactionDtoList;
+
+        TransactionAllDto transactionAllDto = new TransactionAllDto();
+        transactionAllDto.setStartDate(startDate);
+        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setTotalEntries(totalEntries);
+        transactionAllDto.setCurrentPage(currentPage);
+        transactionAllDto.setTotalPages(totalPages);
+        transactionAllDto.setTransactionList(transactionDtoList);
+        return transactionAllDto;
     }
 
     @Override
@@ -105,6 +126,15 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         transactionCountDtoList.add(transactionCountDtoPaymentQr);
 
         return new TransactionMostFrequentDto(totalTransactions, transactionCountDtoList);
+    }
+
+    private Sort.Direction getSortDirection(String direction) {
+        if (direction.equals("asc")) {
+            return Sort.Direction.ASC;
+        } else if (direction.equals("desc")) {
+            return Sort.Direction.DESC;
+        }
+        return Sort.Direction.ASC;
     }
 
     private TransactionCountDto initiateTransactionCountDto(String transactionName, Integer totalTransactions) {
