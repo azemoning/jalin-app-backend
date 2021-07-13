@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TransactionAllDto {
+    private List<String> transactionType;
     private LocalDate startDate;
     private LocalDate endDate;
     private Long totalEntries;

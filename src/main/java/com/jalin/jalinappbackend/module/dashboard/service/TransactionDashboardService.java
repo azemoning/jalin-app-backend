@@ -7,7 +7,13 @@ import com.jalin.jalinappbackend.module.dashboard.model.TransactionMostFrequentD
 import java.time.LocalDate;
 
 public interface TransactionDashboardService {
-    TransactionAllDto getAllTransactions(LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort);
+    TransactionAllDto getAllTransactions(
+            String[] transactionType,
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer page,
+            Integer size,
+            String[] sort);
     TransactionDetailsDto getTransactionById(String transactionId);
     TransactionMostFrequentDto getMostFrequentTransactions();
 }

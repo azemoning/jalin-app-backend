@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TransactionDashboardServiceImpl implements TransactionDashboardService {
@@ -40,9 +41,13 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private CorporateService corporateService;
 
     @Override
-    public TransactionAllDto getAllTransactions(LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort)  {
-        List<Sort.Order> orders = new ArrayList<>();
+    public TransactionAllDto getAllTransactions(String[] transactionType, LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort)  {
+        List<String> types = new ArrayList<>();
+        for (String type : transactionType) {
+            types.add(type.toUpperCase(Locale.ROOT));
+        }
 
+        List<Sort.Order> orders = new ArrayList<>();
         if (sort[0].contains(",")) {
             for (String sortOrder : sort) {
                 String[] _sort = sortOrder.split(",");
@@ -53,7 +58,8 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
-        Page<Transaction> transactionPage = transactionRepository.findByTransactionDateBetween(startDate, endDate, pageable);
+        Page<Transaction> transactionPage = transactionRepository
+                .findByTransactionTypeInAndTransactionDateBetween(types, startDate, endDate, pageable);
 
         Long totalEntries = transactionPage.getTotalElements();
         Integer currentPage = transactionPage.getPageable().getPageNumber();
@@ -73,6 +79,7 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         }
 
         TransactionAllDto transactionAllDto = new TransactionAllDto();
+        transactionAllDto.setTransactionType(types);
         transactionAllDto.setStartDate(startDate);
         transactionAllDto.setEndDate(startDate);
         transactionAllDto.setTotalEntries(totalEntries);
