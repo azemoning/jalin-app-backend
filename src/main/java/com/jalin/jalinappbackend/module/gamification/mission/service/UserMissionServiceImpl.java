@@ -2,8 +2,11 @@ package com.jalin.jalinappbackend.module.gamification.mission.service;
 
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
+import com.jalin.jalinappbackend.module.authentication.entity.Role;
+import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.repository.RoleRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
@@ -15,6 +18,7 @@ import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionR
 import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.PointSourceEnum;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +58,12 @@ public class UserMissionServiceImpl implements UserMissionService {
     @Autowired
     private PointService pointService;
 
+    @Autowired
+    private UserUtility userUtility;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT+7.00")
     public void assignUserMission() {
@@ -67,7 +77,7 @@ public class UserMissionServiceImpl implements UserMissionService {
         List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
         List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userUtility.getAllUsers();
 
         for (User user : users) {
             List<UserMission> userInactiveMissions = userMissionRepository
@@ -227,20 +237,25 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Override
     public void initiateUserMission(User user) {
-        Random random = new Random();
+        Role adminRole = roleRepository.findByRoleName(RoleEnum.ADMIN)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+        if (!adminRole.getRoleName().equals(RoleEnum.ADMIN)) {
+            Random random = new Random();
 
 
-        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
-        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
-        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+            List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
+            List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
+            List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
 
-        Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
-        Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
-        Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
+            Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
+            Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
+            Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
 
-        addUserMission(randomWeeklyMission, user);
-        addUserMission(randomBiweeklyMission, user);
-        addUserMission(randomMonthlyMission, user);
+            addUserMission(randomWeeklyMission, user);
+            addUserMission(randomBiweeklyMission, user);
+            addUserMission(randomMonthlyMission, user);
+        }
     }
 
     @Override

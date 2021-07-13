@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface UserMissionRepository extends JpaRepository<UserMission, UUID> {
     List<UserMission> findUserMissionByUserAndStatusEquals(User user, String status);
-    List<UserMission> findUserMissionsByUser(User user);
+    List<UserMission> findUserMissionsByStatusEquals(String status);
     List<UserMission> findUserMissionsByUserAndIsActiveEquals(User user, Boolean isActive);
     List<UserMission> findUserMissionsByStatusAndCompletionDate(String status, LocalDate completionDate);
 }
