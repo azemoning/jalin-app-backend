@@ -16,4 +16,5 @@ public interface UserMissionService {
     void initiateUserMission(User user);
     void forceCompleteUserMission(String expiration);
     void forceAssignUserMission(String expiration);
+    int getTotalUserCompletedMissions(String jalinId);
 }

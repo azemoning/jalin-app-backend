@@ -3,6 +3,8 @@ package com.jalin.jalinappbackend.module.gamification.mission.service;
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
+import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
@@ -42,6 +44,9 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserDetailsRepository userDetailsRepository;
 
     @Autowired
     private MissionService missionService;
@@ -332,6 +337,27 @@ public class UserMissionServiceImpl implements UserMissionService {
         }
 
 
+    }
+
+    @Override
+    public int getTotalUserCompletedMissions(String jalinId) {
+        List<User> users = userRepository.findAll();
+        int totalUserCompletedMissions = 0;
+
+        for (User user : users) {
+            UserDetails userDetails = userDetailsRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+            if (userDetails.getJalinId().equals(jalinId)) {
+                List<UserMission> userMissions = userMissionRepository
+                        .findUserMissionByUserAndStatusEquals(user, "COMPLETED");
+
+                totalUserCompletedMissions += userMissions.size();
+
+                break;
+            }
+        }
+        return totalUserCompletedMissions;
     }
 
     private User getSignedInUser() {
