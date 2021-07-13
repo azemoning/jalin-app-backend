@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public interface TransactionDashboardService {
     TransactionAllDto getAllTransactions(
             String[] transactionType,
+            String[] transactionName,
             LocalDate startDate,
             LocalDate endDate,
             Integer page,

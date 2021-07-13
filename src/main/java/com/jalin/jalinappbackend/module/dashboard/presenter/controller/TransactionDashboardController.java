@@ -20,6 +20,7 @@ public class TransactionDashboardController {
     @GetMapping("/transactions")
     public ResponseEntity<Object> getAllTransactions(
             @RequestParam(defaultValue = "C,D") String[] type,
+            @RequestParam(defaultValue = "TRANSFER, TRANSFER_DOMESTIC, TOP_UP, PAYMENT_QR") String[] name,
             @RequestParam String start,
             @RequestParam String end,
             @RequestParam(defaultValue = "0") Integer page,
@@ -28,7 +29,7 @@ public class TransactionDashboardController {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         TransactionAllDto transactionAllDto = transactionDashboardService
-                .getAllTransactions(type, startDate, endDate, page, size, sort);
+                .getAllTransactions(type, name, startDate, endDate, page, size, sort);
         return new ResponseEntity<>(transactionAllDto, HttpStatus.OK);
     }
 

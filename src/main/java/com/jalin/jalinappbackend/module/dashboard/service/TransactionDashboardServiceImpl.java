@@ -41,7 +41,20 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private CorporateService corporateService;
 
     @Override
-    public TransactionAllDto getAllTransactions(String[] transactionType, LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort)  {
+    public TransactionAllDto getAllTransactions(
+            String[] transactionType,
+            String[] transactionName,
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer page,
+            Integer size,
+            String[] sort)  {
+
+        List<String> names = new ArrayList<>();
+        for (String name : transactionName) {
+            names.add(name.toUpperCase(Locale.ROOT));
+        }
+
         List<String> types = new ArrayList<>();
         for (String type : transactionType) {
             types.add(type.toUpperCase(Locale.ROOT));
@@ -59,7 +72,8 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
         Page<Transaction> transactionPage = transactionRepository
-                .findByTransactionTypeInAndTransactionDateBetween(types, startDate, endDate, pageable);
+                .findByTransactionTypeInAndTransactionNameInAndTransactionDateBetween(
+                        types, names, startDate, endDate, pageable);
 
         Long totalEntries = transactionPage.getTotalElements();
         Integer currentPage = transactionPage.getPageable().getPageNumber();
