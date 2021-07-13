@@ -28,6 +28,7 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private static final String TRANSFER_DOMESTIC_TRANSACTION_NAME = "TRANSFER_DOMESTIC";
     private static final String TOP_UP_TRANSACTION_NAME = "TOP_UP";
     private static final String PAYMENT_QR_TRANSACTION_NAME = "PAYMENT_QR";
+    private static final String PAYMENT_MOBILE_PHONE_CREDIT_TRANSACTION_NAME = "PAYMENT_MOBILE_PHONE_CREDIT";
 
     @Autowired
     private ModelMapperUtility modelMapperUtility;
@@ -148,6 +149,10 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         TransactionCountDto transactionCountDtoPaymentQr = initiateTransactionCountDto(
                 PAYMENT_QR_TRANSACTION_NAME, totalTransactions);
         transactionCountDtoList.add(transactionCountDtoPaymentQr);
+
+        TransactionCountDto transactionCountDtoPaymentMobilePhoneCredit = initiateTransactionCountDto(
+                PAYMENT_MOBILE_PHONE_CREDIT_TRANSACTION_NAME, totalTransactions);
+        transactionCountDtoList.add(transactionCountDtoPaymentMobilePhoneCredit);
 
         return new TransactionMostFrequentDto(totalTransactions, transactionCountDtoList);
     }
