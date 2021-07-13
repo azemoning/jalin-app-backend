@@ -2,7 +2,12 @@ package com.jalin.jalinappbackend.module.gamification.mission.service;
 
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
+import com.jalin.jalinappbackend.module.authentication.entity.Role;
+import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
+import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.repository.RoleRepository;
+import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
@@ -13,6 +18,7 @@ import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionR
 import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionRepository;
 import com.jalin.jalinappbackend.module.gamification.point.entity.PointSourceEnum;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +50,19 @@ public class UserMissionServiceImpl implements UserMissionService {
     private UserRepository userRepository;
 
     @Autowired
+    private UserDetailsRepository userDetailsRepository;
+
+    @Autowired
     private MissionService missionService;
 
     @Autowired
     private PointService pointService;
+
+    @Autowired
+    private UserUtility userUtility;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT+7.00")
@@ -62,7 +77,7 @@ public class UserMissionServiceImpl implements UserMissionService {
         List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
         List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userUtility.getAllUsers();
 
         for (User user : users) {
             List<UserMission> userInactiveMissions = userMissionRepository
@@ -170,7 +185,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                 .findUserMissionsByUserAndIsActiveEquals(signedInUser, true);
         Set<UserMissionDto> userMissionData = new HashSet<>();
 
-        for (UserMission userMission: userMissions) {
+        for (UserMission userMission : userMissions) {
             Mission mission = missionService.getMissionById(userMission.getMission().getId());
             UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
 
@@ -184,8 +199,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                 userMissionDto.setPoint(mission.getPoint());
 
                 userMissionData.add(userMissionDto);
-            }
-            else if (mission.getExpiration().equalsIgnoreCase(expiration)) {
+            } else if (mission.getExpiration().equalsIgnoreCase(expiration)) {
                 userMissionDto.setActivity(mission.getActivity());
                 userMissionDto.setMissionDescription(mission.getMissionDescription());
                 userMissionDto.setTncDescription(mission.getTncDescription());
@@ -210,7 +224,7 @@ public class UserMissionServiceImpl implements UserMissionService {
 
         if (userMission.getIsClaimed().equals(true)) {
             throw new ClaimMissionPointFailedException("Mission point already claimed");
-        } else if (userMission.getStatus().equals("INCOMPLETE")){
+        } else if (userMission.getStatus().equals("INCOMPLETE")) {
             throw new ClaimMissionPointFailedException("Mission not completed yet");
         } else if (userMission.getStatus().equals("COMPLETED")) {
             userMission.setIsClaimed(true);
@@ -223,7 +237,6 @@ public class UserMissionServiceImpl implements UserMissionService {
     @Override
     public void initiateUserMission(User user) {
         Random random = new Random();
-
 
         List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
         List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
@@ -332,6 +345,27 @@ public class UserMissionServiceImpl implements UserMissionService {
         }
 
 
+    }
+
+    @Override
+    public int getTotalUserCompletedMissions(String jalinId) {
+        List<User> users = userRepository.findAll();
+        int totalUserCompletedMissions = 0;
+
+        for (User user : users) {
+            UserDetails userDetails = userDetailsRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+            if (userDetails.getJalinId().equals(jalinId)) {
+                List<UserMission> userMissions = userMissionRepository
+                        .findUserMissionByUserAndStatusEquals(user, "COMPLETED");
+
+                totalUserCompletedMissions += userMissions.size();
+
+                break;
+            }
+        }
+        return totalUserCompletedMissions;
     }
 
     private User getSignedInUser() {
