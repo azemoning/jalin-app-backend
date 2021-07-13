@@ -6,7 +6,7 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRep
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.banking.service.CorporateService;
-import com.jalin.jalinappbackend.module.dashboard.model.*;
+import com.jalin.jalinappbackend.module.dashboard.model.transaction.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TransactionDashboardServiceImpl implements TransactionDashboardService {
@@ -40,9 +41,27 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private CorporateService corporateService;
 
     @Override
-    public TransactionAllDto getAllTransactions(LocalDate startDate, LocalDate endDate, Integer page, Integer size, String[] sort)  {
-        List<Sort.Order> orders = new ArrayList<>();
+    public TransactionAllDto getAllTransactions(
+            String[] transactionType,
+            String[] transactionName,
+            Integer page,
+            Integer size,
+            String[] sort,
+            LocalDate startDate,
+            LocalDate endDate,
+            String keyword)  {
 
+        List<String> names = new ArrayList<>();
+        for (String name : transactionName) {
+            names.add(name.toUpperCase(Locale.ROOT));
+        }
+
+        List<String> types = new ArrayList<>();
+        for (String type : transactionType) {
+            types.add(type.toUpperCase(Locale.ROOT));
+        }
+
+        List<Sort.Order> orders = new ArrayList<>();
         if (sort[0].contains(",")) {
             for (String sortOrder : sort) {
                 String[] _sort = sortOrder.split(",");
@@ -53,7 +72,9 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
-        Page<Transaction> transactionPage = transactionRepository.findByTransactionDateBetween(startDate, endDate, pageable);
+        Page<Transaction> transactionPage = transactionRepository
+                .findByTransactionTypeInAndTransactionNameInAndTransactionDateBetweenAndTransactionMessageContainingIgnoringCase(
+                        types, names, startDate, endDate, keyword, pageable);
 
         Long totalEntries = transactionPage.getTotalElements();
         Integer currentPage = transactionPage.getPageable().getPageNumber();
@@ -73,11 +94,14 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         }
 
         TransactionAllDto transactionAllDto = new TransactionAllDto();
-        transactionAllDto.setStartDate(startDate);
-        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setTransactionType(types);
+        transactionAllDto.setTransactionName(names);
         transactionAllDto.setTotalEntries(totalEntries);
         transactionAllDto.setCurrentPage(currentPage);
         transactionAllDto.setTotalPages(totalPages);
+        transactionAllDto.setStartDate(startDate);
+        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setKeyword(keyword);
         transactionAllDto.setTransactionList(transactionDtoList);
         return transactionAllDto;
     }

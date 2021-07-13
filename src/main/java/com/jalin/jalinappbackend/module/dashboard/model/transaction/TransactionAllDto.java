@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.dashboard.model;
+package com.jalin.jalinappbackend.module.dashboard.model.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +13,13 @@ import java.util.List;
 @Getter
 @Setter
 public class TransactionAllDto {
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private List<String> transactionType;
+    private List<String> transactionName;
     private Long totalEntries;
     private Integer currentPage;
     private Integer totalPages;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String keyword;
     private List<TransactionDto> transactionList;
 }

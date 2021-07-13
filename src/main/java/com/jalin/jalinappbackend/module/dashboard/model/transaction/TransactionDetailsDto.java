@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.dashboard.model;
+package com.jalin.jalinappbackend.module.dashboard.model.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,13 +13,17 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TransactionDto {
+public class TransactionDetailsDto {
     private String transactionId;
     private String transactionName;
+    private String sourceAccountNumber;
     private String corporateName;
+    private String beneficiaryAccountNumber;
     private LocalDate transactionDate;
     private LocalTime transactionTime;
     private String transactionType;
     private String currency;
     private BigDecimal amount;
+    private String transactionMessage;
+    private String transactionNote;
 }
