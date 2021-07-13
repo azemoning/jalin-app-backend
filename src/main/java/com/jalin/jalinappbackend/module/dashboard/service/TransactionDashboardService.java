@@ -10,11 +10,12 @@ public interface TransactionDashboardService {
     TransactionAllDto getAllTransactions(
             String[] transactionType,
             String[] transactionName,
-            LocalDate startDate,
-            LocalDate endDate,
             Integer page,
             Integer size,
-            String[] sort);
+            String[] sort,
+            LocalDate startDate,
+            LocalDate endDate,
+            String keyword);
     TransactionDetailsDto getTransactionById(String transactionId);
     TransactionMostFrequentDto getMostFrequentTransactions();
 }

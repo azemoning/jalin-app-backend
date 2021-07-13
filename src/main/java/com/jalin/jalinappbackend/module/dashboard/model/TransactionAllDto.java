@@ -14,10 +14,12 @@ import java.util.List;
 @Setter
 public class TransactionAllDto {
     private List<String> transactionType;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private List<String> transactionName;
     private Long totalEntries;
     private Integer currentPage;
     private Integer totalPages;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String keyword;
     private List<TransactionDto> transactionList;
 }

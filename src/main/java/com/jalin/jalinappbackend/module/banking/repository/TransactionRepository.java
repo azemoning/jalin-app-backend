@@ -28,11 +28,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     Transaction findTopByUserAndTransactionTypeEqualsOrderByCreatedDateDesc(User user, String transactionType);
 
     @NotNull
-    Page<Transaction> findByTransactionTypeInAndTransactionNameInAndTransactionDateBetween(
+    Page<Transaction> findByTransactionTypeInAndTransactionNameInAndTransactionDateBetweenAndTransactionMessageContainingIgnoringCase(
             List<String> transactionType,
             List<String> transactionName,
             LocalDate transactionDate_dateStart,
             LocalDate transactionDate_dateEnd,
+            String transactionMessage,
             @NotNull Pageable pageable);
     Long countByTransactionName(String transactionName);
 }

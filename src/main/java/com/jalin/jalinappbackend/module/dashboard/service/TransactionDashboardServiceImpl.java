@@ -44,11 +44,12 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     public TransactionAllDto getAllTransactions(
             String[] transactionType,
             String[] transactionName,
-            LocalDate startDate,
-            LocalDate endDate,
             Integer page,
             Integer size,
-            String[] sort)  {
+            String[] sort,
+            LocalDate startDate,
+            LocalDate endDate,
+            String keyword)  {
 
         List<String> names = new ArrayList<>();
         for (String name : transactionName) {
@@ -72,8 +73,8 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
         Page<Transaction> transactionPage = transactionRepository
-                .findByTransactionTypeInAndTransactionNameInAndTransactionDateBetween(
-                        types, names, startDate, endDate, pageable);
+                .findByTransactionTypeInAndTransactionNameInAndTransactionDateBetweenAndTransactionMessageContainingIgnoringCase(
+                        types, names, startDate, endDate, keyword, pageable);
 
         Long totalEntries = transactionPage.getTotalElements();
         Integer currentPage = transactionPage.getPageable().getPageNumber();
@@ -94,11 +95,13 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
 
         TransactionAllDto transactionAllDto = new TransactionAllDto();
         transactionAllDto.setTransactionType(types);
-        transactionAllDto.setStartDate(startDate);
-        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setTransactionName(names);
         transactionAllDto.setTotalEntries(totalEntries);
         transactionAllDto.setCurrentPage(currentPage);
         transactionAllDto.setTotalPages(totalPages);
+        transactionAllDto.setStartDate(startDate);
+        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setKeyword(keyword);
         transactionAllDto.setTransactionList(transactionDtoList);
         return transactionAllDto;
     }
