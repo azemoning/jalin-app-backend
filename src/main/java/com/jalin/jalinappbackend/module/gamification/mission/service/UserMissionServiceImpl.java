@@ -185,7 +185,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                 .findUserMissionsByUserAndIsActiveEquals(signedInUser, true);
         Set<UserMissionDto> userMissionData = new HashSet<>();
 
-        for (UserMission userMission: userMissions) {
+        for (UserMission userMission : userMissions) {
             Mission mission = missionService.getMissionById(userMission.getMission().getId());
             UserMissionDto userMissionDto = modelMapper.map(userMission, UserMissionDto.class);
 
@@ -199,8 +199,7 @@ public class UserMissionServiceImpl implements UserMissionService {
                 userMissionDto.setPoint(mission.getPoint());
 
                 userMissionData.add(userMissionDto);
-            }
-            else if (mission.getExpiration().equalsIgnoreCase(expiration)) {
+            } else if (mission.getExpiration().equalsIgnoreCase(expiration)) {
                 userMissionDto.setActivity(mission.getActivity());
                 userMissionDto.setMissionDescription(mission.getMissionDescription());
                 userMissionDto.setTncDescription(mission.getTncDescription());
@@ -225,7 +224,7 @@ public class UserMissionServiceImpl implements UserMissionService {
 
         if (userMission.getIsClaimed().equals(true)) {
             throw new ClaimMissionPointFailedException("Mission point already claimed");
-        } else if (userMission.getStatus().equals("INCOMPLETE")){
+        } else if (userMission.getStatus().equals("INCOMPLETE")) {
             throw new ClaimMissionPointFailedException("Mission not completed yet");
         } else if (userMission.getStatus().equals("COMPLETED")) {
             userMission.setIsClaimed(true);
@@ -237,25 +236,19 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Override
     public void initiateUserMission(User user) {
-        Role adminRole = roleRepository.findByRoleName(RoleEnum.ADMIN)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        Random random = new Random();
 
-        if (!adminRole.getRoleName().equals(RoleEnum.ADMIN)) {
-            Random random = new Random();
+        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
+        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
+        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
 
+        Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
+        Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
+        Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
 
-            List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
-            List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
-            List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
-
-            Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
-            Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
-            Mission randomMonthlyMission = monthlyMissions.get(random.nextInt(monthlyMissions.size()));
-
-            addUserMission(randomWeeklyMission, user);
-            addUserMission(randomBiweeklyMission, user);
-            addUserMission(randomMonthlyMission, user);
-        }
+        addUserMission(randomWeeklyMission, user);
+        addUserMission(randomBiweeklyMission, user);
+        addUserMission(randomMonthlyMission, user);
     }
 
     @Override
