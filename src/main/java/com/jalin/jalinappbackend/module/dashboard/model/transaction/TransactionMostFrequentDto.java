@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.dashboard.model;
+package com.jalin.jalinappbackend.module.dashboard.model.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

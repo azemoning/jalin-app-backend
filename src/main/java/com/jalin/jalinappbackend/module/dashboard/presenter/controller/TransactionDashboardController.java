@@ -1,8 +1,8 @@
 package com.jalin.jalinappbackend.module.dashboard.presenter.controller;
 
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionAllDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionDetailsDto;
-import com.jalin.jalinappbackend.module.dashboard.model.TransactionMostFrequentDto;
+import com.jalin.jalinappbackend.module.dashboard.model.transaction.TransactionAllDto;
+import com.jalin.jalinappbackend.module.dashboard.model.transaction.TransactionDetailsDto;
+import com.jalin.jalinappbackend.module.dashboard.model.transaction.TransactionMostFrequentDto;
 import com.jalin.jalinappbackend.module.dashboard.service.TransactionDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

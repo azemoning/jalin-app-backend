@@ -6,7 +6,7 @@ import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRep
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.banking.service.CorporateService;
-import com.jalin.jalinappbackend.module.dashboard.model.*;
+import com.jalin.jalinappbackend.module.dashboard.model.transaction.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
