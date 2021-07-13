@@ -20,7 +20,7 @@ public class TransactionDashboardController {
     @GetMapping("/transactions")
     public ResponseEntity<Object> getAllTransactions(
             @RequestParam(defaultValue = "C,D") String[] type,
-            @RequestParam(defaultValue = "TRANSFER, TRANSFER_DOMESTIC, TOP_UP, PAYMENT_QR") String[] name,
+            @RequestParam(defaultValue = "TRANSFER, TRANSFER_DOMESTIC, TOP_UP, PAYMENT_QR, PAYMENT_MOBILE_PHONE_CREDIT") String[] name,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "4") Integer size,
             @RequestParam(defaultValue = "transactionId,desc") String[] sort,
