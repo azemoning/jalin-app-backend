@@ -2,11 +2,8 @@ package com.jalin.jalinappbackend.module.gamification.mission.service;
 
 import com.jalin.jalinappbackend.exception.ClaimMissionPointFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
-import com.jalin.jalinappbackend.module.authentication.entity.Role;
-import com.jalin.jalinappbackend.module.authentication.entity.RoleEnum;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
-import com.jalin.jalinappbackend.module.authentication.repository.RoleRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
@@ -60,9 +57,6 @@ public class UserMissionServiceImpl implements UserMissionService {
 
     @Autowired
     private UserUtility userUtility;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Override
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT+7.00")
@@ -255,6 +249,7 @@ public class UserMissionServiceImpl implements UserMissionService {
     public void forceCompleteUserMission(String expiration) {
         ZoneId zoneId = ZoneId.of("Asia/Jakarta");
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate localDateNow = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
         LocalTime localTimeNow = LocalTime.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
         User user = getSignedInUser();
@@ -267,6 +262,7 @@ public class UserMissionServiceImpl implements UserMissionService {
             if (userMission.getMission().getExpiration().equals(expiration)) {
                 userMission.setStatus("COMPLETED");
                 userMission.setMissionProgress(userMission.getMission().getFrequency());
+                userMission.setCompletionDate(localDateNow);
                 userMission.setCompletionTime(localTimeNow);
                 userMissionRepository.save(userMission);
             }
