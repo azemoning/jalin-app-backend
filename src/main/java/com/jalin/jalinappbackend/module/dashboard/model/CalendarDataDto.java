@@ -10,8 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CalendarDataDto {
-    private String title;
+    private String checkins;
+    private String missions;
     private String start;
     private String end;
-    private String hexColor;
 }
