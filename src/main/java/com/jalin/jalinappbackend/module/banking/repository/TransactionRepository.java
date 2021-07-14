@@ -36,4 +36,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
             String transactionMessage,
             @NotNull Pageable pageable);
     Long countByTransactionName(String transactionName);
+    List<Transaction> findByTransactionTypeAndTransactionDate(String transactionType, LocalDate transactionDate);
 }
