@@ -38,7 +38,6 @@ public class RegisterRequest {
     private String currentAddress;
     private String idCardImage;
 
-    @NotBlank
     private String bankingGoals;
     @NotBlank
     private String occupation;
