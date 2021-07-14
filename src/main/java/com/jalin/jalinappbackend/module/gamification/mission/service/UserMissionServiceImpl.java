@@ -255,6 +255,7 @@ public class UserMissionServiceImpl implements UserMissionService {
     public void forceCompleteUserMission(String expiration) {
         ZoneId zoneId = ZoneId.of("Asia/Jakarta");
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
+        LocalDate localDateNow = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
         LocalTime localTimeNow = LocalTime.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
         User user = getSignedInUser();
@@ -267,6 +268,7 @@ public class UserMissionServiceImpl implements UserMissionService {
             if (userMission.getMission().getExpiration().equals(expiration)) {
                 userMission.setStatus("COMPLETED");
                 userMission.setMissionProgress(userMission.getMission().getFrequency());
+                userMission.setCompletionDate(localDateNow);
                 userMission.setCompletionTime(localTimeNow);
                 userMissionRepository.save(userMission);
             }
