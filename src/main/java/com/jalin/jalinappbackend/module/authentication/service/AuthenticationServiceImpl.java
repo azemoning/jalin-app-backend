@@ -20,6 +20,7 @@ import com.jalin.jalinappbackend.module.authentication.service.model.AddNewCusto
 import com.jalin.jalinappbackend.module.gamification.checkin.service.CheckInService;
 import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.module.gamification.point.service.PointService;
+import com.jalin.jalinappbackend.utility.FakerUtility;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import com.jalin.jalinappbackend.utility.UserUtility;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Objects;
 
 @Service
@@ -51,6 +53,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER = "accountNumber=";
     private static final String IDR_CURRENCY = "IDR";
     private static final Integer INITIAL_BALANCE = 1000000000;
+    @Autowired
+    private FakerUtility fakerUtility;
     @Autowired
     private ModelMapperUtility modelMapperUtility;
     @Autowired
@@ -104,7 +108,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserDetails newUserDetails = modelMapperUtility.initialize()
                 .map(userDetailsRequestBody, UserDetails.class);
         newUserDetails.setAccountNumber(Objects.requireNonNull(addNewBankAccountResponse.getBody()).getAccountNumber());
-        newUserDetails.setJalinId(newUserDetails.getFullName() + "-" + newUserDetails.getAccountNumber());
+        newUserDetails.setJalinId(initializeJalinId(newUserDetails.getFullName()));
         newUserDetails.setUser(newUser);
         userDetailsRepository.save(newUserDetails);
 
@@ -196,5 +200,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 BASE_URL + ADD_NEW_BANK_ACCOUNT_ENDPOINT + customerId ,
                 requestBody,
                 AddNewBankAccountResponse.class);
+    }
+
+    private String initializeJalinId(String fullName) {
+        String faker = fakerUtility.initialize().bothify("??????##");
+        String name = fullName.toLowerCase(Locale.ROOT).replace(" ", ".");
+        return (name + "." + faker);
     }
 }
