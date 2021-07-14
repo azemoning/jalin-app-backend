@@ -21,12 +21,4 @@ public class CalendarDataController {
     public ResponseEntity<Object> getCalendarData() {
         return new ResponseEntity<>(calendarDataService.getCalendarData(), HttpStatus.OK);
     }
-
-    @PostMapping("updateCalendarData")
-    public ResponseEntity<Object> updateCalendarData() {
-        calendarDataService.updateCalendarData();
-        return new ResponseEntity<>(
-                new SuccessResponse(true, "Calendar data updated"), HttpStatus.OK
-        );
-    }
 }
