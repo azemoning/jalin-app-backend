@@ -34,8 +34,8 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = UserRankDto.class,
                 columns = {
-                        @ColumnResult(name = "totalPoints", type = Integer.class),
-                        @ColumnResult(name = "rank", type = BigInteger.class)
+                        @ColumnResult(name = "rank", type = BigInteger.class),
+                        @ColumnResult(name = "totalPoints", type = Integer.class)
                 }
         )
 )
@@ -45,9 +45,9 @@ import java.util.UUID;
         name = "find_rank_top3",
         query =
                 "SELECT " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank, " +
                         "jalin_id AS jalinId, " +
-                        "total_points AS totalPoints, " +
-                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
+                        "total_points AS totalPoints " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id "+
                         "LIMIT 3;",
@@ -58,9 +58,9 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
+                        @ColumnResult(name = "rank", type = BigInteger.class),
                         @ColumnResult(name = "jalinId", type = String.class),
-                        @ColumnResult(name = "totalPoints", type = Integer.class),
-                        @ColumnResult(name = "rank", type = BigInteger.class)
+                        @ColumnResult(name = "totalPoints", type = Integer.class)
                 }
         )
 )
@@ -70,9 +70,9 @@ import java.util.UUID;
         name = "find_rank",
         query =
                 "SELECT " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank, " +
                         "jalin_id AS jalinId, " +
-                        "total_points AS totalPoints, " +
-                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
+                        "total_points AS totalPoints " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id " +
                         "OFFSET 3;",
@@ -83,9 +83,9 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
+                        @ColumnResult(name = "rank", type = BigInteger.class),
                         @ColumnResult(name = "jalinId", type = String.class),
-                        @ColumnResult(name = "totalPoints", type = Integer.class),
-                        @ColumnResult(name = "rank", type = BigInteger.class)
+                        @ColumnResult(name = "totalPoints", type = Integer.class)
                 }
         )
 )
@@ -95,9 +95,9 @@ import java.util.UUID;
         name = "findUser",
         query =
                 "SELECT " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank, " +
                         "jalin_id AS jalinId, " +
-                        "total_points AS totalPoints, " +
-                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
+                        "total_points AS totalPoints " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id "+
                         "WHERE full_name LIKE CONCAT ('%',:name,'%')",
@@ -108,9 +108,9 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = ListPointRankDto.class,
                 columns = {
+                        @ColumnResult(name = "rank", type = BigInteger.class),
                         @ColumnResult(name = "jalinId", type = String.class),
-                        @ColumnResult(name = "totalPoints", type = Integer.class),
-                        @ColumnResult(name = "rank", type = BigInteger.class)
+                        @ColumnResult(name = "totalPoints", type = Integer.class)
                 }
         )
 )
