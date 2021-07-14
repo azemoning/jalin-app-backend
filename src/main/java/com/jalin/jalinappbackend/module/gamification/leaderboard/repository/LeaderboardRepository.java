@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.repository;
 
+import com.jalin.jalinappbackend.module.gamification.leaderboard.model.LeaderboardAdminDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.UserRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Repository
 public interface LeaderboardRepository extends JpaRepository<Point, UUID> {
+    // leaderboard in android
     @Query(name = "find_rank", nativeQuery = true)
     List<ListPointRankDto> getUsersLeaderboard();
     @Query(name = "find_rank_top3",nativeQuery = true)
@@ -22,4 +24,9 @@ public interface LeaderboardRepository extends JpaRepository<Point, UUID> {
     List<ListPointRankDto> findUserInLeadrrboard(@Param("name") String name);
     @Query(name = "findUserRank", nativeQuery = true)
     Optional<UserRankDto> getUserRankAndPoint(@Param("email") String email);
+    // leaderboard in admin
+    @Query(name = "find_rank_top3_in_admin", nativeQuery = true)
+    List<LeaderboardAdminDto> getUserLeaderboardTop3InAdmin();
+    @Query(name = "find_rank_in_admin", nativeQuery = true)
+    List<LeaderboardAdminDto> getAlluserLeaderboardAfterTop3();
 }

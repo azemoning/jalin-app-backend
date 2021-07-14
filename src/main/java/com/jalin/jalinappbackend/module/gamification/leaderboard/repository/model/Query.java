@@ -21,7 +21,7 @@ import java.util.UUID;
                         "FROM\n" +
                         "\t(SELECT points.user_id AS userId,\n" +
                         "\tfull_name AS fullName, total_points AS totalPoints, \n" +
-                        "\tDENSE_RANK() OVER(ORDER BY total_points DESC) rank \n" +
+                        "\tROW_NUMBER() OVER(ORDER BY total_points DESC) rank \n" +
                         "\tFROM points \n" +
                         "\tINNER JOIN user_details ON points.user_id = user_details.user_id ) AS usera\n" +
                         "INNER JOIN users\n" +
@@ -47,7 +47,7 @@ import java.util.UUID;
                 "SELECT " +
                         "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
-                        "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id "+
                         "LIMIT 3;",
@@ -72,7 +72,7 @@ import java.util.UUID;
                 "SELECT " +
                         "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
-                        "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id " +
                         "OFFSET 3;",
@@ -97,7 +97,7 @@ import java.util.UUID;
                 "SELECT " +
                         "jalin_id AS jalinId, " +
                         "total_points AS totalPoints, " +
-                        "DENSE_RANK() OVER(ORDER BY total_points DESC) rank " +
+                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank " +
                         "FROM points " +
                         "INNER JOIN user_details ON points.user_id = user_details.user_id "+
                         "WHERE full_name LIKE CONCAT ('%',:name,'%')",
