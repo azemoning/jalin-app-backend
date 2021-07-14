@@ -40,7 +40,7 @@ public class LeadrboardDataServiceImpl implements LeaderboardDataService{
         for (LeaderboardAdminDto data: listPointRankDtos){
             LeaderboardDataDto leaderboardDataDto = modelMapperUtility.
                     initialize().map(data, LeaderboardDataDto.class);
-//            Object ini = leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
+            leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
             listDtos.add(leaderboardDataDto);
         }
         return listDtos;
@@ -52,7 +52,8 @@ public class LeadrboardDataServiceImpl implements LeaderboardDataService{
         for (LeaderboardAdminDto data: listPointRankDtos){
             LeaderboardDataDto leaderboardDataDto = modelMapperUtility.
                     initialize().map(data, LeaderboardDataDto.class);
-//            leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
+            leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
+            System.out.println(data.getJalinId());
 
             listDtos.add(leaderboardDataDto);
         }

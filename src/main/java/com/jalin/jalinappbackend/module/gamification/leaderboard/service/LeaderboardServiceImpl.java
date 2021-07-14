@@ -4,7 +4,6 @@ import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.User;
 import com.jalin.jalinappbackend.module.authentication.repository.UserRepository;
 import com.jalin.jalinappbackend.module.authentication.service.UserService;
-import com.jalin.jalinappbackend.module.gamification.leaderboard.model.UserRankDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.LeaderboardRepository;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
@@ -40,7 +39,7 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
         Map<Object, Object> leaderboard = new HashMap<>();
 
-        leaderboard.put("userPointAndRank", getUserRankAndPoint());
+        leaderboard.put("currentUserPointAndRank", getUserRankAndPoint());
         leaderboard.put("topThree", getTopThree());
         leaderboard.put("listLeaderboard", getListLeaderboard());
 
@@ -56,7 +55,7 @@ public class LeaderboardServiceImpl implements LeaderboardService{
         return leaderboardRepository.getUsersLeaderboard();
     }
 
-    private Optional<UserRankDto> getUserRankAndPoint(){
+    private Optional<ListPointRankDto> getUserRankAndPoint(){
         String user = getSignedInUser().getEmail();
         return leaderboardRepository.getUserRankAndPoint(user);
     }

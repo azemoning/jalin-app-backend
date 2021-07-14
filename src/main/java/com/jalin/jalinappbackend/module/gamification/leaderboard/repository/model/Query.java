@@ -1,7 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.repository.model;
 
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
-import com.jalin.jalinappbackend.module.gamification.leaderboard.model.UserRankDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +16,12 @@ import java.util.UUID;
 @NamedNativeQuery(
         name = "findUserRank",
         query =
-                "SELECT totalPoints, rank\n" +
+                "SELECT totalPoints, rank\n, jalinId " +
                         "FROM\n" +
                         "\t(SELECT points.user_id AS userId,\n" +
-                        "\tfull_name AS fullName, total_points AS totalPoints, \n" +
-                        "\tROW_NUMBER() OVER(ORDER BY total_points DESC) rank \n" +
+                        "\tROW_NUMBER() OVER(ORDER BY total_points DESC) rank, \n" +
+                        "jalin_id AS jalinId, " +
+                        "\tfull_name AS fullName, total_points AS totalPoints \n" +
                         "\tFROM points \n" +
                         "\tINNER JOIN user_details ON points.user_id = user_details.user_id ) AS usera\n" +
                         "INNER JOIN users\n" +
@@ -32,9 +32,10 @@ import java.util.UUID;
 @SqlResultSetMapping(
         name = "findUserRankDto",
         classes = @ConstructorResult(
-                targetClass = UserRankDto.class,
+                targetClass = ListPointRankDto.class,
                 columns = {
                         @ColumnResult(name = "rank", type = BigInteger.class),
+                        @ColumnResult(name = "jalinId", type = String.class),
                         @ColumnResult(name = "totalPoints", type = Integer.class)
                 }
         )
