@@ -1,14 +1,12 @@
 package com.jalin.jalinappbackend.module.dashboard.service;
 
 import com.jalin.jalinappbackend.module.dashboard.model.LeaderboardDataDto;
-import com.jalin.jalinappbackend.module.gamification.leaderboard.model.LeaderboardAdminDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.repository.LeaderboardRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,26 +33,10 @@ public class LeadrboardDataServiceImpl implements LeaderboardDataService{
     }
 
     private List<LeaderboardDataDto> getLeadaerboardTop3(){
-        List<LeaderboardAdminDto> listPointRankDtos = leaderboardRepository.getUserLeaderboardTop3InAdmin();
-        List<LeaderboardDataDto> listDtos = new ArrayList<>();
-        for (LeaderboardAdminDto data: listPointRankDtos){
-            LeaderboardDataDto leaderboardDataDto = modelMapperUtility.
-                    initialize().map(data, LeaderboardDataDto.class);
-//            leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
-            listDtos.add(leaderboardDataDto);
-        }
-        return listDtos;
+        return leaderboardRepository.getUserLeaderboardTop3InAdmin();
     }
 
     private List<LeaderboardDataDto> getLeaderboardAfterTop3(){
-        List<LeaderboardAdminDto> listPointRankDtos = leaderboardRepository.getAlluserLeaderboardAfterTop3();
-        List<LeaderboardDataDto> listDtos = new ArrayList<>();
-        for (LeaderboardAdminDto data: listPointRankDtos){
-            LeaderboardDataDto leaderboardDataDto = modelMapperUtility.
-                    initialize().map(data, LeaderboardDataDto.class);
-//            leaderboardDataDto.setMissionSolved(userMissionService.getTotalUserCompletedMissions(data.getJalinId()));
-            listDtos.add(leaderboardDataDto);
-        }
-        return listDtos;
+        return leaderboardRepository.getAlluserLeaderboardAfterTop3InAdmin();
     }
 }

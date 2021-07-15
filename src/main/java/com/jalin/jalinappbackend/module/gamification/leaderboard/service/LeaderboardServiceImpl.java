@@ -41,7 +41,7 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
         leaderboard.put("currentUserPointAndRank", getUserRankAndPoint());
         leaderboard.put("topThree", getTopThree());
-        leaderboard.put("listLeaderboard", getListLeaderboard());
+        leaderboard.put("listLeaderboard", getAfterTop3());
 
         return leaderboard;
     }
@@ -51,10 +51,6 @@ public class LeaderboardServiceImpl implements LeaderboardService{
         return  leaderboardRepository.findUserInLeadrrboard(name);
     }
 
-    private List<ListPointRankDto> getListLeaderboard() {
-        return leaderboardRepository.getUsersLeaderboard();
-    }
-
     private Optional<ListPointRankDto> getUserRankAndPoint(){
         String user = getSignedInUser().getEmail();
         return leaderboardRepository.getUserRankAndPoint(user);
@@ -62,6 +58,10 @@ public class LeaderboardServiceImpl implements LeaderboardService{
 
     private List<ListPointRankDto> getTopThree(){
         return leaderboardRepository.getUserLeaderBoardTop3();
+    }
+
+    private List<ListPointRankDto> getAfterTop3() {
+        return leaderboardRepository.getUsersLeaderboard();
     }
 
     private User getSignedInUser() {

@@ -1,6 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.repository;
 
-import com.jalin.jalinappbackend.module.gamification.leaderboard.model.LeaderboardAdminDto;
+import com.jalin.jalinappbackend.module.dashboard.model.LeaderboardDataDto;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.model.ListPointRankDto;
 import com.jalin.jalinappbackend.module.gamification.point.entity.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +25,7 @@ public interface LeaderboardRepository extends JpaRepository<Point, UUID> {
     Optional<ListPointRankDto> getUserRankAndPoint(@Param("email") String email);
     // leaderboard in admin
     @Query(name = "find_rank_top3_in_admin", nativeQuery = true)
-    List<LeaderboardAdminDto> getUserLeaderboardTop3InAdmin();
+    List<LeaderboardDataDto> getUserLeaderboardTop3InAdmin();
     @Query(name = "find_rank_in_admin", nativeQuery = true)
-    List<LeaderboardAdminDto> getAlluserLeaderboardAfterTop3();
+    List<LeaderboardDataDto> getAlluserLeaderboardAfterTop3InAdmin();
 }
