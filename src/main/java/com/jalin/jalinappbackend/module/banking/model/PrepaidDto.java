@@ -1,19 +1,43 @@
 package com.jalin.jalinappbackend.module.banking.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.UUID;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class PrepaidDto {
     private UUID prepaidId;
     private String prepaidName;
-    private BigDecimal price;
+    private String price;
+
+    public PrepaidDto(UUID prepaidId, String prepaidName, BigDecimal price) {
+        this.prepaidId = prepaidId;
+        this.prepaidName = prepaidName;
+        this.price = formatAmount(price);
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = formatAmount(price);
+    }
+
+    private String formatAmount(BigDecimal amount) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        symbols.setGroupingSeparator('.');
+
+        String pattern = "#,##0.##";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
+        return decimalFormat.format(amount);
+    }
 }

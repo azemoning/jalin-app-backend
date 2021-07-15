@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmTransferDto;
 import com.jalin.jalinappbackend.module.banking.model.CorporateDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
@@ -32,7 +33,9 @@ public class TopUpController {
     @GetMapping("/transfers/virtual")
     public ResponseEntity<Object> getWalletList() {
         List<WalletListDto> walletListDto = walletListService.getWalletList();
-        return new ResponseEntity<>(walletListDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Wallet list successfully found", walletListDto),
+                HttpStatus.OK);
     }
 
     @PostMapping(
