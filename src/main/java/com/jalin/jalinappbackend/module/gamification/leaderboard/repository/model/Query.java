@@ -95,13 +95,16 @@ import java.util.UUID;
 @NamedNativeQuery(
         name = "findUser",
         query =
-                "SELECT " +
-                        "ROW_NUMBER() OVER(ORDER BY total_points DESC) rank, " +
-                        "jalin_id AS jalinId, " +
-                        "total_points AS totalPoints " +
-                        "FROM points " +
-                        "INNER JOIN user_details ON points.user_id = user_details.user_id "+
-                        "WHERE full_name LIKE CONCAT ('%',:name,'%')",
+                "SELECT totalPoints, rank, jalinId \n" +
+                        "FROM (\n" +
+                        "\tSELECT points.user_id AS userId,\n" +
+                        "\tROW_NUMBER() OVER(ORDER BY total_points DESC) rank,\n" +
+                        "\tjalin_id AS jalinId, \n" +
+                        "\tfull_name AS fullName, total_points AS totalPoints \n" +
+                        "\tFROM points \n" +
+                        "\tINNER JOIN user_details ON points.user_id = user_details.user_id \n" +
+                        ") AS usera\n" +
+                        "WHERE jalinId LIKE CONCAT ('%',:name,'%');",
         resultSetMapping = "findUserDto"
 )
 @SqlResultSetMapping(
