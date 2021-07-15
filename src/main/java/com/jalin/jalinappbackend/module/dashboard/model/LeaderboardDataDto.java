@@ -1,4 +1,4 @@
-package com.jalin.jalinappbackend.module.gamification.leaderboard.model;
+package com.jalin.jalinappbackend.module.dashboard.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,10 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserRankDto {
-    private Integer totalPoints;
+public class LeaderboardDataDto {
     private BigInteger rank;
+    private String profilePicture;
+    private String jalinId;
+    private Integer totalPoints;
+    private BigInteger missionSolved;
 }

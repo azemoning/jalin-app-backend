@@ -12,7 +12,7 @@ import java.math.BigInteger;
 @Getter
 @Setter
 public class ListPointRankDto {
+    private BigInteger rank;
     private String jalinId;
     private Integer totalPoints;
-    private BigInteger rank;
 }
