@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/admmin/v1")
+@RequestMapping("api/admin/v1")
 public class LeaderboardDataController {
     @Autowired
     LeaderboardDataService leaderboardDataService;
