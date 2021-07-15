@@ -27,6 +27,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
 
     Transaction findTopByUserAndTransactionTypeEqualsOrderByCreatedDateDesc(User user, String transactionType);
 
+    List<Transaction> findByTransactionDateBetween(LocalDate transactionDate_dateStart, LocalDate transactionDate_dateEnd);
     @NotNull
     Page<Transaction> findByTransactionTypeInAndTransactionNameInAndTransactionDateBetweenAndTransactionMessageContainingIgnoringCase(
             List<String> transactionType,
