@@ -13,8 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    private BigDecimal getAccountBalance() {
+    private String getAccountBalance() {
         return bankingService.getAccountBalance().getBalance();
     }
 }
