@@ -39,11 +39,8 @@ public class RegisterRequest {
     private String idCardImage;
 
     private String bankingGoals;
-    @NotBlank
     private String occupation;
-    @NotBlank
     private String sourceOfIncome;
-    @NotBlank
     private String incomeRange;
     private String npwpImage;
 }

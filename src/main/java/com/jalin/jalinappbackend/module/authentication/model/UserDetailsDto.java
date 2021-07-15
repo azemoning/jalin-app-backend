@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -15,7 +13,7 @@ public class UserDetailsDto {
     private String fullName;
     private String email;
     private String accountNumber;
-    private BigDecimal balance;
+    private String balance;
     private String jalinId;
     private String displayName;
     private String mobileNumber;
