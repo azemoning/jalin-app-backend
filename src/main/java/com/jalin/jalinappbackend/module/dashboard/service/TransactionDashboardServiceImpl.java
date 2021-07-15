@@ -42,6 +42,42 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private CorporateService corporateService;
 
     @Override
+    public List<TransactionDto> getAllTransactions() {
+        List<Transaction> transactionList = transactionRepository.findAll();
+
+        List<TransactionDto> transactionDtoList = new ArrayList<>();
+        for (Transaction transaction : transactionList) {
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(transaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService
+                    .getCorporateByCorporateId(transaction.getCorporateId())
+                    .getCorporateName());
+            transactionDto.setTransactionTime(
+                    LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Jakarta")));
+            transactionDtoList.add(transactionDto);
+        }
+        return transactionDtoList;
+    }
+
+    @Override
+    public List<TransactionDto> getAllTransactions(LocalDate startDate, LocalDate endDate) {
+        List<Transaction> transactionList = transactionRepository.findByTransactionDateBetween(startDate, endDate);
+
+        List<TransactionDto> transactionDtoList = new ArrayList<>();
+        for (Transaction transaction : transactionList) {
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(transaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService
+                    .getCorporateByCorporateId(transaction.getCorporateId())
+                    .getCorporateName());
+            transactionDto.setTransactionTime(
+                    LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Jakarta")));
+            transactionDtoList.add(transactionDto);
+        }
+        return transactionDtoList;
+    }
+
+    @Override
     public TransactionAllDto getAllTransactions(
             String[] transactionType,
             String[] transactionName,
