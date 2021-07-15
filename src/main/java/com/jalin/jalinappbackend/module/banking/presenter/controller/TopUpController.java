@@ -70,6 +70,8 @@ public class TopUpController {
     @GetMapping("/transfers/corporates/wallet")
     public ResponseEntity<Object> getDigitalWalletCorporates() {
         List<CorporateDto> corporateDtoList = corporateService.getDigitalWalletCorporates();
-        return new ResponseEntity<>(corporateDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Wallet successfully found", corporateDtoList),
+                HttpStatus.OK);
     }
 }
