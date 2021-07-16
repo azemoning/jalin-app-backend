@@ -18,7 +18,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll();
+        return voucherRepository.findVouchersByStatusEquals(true);
     }
 
     @Override

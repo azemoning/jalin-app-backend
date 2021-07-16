@@ -13,6 +13,6 @@ public class MissionCompleteServiceImpl implements MissionCompleteService {
 
     @Override
     public int getTotalMissionComplete() {
-        return userMissionRepository.findUserMissionsByStatusEquals("COMPLETED").size();
+        return userMissionRepository.findUserMissionsByStatusEqualsOrderByModifiedDateDesc("COMPLETED").size();
     }
 }

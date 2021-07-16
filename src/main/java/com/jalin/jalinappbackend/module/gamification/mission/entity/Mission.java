@@ -44,4 +44,7 @@ public class Mission {
 
     @NotNull
     private Integer point;
+
+    @NotNull
+    private Boolean status = true;
 }

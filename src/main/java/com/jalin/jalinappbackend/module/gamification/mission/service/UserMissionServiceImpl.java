@@ -67,9 +67,12 @@ public class UserMissionServiceImpl implements UserMissionService {
         LocalDate today = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
         LocalDate yesterday = today.minusDays(1);
 
-        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
-        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
-        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+        List<Mission> weeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("WEEKLY", true);
+        List<Mission> biweeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("BIWEEKLY", true);
+        List<Mission> monthlyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("MONTHLY", true);
 
         List<User> users = userUtility.getAllUsers();
 
@@ -232,9 +235,12 @@ public class UserMissionServiceImpl implements UserMissionService {
     public void initiateUserMission(User user) {
         Random random = new Random();
 
-        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
-        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
-        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+        List<Mission> weeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("WEEKLY", true);
+        List<Mission> biweeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("BIWEEKLY", true);
+        List<Mission> monthlyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("MONTHLY", true);
 
         Mission randomWeeklyMission = weeklyMissions.get(random.nextInt(weeklyMissions.size()));
         Mission randomBiweeklyMission = biweeklyMissions.get(random.nextInt(biweeklyMissions.size()));
@@ -276,9 +282,12 @@ public class UserMissionServiceImpl implements UserMissionService {
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(zoneId);
         LocalDate today = LocalDate.parse(zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
-        List<Mission> weeklyMissions = missionRepository.findMissionsByExpirationEquals("WEEKLY");
-        List<Mission> biweeklyMissions = missionRepository.findMissionsByExpirationEquals("BIWEEKLY");
-        List<Mission> monthlyMissions = missionRepository.findMissionsByExpirationEquals("MONTHLY");
+        List<Mission> weeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("WEEKLY", true);
+        List<Mission> biweeklyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("BIWEEKLY", true);
+        List<Mission> monthlyMissions = missionRepository
+                .findMissionsByExpirationEqualsAndStatusEquals("MONTHLY", true);
 
         User user = getSignedInUser();
 

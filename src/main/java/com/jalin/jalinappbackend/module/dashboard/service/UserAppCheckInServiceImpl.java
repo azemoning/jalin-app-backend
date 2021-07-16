@@ -53,7 +53,8 @@ public class UserAppCheckInServiceImpl implements UserAppCheckInService {
         List<UserAppCheckInDto> userAppCheckInDtoList = new ArrayList<>();
 
         if (filter.equals("today")) {
-            List<CheckInLog> checkInLogs = checkInLogRepository.findAll();
+            List<CheckInLog> checkInLogs = checkInLogRepository.
+                    findTop4ByOrderByCreatedDateDesc();
 
             for (CheckInLog checkInLog : checkInLogs) {
                 UserAppCheckInDto userAppCheckInDto = modelMapperUtility
@@ -114,7 +115,7 @@ public class UserAppCheckInServiceImpl implements UserAppCheckInService {
                 userAppCheckInDtoList.add(userAppCheckInDto);
             }
         } else if (filter.equals("all") && startDate.equals("all") || endDate.equals("all")) {
-            List<CheckIn> checkIns = checkInRepository.findAll();
+            List<CheckIn> checkIns = checkInRepository.findAllByOrderByCreatedDateDesc();
 
             for (CheckIn checkIn : checkIns) {
                 UserAppCheckInDto userAppCheckInDto = modelMapperUtility
@@ -181,7 +182,7 @@ public class UserAppCheckInServiceImpl implements UserAppCheckInService {
             Instant startDateInstant = startDateLocal.atStartOfDay(ZoneId.systemDefault()).toInstant();
             Instant endDateInstant = endDateLocal.atStartOfDay(ZoneId.systemDefault()).toInstant();
             List<CheckIn> checkIns = checkInRepository
-                    .findCheckInByCreatedDateBetween(startDateInstant, endDateInstant);
+                    .findCheckInByCreatedDateBetweenOrderByCreatedDateDesc(startDateInstant, endDateInstant);
 
             for (CheckIn checkIn : checkIns) {
                 UserAppCheckInDto userAppCheckInDto = modelMapperUtility
