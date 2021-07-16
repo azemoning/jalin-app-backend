@@ -1,23 +1,29 @@
 image: maven:3-jdk-11
 
 cache:
+  key: "$CI_JOB_NAME"
   paths:
-    - .m2/
+    - .m2/repository
 
 stages:
   - build
   - deploy
 
+variables:
+  JDBC_DATABASE_URL: $DATABASE_URL
+  JDBC_DATABASE_USER: $DATABASE_USER
+  JDBC_DATABASE_PASSWORD: $DATABASE_PASSWORD
+
 maven-build:
   tags:
-    - production
-  image: maven:3-jdk-11
+    - build
   stage: build
-  script: "mvn -Pproduction clean package -DskipTests"
+  script:
+    - mvn -Pproduction spring-boot:build-image -DskipTests -Dspring.boot.build-image.imageName=jalin-backend -Dresource.server.url=$RESOURCE_SERVER_URL -Dserver.port=8888
   only:
     - master
 
-deploy:
+deploy-development:
   tags:
     - development
   stage: deploy
@@ -27,5 +33,16 @@ deploy:
     - apt-get install -y ruby-dev
     - gem install dpl
     - dpl --provider=heroku --app=$APP_NAME --api-key=$HEROKU_API_KEY
+  only:
+    - develop
+
+deploy-production:
+  tags:
+    - production
+  stage: deploy
+  script:
+    - docker container rm jalin-backend -f
+    - docker run -itd -p 8888:8888 --name jalin-backend --restart always -e JDBC_DATABASE_URL=$JDBC_DATABASE_URL -e JDBC_DATABASE_USER=$JDBC_DATABASE_USER -e JDBC_DATABASE_PASSWORD=$JDBC_DATABASE_PASSWORD jalin-backend
+    - docker image -a -f
   only:
     - master
