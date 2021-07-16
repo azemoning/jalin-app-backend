@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface MissionRepository extends JpaRepository<Mission, UUID> {
-    List<Mission> findMissionsByExpirationEquals(String expiration);
+    List<Mission> findMissionsByExpirationEqualsAndStatusEquals(String expiration, Boolean status);
 }

@@ -9,6 +9,8 @@ stages:
   - deploy
 
 maven-build:
+  tags:
+    - production
   image: maven:3-jdk-11
   stage: build
   script: "mvn -Pproduction clean package -DskipTests"
@@ -16,6 +18,8 @@ maven-build:
     - master
 
 deploy:
+  tags:
+    - development
   stage: deploy
   image: ruby:latest
   script:

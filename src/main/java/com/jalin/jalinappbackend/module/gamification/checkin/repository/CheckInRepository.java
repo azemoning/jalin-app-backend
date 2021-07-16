@@ -13,5 +13,6 @@ import java.util.UUID;
 @Repository
 public interface CheckInRepository extends JpaRepository<CheckIn, UUID> {
     Optional<CheckIn> findFirstByUserOrderByCreatedDateDesc(User user);
-    List<CheckIn> findCheckInByCreatedDateBetween(Instant startDate, Instant endDate);
+    List<CheckIn> findCheckInByCreatedDateBetweenOrderByCreatedDateDesc(Instant startDate, Instant endDate);
+    List<CheckIn> findAllByOrderByCreatedDateDesc();
 }

@@ -39,4 +39,7 @@ public class Voucher {
 
     @NotNull
     private LocalDate validity;
+
+    @NotNull
+    private Boolean status = true;
 }
