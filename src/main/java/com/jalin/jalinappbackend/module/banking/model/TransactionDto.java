@@ -52,7 +52,7 @@ public class TransactionDto {
     }
 
     public void setAmount(String amount) {
-        this.amount = amount;
+        this.amount = formatAmount(new BigDecimal(amount));
     }
 
     public void setAmount(BigDecimal amount) {
