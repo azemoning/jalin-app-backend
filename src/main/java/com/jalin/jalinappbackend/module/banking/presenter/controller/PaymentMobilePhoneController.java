@@ -1,7 +1,7 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
-import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDto;
+import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDetailsDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidMobilePhoneDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmPaymentMobilePhoneRequest;
@@ -22,12 +22,6 @@ public class PaymentMobilePhoneController {
     @Autowired
     private PaymentService paymentService;
 
-    @GetMapping("payment/mobile/prepaid/{mobileNumber}/credit")
-    public ResponseEntity<Object> getMobilePhoneCreditOptions(@PathVariable String mobileNumber) {
-        PrepaidMobilePhoneDto prepaidMobilePhoneDto = paymentService.getMobilePhoneCreditOptions(mobileNumber);
-        return new ResponseEntity<>(prepaidMobilePhoneDto, HttpStatus.OK);
-    }
-
     @GetMapping("payment/mobile/prepaid/{mobileNumber}")
     public ResponseEntity<Object> getMobilePhonePrepaidOptions(@PathVariable String mobileNumber) {
         PrepaidMobilePhoneDto prepaidMobilePhoneDto = paymentService.getMobilePhonePrepaidOptions(mobileNumber);
@@ -37,7 +31,7 @@ public class PaymentMobilePhoneController {
     }
 
     @PostMapping(
-            path = "payment/mobile/prepaid/{mobileNumber}/credit/",
+            path = "payment/mobile/prepaid/{mobileNumber}/credit/pay",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> payMobilePhoneCredit(
             @PathVariable String mobileNumber,
@@ -55,10 +49,10 @@ public class PaymentMobilePhoneController {
     public ResponseEntity<Object> confirmMobilePhoneCreditPayment(
             @PathVariable String mobileNumber,
             @Valid @ModelAttribute ConfirmPaymentMobilePhoneRequest requestBody) {
-        ConfirmPaymentDto confirmPaymentDto = paymentService.confirmPaymentMobilePhoneCredit(
+        ConfirmPaymentDetailsDto confirmPaymentDetailsDto = paymentService.confirmPaymentMobilePhoneCredit(
                 requestBody.getProviderId(),
                 UUID.fromString(requestBody.getPrepaidId()),
                 mobileNumber);
-        return new ResponseEntity<>(confirmPaymentDto, HttpStatus.OK);
+        return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
     }
 }
