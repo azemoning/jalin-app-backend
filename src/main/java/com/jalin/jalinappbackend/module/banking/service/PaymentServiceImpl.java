@@ -102,7 +102,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public ConfirmPaymentDto confirmPaymentQr(String corporateId, BigDecimal amount) {
-        return initializeConfirmTransferDto(
+        return initializeConfirmPaymentDto(
                 corporateId,
                 corporateService.getCorporateByCorporateId(corporateId).getCorporateName(),
                 amount,
@@ -204,7 +204,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ConfirmPaymentDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber) {
+    public ConfirmPaymentDetailsDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber) {
         try {
             ResponseEntity<GetProviderResponse> responseProvider = restTemplateUtility.initialize().getForEntity(
                     BASE_URL + GET_PROVIDER_BY_ID + providerId,
@@ -214,12 +214,13 @@ public class PaymentServiceImpl implements PaymentService {
                     BASE_URL + GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID + prepaidId,
                     PrepaidOption.class);
 
-            return initializeConfirmTransferDto(
+            return initializeConfirmPaymentDetailsDto(
                     Objects.requireNonNull(responseProvider.getBody()).getProviderId(),
                     corporateService.getCorporateByCorporateId(providerId).getCorporateName(),
                     Objects.requireNonNull(responsePrepaid.getBody()).getPrice(),
                     IDR_NO_PAYMENT_FEE,
-                    IDR_NO_PAYMENT_DISCOUNT);
+                    IDR_NO_PAYMENT_DISCOUNT,
+                    responsePrepaid.getBody().getPrepaidName());
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
             String error = object.getString("error");
@@ -227,7 +228,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private ConfirmPaymentDto initializeConfirmTransferDto(
+    private ConfirmPaymentDto initializeConfirmPaymentDto(
             String corporateId,
             String corporateName,
             BigDecimal transferAmount,
@@ -240,6 +241,23 @@ public class PaymentServiceImpl implements PaymentService {
                 transferFee,
                 transferDiscount,
                 transferAmount.add(transferFee).subtract(transferDiscount));
+    }
+
+    private ConfirmPaymentDetailsDto initializeConfirmPaymentDetailsDto(
+            String corporateId,
+            String corporateName,
+            BigDecimal transferAmount,
+            BigDecimal transferFee,
+            BigDecimal transferDiscount,
+            Object transferDetails) {
+        return new ConfirmPaymentDetailsDto(
+                corporateId,
+                corporateName,
+                transferAmount,
+                transferFee,
+                transferDiscount,
+                transferAmount.add(transferFee).subtract(transferDiscount),
+                transferDetails);
     }
 
     private ProviderDto getMobilePhoneProvider(String mobilePhoneNumber) {
