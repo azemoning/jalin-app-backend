@@ -55,4 +55,17 @@ public class PaymentMobilePhoneController {
                 mobileNumber);
         return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
     }
+
+    @PostMapping(
+            path = "payment/mobile/prepaid/{mobileNumber}/data/confirm",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> confirmMobilePhoneDataPayment(
+            @PathVariable String mobileNumber,
+            @Valid @ModelAttribute ConfirmPaymentMobilePhoneRequest requestBody) {
+     ConfirmPaymentDetailsDto confirmPaymentDetailsDto = paymentService.confirmPaymentMobilePhoneData(
+             requestBody.getProviderId(),
+             UUID.fromString(requestBody.getPrepaidId()),
+             mobileNumber);
+     return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
+    }
 }

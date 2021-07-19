@@ -42,6 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = "/api/v1/prepaid/mobile/credit";
     private static final String GET_MOBILE_PHONE_DATA_OPTIONS = "/api/v1/prepaid/mobile/data";
     private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = "/api/v1/prepaid/mobile/credit/";
+    private static final String GET_MOBILE_PHONE_DATA_OPTION_BY_ID = "/api/v1/prepaid/mobile/data/";
 
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_PAYMENT_DISCOUNT = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
@@ -213,6 +214,31 @@ public class PaymentServiceImpl implements PaymentService {
             ResponseEntity<PrepaidOption> responsePrepaid = restTemplateUtility.initialize().getForEntity(
                     BASE_URL + GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID + prepaidId,
                     PrepaidOption.class);
+
+            return initializeConfirmPaymentDetailsDto(
+                    Objects.requireNonNull(responseProvider.getBody()).getProviderId(),
+                    corporateService.getCorporateByCorporateId(providerId).getCorporateName(),
+                    Objects.requireNonNull(responsePrepaid.getBody()).getPrice(),
+                    IDR_NO_PAYMENT_FEE,
+                    IDR_NO_PAYMENT_DISCOUNT,
+                    responsePrepaid.getBody().getPrepaidName());
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new ResourceNotFoundException(error);
+        }
+    }
+
+    @Override
+    public ConfirmPaymentDetailsDto confirmPaymentMobilePhoneData(String providerId, UUID prepaidId, String mobilePhoneNumber) {
+        try {
+            ResponseEntity<GetProviderResponse> responseProvider = restTemplateUtility.initialize().getForEntity(
+                    BASE_URL + GET_PROVIDER_BY_ID + providerId,
+                    GetProviderResponse.class);
+
+            ResponseEntity<PrepaidOptionDetails> responsePrepaid = restTemplateUtility.initialize().getForEntity(
+                    BASE_URL + GET_MOBILE_PHONE_DATA_OPTION_BY_ID + prepaidId,
+                    PrepaidOptionDetails.class);
 
             return initializeConfirmPaymentDetailsDto(
                     Objects.requireNonNull(responseProvider.getBody()).getProviderId(),
