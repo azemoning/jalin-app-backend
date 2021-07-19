@@ -42,6 +42,12 @@ public class PaymentBillController {
         return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
     }
 
+    @PostMapping("/payment/electricity/postpaid/{customerId}/confirm")
+    public ResponseEntity<Object> confirmElectricityPostpaidPayment(@PathVariable String customerId) {
+        ConfirmPaymentDetailsDto confirmPaymentDetailsDto = paymentBillService.confirmPaymentElectricityPostpaid(customerId);
+        return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
+    }
+
     @PostMapping(
             path = "/payment/electricity/prepaid/{customerId}/pay",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

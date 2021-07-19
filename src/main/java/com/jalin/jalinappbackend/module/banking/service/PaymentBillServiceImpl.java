@@ -11,7 +11,10 @@ import com.jalin.jalinappbackend.module.banking.model.PrepaidDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidElectricityDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
-import com.jalin.jalinappbackend.module.banking.service.model.payment.*;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.GetPrepaidOptionResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.PaymentElectricityRequest;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.PaymentElectricityResponse;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.PrepaidOption;
 import com.jalin.jalinappbackend.utility.FakerUtility;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
@@ -29,10 +32,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PaymentBillServiceImpl implements PaymentBillService {
@@ -45,6 +45,10 @@ public class PaymentBillServiceImpl implements PaymentBillService {
     private static final String PLN_CORPORATE_ID = "10123";
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_PAYMENT_DISCOUNT = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
+
+    private static final Integer MIN_POSTPAID_BILL = 200000;
+    private static final Integer MAX_POSTPAID_BILL = 2500000;
+    private static final String POSTPAID_PAYMENT_DETAILS = "Electricity postpaid bill";
 
     @Autowired
     private FakerUtility fakerUtility;
@@ -109,6 +113,18 @@ public class PaymentBillServiceImpl implements PaymentBillService {
     }
 
     @Override
+    public ConfirmPaymentDetailsDto confirmPaymentElectricityPostpaid(String customerId) {
+        validateCustomerId(customerId);
+        return initializeConfirmPaymentDetailsDto(
+                PLN_CORPORATE_ID,
+                corporateService.getCorporateByCorporateId(PLN_CORPORATE_ID).getCorporateName(),
+                generatePostpaidBill(),
+                IDR_NO_PAYMENT_FEE,
+                IDR_NO_PAYMENT_DISCOUNT,
+                POSTPAID_PAYMENT_DETAILS);
+    }
+
+    @Override
     public TransactionDto payElectricityPrepaid(String customerId, BigDecimal amount) {
         UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
                 .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
@@ -151,6 +167,12 @@ public class PaymentBillServiceImpl implements PaymentBillService {
         if (!customerId.matches("^[0-9]*$") | (customerId.length() != 12)) {
             throw new CustomerIdNotValidException("Customer ID not valid");
         }
+    }
+
+    private BigDecimal generatePostpaidBill() {
+        Random random = new Random();
+        int randomInteger = random.nextInt(MAX_POSTPAID_BILL - MIN_POSTPAID_BILL) + MIN_POSTPAID_BILL;
+        return new BigDecimal(randomInteger);
     }
 
     private ConfirmPaymentDetailsDto initializeConfirmPaymentDetailsDto(

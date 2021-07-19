@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface PaymentBillService {
     PrepaidElectricityDto getElectricityPrepaidOptions(String customerId);
     ConfirmPaymentDetailsDto confirmPaymentElectricityPrepaid(String customerId, UUID prepaidId);
+    ConfirmPaymentDetailsDto confirmPaymentElectricityPostpaid(String customerId);
     TransactionDto payElectricityPrepaid(String customerId, BigDecimal amount);
 }
