@@ -34,10 +34,12 @@ public class VoucherServiceImpl implements VoucherService {
         for (Voucher data : voucherList) {
             if (voucher.getCategory().equals(data.getCategory())) {
                 if (voucher.getUsage().equals(data.getUsage())) {
-                    if (voucher.getQuota().compareTo(data.getQuota()) == 0) {
-                        if (voucher.getPoints().compareTo(data.getPoints()) == 0) {
-                            if (voucher.getValidity().equals(data.getValidity())) {
-                                throw new AddMissionFailedException("Voucher with same details are already exists");
+                    if (voucher.getAmount().equals(data.getAmount())) {
+                        if (voucher.getQuota().compareTo(data.getQuota()) == 0) {
+                            if (voucher.getPoints().compareTo(data.getPoints()) == 0) {
+                                if (voucher.getValidity().equals(data.getValidity())) {
+                                    throw new AddMissionFailedException("Voucher with same details are already exists");
+                                }
                             }
                         }
                     }
@@ -58,10 +60,12 @@ public class VoucherServiceImpl implements VoucherService {
         for (Voucher data : voucherList) {
             if (voucher.getCategory().equals(data.getCategory())) {
                 if (voucher.getUsage().equals(data.getUsage())) {
-                    if (voucher.getQuota().compareTo(data.getQuota()) == 0) {
-                        if (voucher.getPoints().compareTo(data.getPoints()) == 0) {
-                            if (voucher.getValidity().equals(data.getValidity())) {
-                                throw new AddMissionFailedException("Voucher with same details are already exists");
+                    if (voucher.getAmount().equals(data.getAmount())) {
+                        if (voucher.getQuota().compareTo(data.getQuota()) == 0) {
+                            if (voucher.getPoints().compareTo(data.getPoints()) == 0) {
+                                if (voucher.getValidity().equals(data.getValidity())) {
+                                    throw new AddMissionFailedException("Voucher with same details are already exists");
+                                }
                             }
                         }
                     }
@@ -72,6 +76,7 @@ public class VoucherServiceImpl implements VoucherService {
         findVoucher.setCategory(voucher.getCategory());
         findVoucher.setTncDescription(voucher.getTncDescription());
         findVoucher.setPoints(voucher.getPoints());
+        findVoucher.setAmount(voucher.getAmount());
         findVoucher.setQuota(voucher.getQuota());
         findVoucher.setUsage(voucher.getUsage());
         findVoucher.setValidity(voucher.getValidity());
