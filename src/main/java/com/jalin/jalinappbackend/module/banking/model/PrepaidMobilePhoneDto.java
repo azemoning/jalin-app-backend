@@ -16,5 +16,6 @@ public class PrepaidMobilePhoneDto {
     private String productName;
     private String providerName;
     private String mobilePhoneNumber;
-    private List<PrepaidDto> prepaidList;
+    private List<PrepaidDto> creditList;
+    private List<PrepaidDetailsDto> dataList;
 }

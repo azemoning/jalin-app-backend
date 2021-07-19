@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.banking.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidMobilePhoneDto;
 import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
@@ -25,6 +26,14 @@ public class PaymentMobilePhoneController {
     public ResponseEntity<Object> getMobilePhoneCreditOptions(@PathVariable String mobileNumber) {
         PrepaidMobilePhoneDto prepaidMobilePhoneDto = paymentService.getMobilePhoneCreditOptions(mobileNumber);
         return new ResponseEntity<>(prepaidMobilePhoneDto, HttpStatus.OK);
+    }
+
+    @GetMapping("payment/mobile/prepaid/{mobileNumber}")
+    public ResponseEntity<Object> getMobilePhonePrepaidOptions(@PathVariable String mobileNumber) {
+        PrepaidMobilePhoneDto prepaidMobilePhoneDto = paymentService.getMobilePhonePrepaidOptions(mobileNumber);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "Mobile phone prepaid options successfully found", prepaidMobilePhoneDto),
+                HttpStatus.OK);
     }
 
     @PostMapping(

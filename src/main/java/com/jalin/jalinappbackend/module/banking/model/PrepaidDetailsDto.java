@@ -12,14 +12,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PrepaidDto {
+public class PrepaidDetailsDto {
     private UUID prepaidId;
     private String prepaidName;
+    private String prepaidDetails;
     private String price;
 
-    public PrepaidDto(UUID prepaidId, String prepaidName, BigDecimal price) {
+    public PrepaidDetailsDto(UUID prepaidId, String prepaidName, String prepaidDetails, BigDecimal price) {
         this.prepaidId = prepaidId;
         this.prepaidName = prepaidName;
+        this.prepaidDetails = prepaidDetails;
         this.price = formatAmount(price);
     }
 

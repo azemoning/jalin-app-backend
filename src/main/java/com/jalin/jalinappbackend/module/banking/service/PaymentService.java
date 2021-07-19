@@ -11,6 +11,7 @@ public interface PaymentService {
     TransactionDto payWithQr(String corporateId, BigDecimal amount, String transactionNote);
     ConfirmPaymentDto confirmPaymentQr(String corporateId, BigDecimal amount);
     PrepaidMobilePhoneDto getMobilePhoneCreditOptions(String mobilePhoneNumber);
+    PrepaidMobilePhoneDto getMobilePhonePrepaidOptions(String mobilePhoneNumber);
     TransactionDto payMobilePhoneCredit(String providerId, String mobilePhoneNumber, BigDecimal amount);
     ConfirmPaymentDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber);
 }

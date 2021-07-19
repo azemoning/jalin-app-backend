@@ -40,6 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String GET_PROVIDER_BY_ID = "/api/v1/providers/";
     private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = "/api/v1/providers/find?prefixNumber=";
     private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = "/api/v1/prepaid/mobile/credit";
+    private static final String GET_MOBILE_PHONE_DATA_OPTIONS = "/api/v1/prepaid/mobile/data";
     private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = "/api/v1/prepaid/mobile/credit/";
 
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
@@ -126,7 +127,40 @@ public class PaymentServiceImpl implements PaymentService {
 
         PrepaidMobilePhoneDto prepaidMobilePhoneDto = modelMapperUtility.initialize()
                 .map(providerDto, PrepaidMobilePhoneDto.class);
-        prepaidMobilePhoneDto.setPrepaidList(prepaidDtoList);
+        prepaidMobilePhoneDto.setCreditList(prepaidDtoList);
+        return prepaidMobilePhoneDto;
+    }
+
+    @Override
+    public PrepaidMobilePhoneDto getMobilePhonePrepaidOptions(String mobilePhoneNumber) {
+        ProviderDto providerDto = getMobilePhoneProvider(mobilePhoneNumber);
+
+        ResponseEntity<GetPrepaidOptionResponse> responseCreditOptions = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_MOBILE_PHONE_CREDIT_OPTIONS,
+                GetPrepaidOptionResponse.class);
+
+        ResponseEntity<GetPrepaidOptionDetailsResponse> responseDataOptions = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_MOBILE_PHONE_DATA_OPTIONS,
+                GetPrepaidOptionDetailsResponse.class);
+
+        List<PrepaidDto> creditList = new ArrayList<>();
+        for (PrepaidOption prepaidOption : Objects.requireNonNull(responseCreditOptions.getBody()).getPrepaidOptionList()) {
+            PrepaidDto prepaidDto = modelMapperUtility.initialize()
+                    .map(prepaidOption, PrepaidDto.class);
+            creditList.add(prepaidDto);
+        }
+
+        List<PrepaidDetailsDto> dataList = new ArrayList<>();
+        for (PrepaidOptionDetails prepaidOptionDetails : Objects.requireNonNull(responseDataOptions.getBody()).getPrepaidOptionDetailsList()) {
+            PrepaidDetailsDto prepaidDetailsDto = modelMapperUtility.initialize()
+                    .map(prepaidOptionDetails, PrepaidDetailsDto.class);
+            dataList.add(prepaidDetailsDto);
+        }
+
+        PrepaidMobilePhoneDto prepaidMobilePhoneDto = modelMapperUtility.initialize()
+                .map(providerDto, PrepaidMobilePhoneDto.class);
+        prepaidMobilePhoneDto.setCreditList(creditList);
+        prepaidMobilePhoneDto.setDataList(dataList);
         return prepaidMobilePhoneDto;
     }
 
