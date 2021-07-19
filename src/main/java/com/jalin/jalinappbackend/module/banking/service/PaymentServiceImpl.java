@@ -36,6 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private String BASE_URL;
     private static final String PAYMENT_QR_ENDPOINT = "/api/v1/payment/qr";
     private static final String PAYMENT_MOBILE_PHONE_CREDIT = "/api/v1/payment/mobile/prepaid/credit";
+    private static final String PAYMENT_MOBILE_PHONE_DATA = "/api/v1/payment/mobile/prepaid/data";
 
     private static final String GET_PROVIDER_BY_ID = "/api/v1/providers/";
     private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = "/api/v1/providers/find?prefixNumber=";
@@ -182,6 +183,45 @@ public class PaymentServiceImpl implements PaymentService {
                     BASE_URL + PAYMENT_MOBILE_PHONE_CREDIT,
                     requestEntity,
                     PaymentMobilePhoneCreditResponse.class);
+
+            Transaction transaction = modelMapperUtility.initialize()
+                    .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);
+            transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getSourceTransaction().getTransactionDate()));
+            transaction.setCorporateId(getCorporateId(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setUser(userDetails.getUser());
+
+            Transaction savedTransaction = transactionRepository.save(transaction);
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(savedTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
+            transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            return transactionDto;
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new PaymentFailedException(error);
+        }
+    }
+
+    @Override
+    public TransactionDto payMobilePhoneData(String providerId, String mobilePhoneNumber, BigDecimal amount) {
+        UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+        PaymentMobilePhoneDataRequest request = new PaymentMobilePhoneDataRequest();
+        request.setSourceAccountNumber(userDetails.getAccountNumber());
+        request.setCorporateId(providerId);
+        request.setMobilePhoneNumber(mobilePhoneNumber);
+        request.setAmount(amount);
+
+        try {
+            HttpEntity<PaymentMobilePhoneDataRequest> requestEntity = new HttpEntity<>(request);
+            ResponseEntity<PaymentMobilePhoneDataResponse> response = restTemplateUtility.initialize().postForEntity(
+                    BASE_URL + PAYMENT_MOBILE_PHONE_DATA,
+                    requestEntity,
+                    PaymentMobilePhoneDataResponse.class);
 
             Transaction transaction = modelMapperUtility.initialize()
                     .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);

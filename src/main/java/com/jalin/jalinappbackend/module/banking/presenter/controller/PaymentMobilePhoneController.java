@@ -57,6 +57,19 @@ public class PaymentMobilePhoneController {
     }
 
     @PostMapping(
+            path = "payment/mobile/prepaid/{mobileNumber}/data/pay",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> payMobilePhoneData(
+            @PathVariable String mobileNumber,
+            @Valid @ModelAttribute PaymentMobilePhoneRequest requestBody) {
+        TransactionDto transactionDto = paymentService.payMobilePhoneData(
+                requestBody.getProviderId(),
+                mobileNumber,
+                requestBody.getAmount());
+        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping(
             path = "payment/mobile/prepaid/{mobileNumber}/data/confirm",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> confirmMobilePhoneDataPayment(

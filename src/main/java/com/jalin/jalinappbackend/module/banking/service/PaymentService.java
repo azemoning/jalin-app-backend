@@ -15,6 +15,7 @@ public interface PaymentService {
     PrepaidMobilePhoneDto getMobilePhoneCreditOptions(String mobilePhoneNumber);
     PrepaidMobilePhoneDto getMobilePhonePrepaidOptions(String mobilePhoneNumber);
     TransactionDto payMobilePhoneCredit(String providerId, String mobilePhoneNumber, BigDecimal amount);
+    TransactionDto payMobilePhoneData(String providerId, String mobilePhoneNumber, BigDecimal amount);
     ConfirmPaymentDetailsDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber);
     ConfirmPaymentDetailsDto confirmPaymentMobilePhoneData(String providerId, UUID prepaidId, String mobilePhoneNumber);
 }
