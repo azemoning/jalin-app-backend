@@ -39,6 +39,7 @@ public class PaymentBillServiceImpl implements PaymentBillService {
     @Value("${resource.server.url}")
     private String BASE_URL;
     private static final String PAYMENT_ELECTRICITY_PREPAID = "/api/v1/payment/electricity/prepaid";
+    private static final String PAYMENT_ELECTRICITY_POSTPAID = "/api/v1/payment/electricity/postpaid";
     private static final String GET_ELECTRICITY_PREPAID_OPTIONS = "/api/v1/prepaid/electricity";
     private static final String GET_ELECTRICITY_PREPAID_OPTION_BY_ID = "/api/v1/prepaid/electricity/";
 
@@ -139,6 +140,45 @@ public class PaymentBillServiceImpl implements PaymentBillService {
             HttpEntity<PaymentElectricityRequest> requestEntity = new HttpEntity<>(request);
             ResponseEntity<PaymentElectricityResponse> response = restTemplateUtility.initialize().postForEntity(
                     BASE_URL + PAYMENT_ELECTRICITY_PREPAID,
+                    requestEntity,
+                    PaymentElectricityResponse.class);
+
+            Transaction transaction = modelMapperUtility.initialize()
+                    .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);
+            transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getSourceTransaction().getTransactionDate()));
+            transaction.setCorporateId(getCorporateId(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setUser(userDetails.getUser());
+
+            Transaction savedTransaction = transactionRepository.save(transaction);
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(savedTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
+            transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            return transactionDto;
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new PaymentFailedException(error);
+        }
+    }
+
+    @Override
+    public TransactionDto payElectricityPostpaid(String customerId, BigDecimal amount) {
+        UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+        PaymentElectricityRequest request = new PaymentElectricityRequest();
+        request.setSourceAccountNumber(userDetails.getAccountNumber());
+        request.setCorporateId(PLN_CORPORATE_ID);
+        request.setCustomerId(customerId);
+        request.setAmount(amount);
+
+        try {
+            HttpEntity<PaymentElectricityRequest> requestEntity = new HttpEntity<>(request);
+            ResponseEntity<PaymentElectricityResponse> response = restTemplateUtility.initialize().postForEntity(
+                    BASE_URL + PAYMENT_ELECTRICITY_POSTPAID,
                     requestEntity,
                     PaymentElectricityResponse.class);
 

@@ -57,4 +57,14 @@ public class PaymentBillController {
         TransactionDto transactionDto = paymentBillService.payElectricityPrepaid(customerId, requestBody.getAmount());
         return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
     }
+
+    @PostMapping(
+            path = "/payment/electricity/postpaid/{customerId}/pay",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> payElectricityPostpaid(
+            @PathVariable String customerId,
+            @Valid @ModelAttribute PaymentElectricityRequest requestBody) {
+        TransactionDto transactionDto = paymentBillService.payElectricityPostpaid(customerId, requestBody.getAmount());
+        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
+    }
 }

@@ -12,4 +12,5 @@ public interface PaymentBillService {
     ConfirmPaymentDetailsDto confirmPaymentElectricityPrepaid(String customerId, UUID prepaidId);
     ConfirmPaymentDetailsDto confirmPaymentElectricityPostpaid(String customerId);
     TransactionDto payElectricityPrepaid(String customerId, BigDecimal amount);
+    TransactionDto payElectricityPostpaid(String customerId, BigDecimal amount);
 }
