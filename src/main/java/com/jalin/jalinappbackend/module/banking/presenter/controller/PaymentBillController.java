@@ -3,8 +3,9 @@ package com.jalin.jalinappbackend.module.banking.presenter.controller;
 import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDetailsDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidElectricityDto;
+import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
 import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmPaymentElectricityRequest;
-import com.jalin.jalinappbackend.module.banking.presenter.model.ConfirmPaymentMobilePhoneRequest;
+import com.jalin.jalinappbackend.module.banking.presenter.model.PaymentElectricityRequest;
 import com.jalin.jalinappbackend.module.banking.service.PaymentBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,9 @@ public class PaymentBillController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("payment/electricity/prepaid/{customerId}/confirm")
+    @PostMapping(
+            path = "/payment/electricity/prepaid/{customerId}/confirm",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> confirmElectricityPrepaidPayment(
             @PathVariable String customerId,
             @Valid @ModelAttribute ConfirmPaymentElectricityRequest requestBody) {
@@ -37,5 +40,15 @@ public class PaymentBillController {
                 customerId,
                 UUID.fromString(requestBody.getPrepaidId()));
         return new ResponseEntity<>(confirmPaymentDetailsDto, HttpStatus.OK);
+    }
+
+    @PostMapping(
+            path = "/payment/electricity/prepaid/{customerId}/pay",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> payElectricityPrepaid(
+            @PathVariable String customerId,
+            @Valid @ModelAttribute PaymentElectricityRequest requestBody) {
+        TransactionDto transactionDto = paymentBillService.payElectricityPrepaid(customerId, requestBody.getAmount());
+        return new ResponseEntity<>(transactionDto, HttpStatus.CREATED);
     }
 }

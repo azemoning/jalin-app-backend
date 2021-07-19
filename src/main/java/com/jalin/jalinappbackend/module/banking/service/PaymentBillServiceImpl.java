@@ -1,24 +1,34 @@
 package com.jalin.jalinappbackend.module.banking.service;
 
 import com.jalin.jalinappbackend.exception.CustomerIdNotValidException;
+import com.jalin.jalinappbackend.exception.PaymentFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
+import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
+import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
+import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.model.ConfirmPaymentDetailsDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidDto;
 import com.jalin.jalinappbackend.module.banking.model.PrepaidElectricityDto;
-import com.jalin.jalinappbackend.module.banking.service.model.payment.GetPrepaidOptionResponse;
-import com.jalin.jalinappbackend.module.banking.service.model.payment.PrepaidOption;
+import com.jalin.jalinappbackend.module.banking.model.TransactionDto;
+import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
+import com.jalin.jalinappbackend.module.banking.service.model.payment.*;
 import com.jalin.jalinappbackend.utility.FakerUtility;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
+import com.jalin.jalinappbackend.utility.UserUtility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,10 +38,11 @@ import java.util.UUID;
 public class PaymentBillServiceImpl implements PaymentBillService {
     @Value("${resource.server.url}")
     private String BASE_URL;
+    private static final String PAYMENT_ELECTRICITY_PREPAID = "/api/v1/payment/electricity/prepaid";
     private static final String GET_ELECTRICITY_PREPAID_OPTIONS = "/api/v1/prepaid/electricity";
     private static final String GET_ELECTRICITY_PREPAID_OPTION_BY_ID = "/api/v1/prepaid/electricity/";
-    private static final String PLN_CORPORATE_ID = "10123";
 
+    private static final String PLN_CORPORATE_ID = "10123";
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_PAYMENT_DISCOUNT = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
 
@@ -41,6 +52,13 @@ public class PaymentBillServiceImpl implements PaymentBillService {
     private ModelMapperUtility modelMapperUtility;
     @Autowired
     private RestTemplateUtility restTemplateUtility;
+    @Autowired
+    private UserUtility userUtility;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
+    private UserDetailsRepository userDetailsRepository;
 
     @Autowired
     private CorporateService corporateService;
@@ -90,6 +108,45 @@ public class PaymentBillServiceImpl implements PaymentBillService {
         }
     }
 
+    @Override
+    public TransactionDto payElectricityPrepaid(String customerId, BigDecimal amount) {
+        UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+        PaymentElectricityRequest request = new PaymentElectricityRequest();
+        request.setSourceAccountNumber(userDetails.getAccountNumber());
+        request.setCorporateId(PLN_CORPORATE_ID);
+        request.setCustomerId(customerId);
+        request.setAmount(amount);
+
+        try {
+            HttpEntity<PaymentElectricityRequest> requestEntity = new HttpEntity<>(request);
+            ResponseEntity<PaymentElectricityResponse> response = restTemplateUtility.initialize().postForEntity(
+                    BASE_URL + PAYMENT_ELECTRICITY_PREPAID,
+                    requestEntity,
+                    PaymentElectricityResponse.class);
+
+            Transaction transaction = modelMapperUtility.initialize()
+                    .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);
+            transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getSourceTransaction().getTransactionDate()));
+            transaction.setCorporateId(getCorporateId(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setUser(userDetails.getUser());
+
+            Transaction savedTransaction = transactionRepository.save(transaction);
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(savedTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
+            transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            return transactionDto;
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new PaymentFailedException(error);
+        }
+    }
+
     private void validateCustomerId(String customerId) {
         if (!customerId.matches("^[0-9]*$") | (customerId.length() != 12)) {
             throw new CustomerIdNotValidException("Customer ID not valid");
@@ -111,5 +168,20 @@ public class PaymentBillServiceImpl implements PaymentBillService {
                 transferDiscount,
                 transferAmount.add(transferFee).subtract(transferDiscount),
                 transferDetails);
+    }
+
+    private String getCorporateId(String transactionDescription) {
+        String[] numbers = transactionDescription.split("/");
+        return numbers[0];
+    }
+
+    private String getAccountNumber(String transactionDescription) {
+        String[] numbers = transactionDescription.split("/");
+        return numbers[1];
+    }
+
+    private String getTransactionMessage(String transactionDescription) {
+        String[] numbers = transactionDescription.split("/");
+        return numbers[2];
     }
 }
