@@ -14,6 +14,7 @@ import java.util.UUID;
 @Setter
 public class PrepaidOptionDetails {
     private UUID prepaidId;
+    private String prepaidType;
     private String prepaidName;
     private String prepaidDetails;
     private BigDecimal price;

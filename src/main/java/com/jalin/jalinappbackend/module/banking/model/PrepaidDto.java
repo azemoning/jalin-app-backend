@@ -14,11 +14,13 @@ import java.util.UUID;
 @Setter
 public class PrepaidDto {
     private UUID prepaidId;
+    private String prepaidType;
     private String prepaidName;
     private String price;
 
-    public PrepaidDto(UUID prepaidId, String prepaidName, BigDecimal price) {
+    public PrepaidDto(UUID prepaidId, String prepaidType, String prepaidName, BigDecimal price) {
         this.prepaidId = prepaidId;
+        this.prepaidType = prepaidType;
         this.prepaidName = prepaidName;
         this.price = formatAmount(price);
     }
