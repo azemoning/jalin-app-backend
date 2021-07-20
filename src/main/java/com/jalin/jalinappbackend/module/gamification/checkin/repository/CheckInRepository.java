@@ -15,4 +15,5 @@ public interface CheckInRepository extends JpaRepository<CheckIn, UUID> {
     Optional<CheckIn> findFirstByUserOrderByCreatedDateDesc(User user);
     List<CheckIn> findCheckInByCreatedDateBetweenOrderByCreatedDateDesc(Instant startDate, Instant endDate);
     List<CheckIn> findAllByOrderByCreatedDateDesc();
+    List<CheckIn> findTop4ByCreatedDateBetweenOrderByCreatedDateDesc(Instant startDate, Instant endDate);
 }
