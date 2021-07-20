@@ -1,5 +1,6 @@
 package com.jalin.jalinappbackend.module.gamification.leaderboard.presenter.controller;
 
+import com.jalin.jalinappbackend.model.SuccessDetailsResponse;
 import com.jalin.jalinappbackend.module.gamification.leaderboard.service.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,10 @@ public class LeaderboardController {
 
     @GetMapping("/leaderboard")
     public ResponseEntity<Object> getLeaderboard(){
-        return new ResponseEntity<>(leaderboardService.getUserPointOnLeaderboard(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SuccessDetailsResponse(true, "OK", leaderboardService.getLeaderboardData()),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/leaderboard/search")
