@@ -23,8 +23,8 @@ public class UserMissionController {
         return new ResponseEntity<>(userMissionService.getUserMissions(expiration), HttpStatus.OK);
     }
 
-    @PostMapping("mission/claim/{userMissionId}")
-    public ResponseEntity<Object> claimUserCompletedMissionPoint(@PathVariable UUID userMissionId) {
+    @PostMapping("mission/claim")
+    public ResponseEntity<Object> claimUserCompletedMissionPoint(@RequestBody UUID userMissionId) {
         userMissionService.claimCompletedMissionPoint(userMissionId);
         return new ResponseEntity<>(
                 new SuccessResponse(true, "Mission point claimed successfully"),
