@@ -4,6 +4,7 @@ import com.jalin.jalinappbackend.model.SuccessResponse;
 import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class UserMissionController {
         return new ResponseEntity<>(userMissionService.getUserMissions(expiration), HttpStatus.OK);
     }
 
-    @PostMapping("mission/claim")
+    @PostMapping(path = "mission/claim", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> claimUserCompletedMissionPoint(@RequestBody UUID userMissionId) {
         userMissionService.claimCompletedMissionPoint(userMissionId);
         return new ResponseEntity<>(
