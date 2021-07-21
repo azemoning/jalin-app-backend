@@ -65,6 +65,7 @@ public class VoucherServiceImpl implements VoucherService {
         findVoucher.setPoints(voucher.getPoints());
         findVoucher.setAmount(voucher.getAmount());
         findVoucher.setQuota(voucher.getQuota());
+        findVoucher.setStatus(voucher.getStatus());
         findVoucher.setUsage(voucher.getUsage());
         findVoucher.setValidity(voucher.getValidity());
 
