@@ -89,14 +89,11 @@ public class MissionServiceImpl implements MissionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
         List<UserMission> userMissions = userMissionRepository.findUserMissionsByMission(mission);
 
-        String expiration = mission.getExpiration();
-
-        for (UserMission userMission : userMissions) {
-            userMissionRepository.delete(userMission);
+        if (!userMissions.isEmpty()) {
+            for (UserMission userMission : userMissions) {
+                userMissionRepository.delete(userMission);
+            }
         }
-
         missionRepository.delete(mission);
-
-        userMissionService.forceAssignUserMission(expiration.toUpperCase(Locale.ROOT));
     }
 }
