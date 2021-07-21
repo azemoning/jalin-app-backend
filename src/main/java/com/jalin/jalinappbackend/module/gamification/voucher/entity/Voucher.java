@@ -28,7 +28,7 @@ public class Voucher {
     private String usage;
 
     @NotNull
-    private Integer amount;
+    private Integer amount = 0;
 
     @NotNull
     private Integer quota;
