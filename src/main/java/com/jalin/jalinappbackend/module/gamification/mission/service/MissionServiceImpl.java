@@ -63,22 +63,6 @@ public class MissionServiceImpl implements MissionService {
         Mission findMission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
 
-        List<Mission> allMissions = missionRepository.findAll();
-
-        for (Mission data : allMissions) {
-            if (mission.getActivity().equals(data.getActivity())) {
-                if (mission.getFrequency().equals(data.getFrequency())) {
-                    if (mission.getMinAmount().compareTo(data.getMinAmount()) == 0) {
-                        if (mission.getExpiration().equals(data.getExpiration())) {
-                            if (mission.getPoint().equals(data.getPoint())) {
-                                throw new AddMissionFailedException("Mission with same detail are already exists");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         findMission.setActivity(mission.getActivity());
         findMission.setMissionDescription(mission.getMissionDescription());
         findMission.setTncDescription(mission.getTncDescription());

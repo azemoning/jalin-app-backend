@@ -55,24 +55,6 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher findVoucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
 
-        List<Voucher> voucherList = voucherRepository.findAll();
-
-        for (Voucher data : voucherList) {
-            if (voucher.getCategory().equals(data.getCategory())) {
-                if (voucher.getUsage().equals(data.getUsage())) {
-                    if (voucher.getAmount().equals(data.getAmount())) {
-                        if (voucher.getQuota().compareTo(data.getQuota()) == 0) {
-                            if (voucher.getPoints().compareTo(data.getPoints()) == 0) {
-                                if (voucher.getValidity().equals(data.getValidity())) {
-                                    throw new AddMissionFailedException("Voucher with same details are already exists");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         findVoucher.setCategory(voucher.getCategory());
         findVoucher.setTncDescription(voucher.getTncDescription());
         findVoucher.setPoints(voucher.getPoints());
