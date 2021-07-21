@@ -1,13 +1,16 @@
 package com.jalin.jalinappbackend.module.gamification.voucher.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessResponse;
+import com.jalin.jalinappbackend.module.gamification.voucher.model.RedeemVoucherRequest;
 import com.jalin.jalinappbackend.module.gamification.voucher.service.UserVoucherService;
 import com.jalin.jalinappbackend.module.gamification.voucher.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -30,9 +33,9 @@ public class UserVoucherController {
         return new ResponseEntity<>(userVoucherService.getUserVouchers(), HttpStatus.OK);
     }
 
-    @PostMapping("voucher/{voucherId}")
-    public ResponseEntity<Object> redeemVoucher(@PathVariable UUID voucherId) {
-        userVoucherService.redeemVoucher(voucherId);
+    @PostMapping(path = "voucher/redeem", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> redeemVoucher(@Valid @ModelAttribute RedeemVoucherRequest request) {
+        userVoucherService.redeemVoucher(request.getVoucherId());
         return new ResponseEntity<>(
                 new SuccessResponse(true, "Voucher redeemed successfully"),
                 HttpStatus.OK
