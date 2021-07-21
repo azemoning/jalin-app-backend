@@ -3,11 +3,14 @@ package com.jalin.jalinappbackend.module.gamification.mission.service;
 import com.jalin.jalinappbackend.exception.AddMissionFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
+import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMission;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionRepository;
+import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -15,6 +18,12 @@ public class MissionServiceImpl implements MissionService {
 
     @Autowired
     private MissionRepository missionRepository;
+
+    @Autowired
+    private UserMissionRepository userMissionRepository;
+
+    @Autowired
+    private UserMissionService userMissionService;
 
     @Override
     public List<Mission> getAllMissions() {
@@ -78,6 +87,16 @@ public class MissionServiceImpl implements MissionService {
     public void deleteMission(UUID missionId) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
+        List<UserMission> userMissions = userMissionRepository.findUserMissionsByMission(mission);
+
+        String expiration = mission.getExpiration();
+
+        for (UserMission userMission : userMissions) {
+            userMissionRepository.delete(userMission);
+        }
+
         missionRepository.delete(mission);
+
+        userMissionService.forceAssignUserMission(expiration.toUpperCase(Locale.ROOT));
     }
 }

@@ -2,7 +2,9 @@ package com.jalin.jalinappbackend.module.gamification.voucher.service;
 
 import com.jalin.jalinappbackend.exception.AddMissionFailedException;
 import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
+import com.jalin.jalinappbackend.module.gamification.voucher.entity.UserVoucher;
 import com.jalin.jalinappbackend.module.gamification.voucher.entity.Voucher;
+import com.jalin.jalinappbackend.module.gamification.voucher.repository.UserVoucherRepository;
 import com.jalin.jalinappbackend.module.gamification.voucher.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     private VoucherRepository voucherRepository;
+
+    @Autowired
+    private UserVoucherRepository userVoucherRepository;
 
     @Override
     public List<Voucher> getAllVouchers() {
@@ -71,6 +76,9 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
 
+        UserVoucher userVoucher = userVoucherRepository.findUserVoucherByVoucher(voucher);
+
+        userVoucherRepository.delete(userVoucher);
         voucherRepository.delete(voucher);
     }
 }
