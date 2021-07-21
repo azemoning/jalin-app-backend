@@ -78,7 +78,10 @@ public class VoucherServiceImpl implements VoucherService {
 
         UserVoucher userVoucher = userVoucherRepository.findUserVoucherByVoucher(voucher);
 
-        userVoucherRepository.delete(userVoucher);
+        if (userVoucher != null) {
+            userVoucherRepository.delete(userVoucher);
+        }
+
         voucherRepository.delete(voucher);
     }
 }
