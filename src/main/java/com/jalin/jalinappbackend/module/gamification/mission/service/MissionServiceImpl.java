@@ -78,6 +78,7 @@ public class MissionServiceImpl implements MissionService {
         findMission.setFrequency(mission.getFrequency());
         findMission.setMinAmount(mission.getMinAmount());
         findMission.setExpiration(mission.getExpiration());
+        findMission.setStatus(mission.getStatus());
         findMission.setPoint(mission.getPoint());
 
         missionRepository.save(findMission);
