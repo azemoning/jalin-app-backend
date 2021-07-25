@@ -23,13 +23,10 @@ public class CorporateServiceImpl implements CorporateService {
     @Value("${resource.server.url}")
     private String BASE_URL;
 
-    @Value("${url.map.api}")
-    private String URL_MAP_API;
-
-    private final String GET_BANK_CORPORATES_ENDPOINT = URL_MAP_API + "/v1/corporates/bank";
-    private final String GET_DIGITAL_WALLET_CORPORATES_ENDPOINT = URL_MAP_API + "/v1/corporates/wallet";
-    private final String GET_MERCHANT_CORPORATES_ENDPOINT = URL_MAP_API + "/v1/corporates/merchant";
-    private final String GET_CORPORATE_BY_CORPORATE_ID = URL_MAP_API + "/v1/corporates/";
+    private static final String GET_BANK_CORPORATES_ENDPOINT = "/v1/corporates/bank";
+    private static final String GET_DIGITAL_WALLET_CORPORATES_ENDPOINT = "/v1/corporates/wallet";
+    private static final String GET_MERCHANT_CORPORATES_ENDPOINT = "/v1/corporates/merchant";
+    private static final String GET_CORPORATE_BY_CORPORATE_ID = "/v1/corporates/";
     @Autowired
     private ModelMapperUtility modelMapperUtility;
     @Autowired

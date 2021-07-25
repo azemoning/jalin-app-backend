@@ -47,12 +47,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${resource.server.url}")
     private String BASE_URL;
 
-    @Value("${url.map.api}")
-    private static String URL_MAP_API;
-
-    private static final String ADD_NEW_CUSTOMER_ENDPOINT = URL_MAP_API + "/v1/customers";
-    private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = URL_MAP_API + "/v1/accounts?customerId=";
-    private static final String FIND_CUSTOMER_ENDPOINT = URL_MAP_API + "/v1/customers/find";
+    private static final String ADD_NEW_CUSTOMER_ENDPOINT = "/v1/customers";
+    private static final String ADD_NEW_BANK_ACCOUNT_ENDPOINT = "/v1/accounts?customerId=";
+    private static final String FIND_CUSTOMER_ENDPOINT = "/v1/customers/find";
     private static final String FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER = "idCardNumber=";
     private static final String FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER = "accountNumber=";
     private static final String IDR_CURRENCY = "IDR";
