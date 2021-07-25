@@ -38,7 +38,7 @@ deploy-production:
   script:
     - source /home/gitlab-runner/jalin.env
     - docker-compose down
-    - docker image -a -f
+    - docker image prune -a -f
     - docker-compose up -d
   only:
     - master
