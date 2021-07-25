@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/banking")
+@RequestMapping("${url.map.api}/v1/banking")
 public class PaymentBillController {
     @Autowired
     private PaymentBillService paymentBillService;
