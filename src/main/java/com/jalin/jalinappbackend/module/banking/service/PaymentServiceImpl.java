@@ -34,16 +34,20 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String PAYMENT_QR_ENDPOINT = "/api/v1/payment/qr";
-    private static final String PAYMENT_MOBILE_PHONE_CREDIT = "/api/v1/payment/mobile/prepaid/credit";
-    private static final String PAYMENT_MOBILE_PHONE_DATA = "/api/v1/payment/mobile/prepaid/data";
 
-    private static final String GET_PROVIDER_BY_ID = "/api/v1/providers/";
-    private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = "/api/v1/providers/find?prefixNumber=";
-    private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = "/api/v1/prepaid/mobile/credit";
-    private static final String GET_MOBILE_PHONE_DATA_OPTIONS = "/api/v1/prepaid/mobile/data";
-    private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = "/api/v1/prepaid/mobile/credit/";
-    private static final String GET_MOBILE_PHONE_DATA_OPTION_BY_ID = "/api/v1/prepaid/mobile/data/";
+    @Value("${url.map.api}")
+    private static String URL_MAP_API;
+
+    private static final String PAYMENT_QR_ENDPOINT = URL_MAP_API + "/v1/payment/qr";
+    private static final String PAYMENT_MOBILE_PHONE_CREDIT = URL_MAP_API + "/v1/payment/mobile/prepaid/credit";
+    private static final String PAYMENT_MOBILE_PHONE_DATA = URL_MAP_API + "/v1/payment/mobile/prepaid/data";
+
+    private static final String GET_PROVIDER_BY_ID = URL_MAP_API + "/v1/providers/";
+    private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = URL_MAP_API + "/v1/providers/find?prefixNumber=";
+    private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = URL_MAP_API + "/v1/prepaid/mobile/credit";
+    private static final String GET_MOBILE_PHONE_DATA_OPTIONS = URL_MAP_API + "/v1/prepaid/mobile/data";
+    private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = URL_MAP_API + "/v1/prepaid/mobile/credit/";
+    private static final String GET_MOBILE_PHONE_DATA_OPTION_BY_ID = URL_MAP_API + "/v1/prepaid/mobile/data/";
 
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_PAYMENT_DISCOUNT = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
