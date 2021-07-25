@@ -56,8 +56,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .mvcMatchers("/api/register", "/api/login", "/api/admin/login").permitAll()
+                .mvcMatchers("/register", "/login", "/admin/login").permitAll()
                 .antMatchers("/api/admin/v1/**").hasRole(RoleEnum.ADMIN.name())
+                .antMatchers("/admin/v1/**").hasRole(RoleEnum.ADMIN.name())
                 .antMatchers("/api/v1/**").hasRole(RoleEnum.USER.name())
+                .antMatchers("/v1/**").hasRole(RoleEnum.USER.name())
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated();
