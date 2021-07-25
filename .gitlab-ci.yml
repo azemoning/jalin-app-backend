@@ -36,7 +36,7 @@ deploy-production:
     - production
   stage: deploy
   script:
-    - source ./jalin.env
+    - source /home/gitlab-runner/jalin.env
     - docker-compose down
     - docker image -a -f
     - docker-compose up -d
