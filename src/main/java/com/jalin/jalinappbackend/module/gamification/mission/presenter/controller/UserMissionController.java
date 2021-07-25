@@ -1,16 +1,19 @@
 package com.jalin.jalinappbackend.module.gamification.mission.presenter.controller;
 
 import com.jalin.jalinappbackend.model.SuccessResponse;
+import com.jalin.jalinappbackend.module.gamification.mission.model.ClaimMissionRequest;
 import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("${url.map.api}/v1")
 public class UserMissionController {
 
     @Autowired
@@ -23,9 +26,9 @@ public class UserMissionController {
         return new ResponseEntity<>(userMissionService.getUserMissions(expiration), HttpStatus.OK);
     }
 
-    @PostMapping("mission/claim/{userMissionId}")
-    public ResponseEntity<Object> claimUserCompletedMissionPoint(@PathVariable UUID userMissionId) {
-        userMissionService.claimCompletedMissionPoint(userMissionId);
+    @PostMapping(path = "mission/claim", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<Object> claimUserCompletedMissionPoint(@Valid @ModelAttribute ClaimMissionRequest userMissionId) {
+        userMissionService.claimCompletedMissionPoint(userMissionId.getUserMissionId());
         return new ResponseEntity<>(
                 new SuccessResponse(true, "Mission point claimed successfully"),
                 HttpStatus.OK);

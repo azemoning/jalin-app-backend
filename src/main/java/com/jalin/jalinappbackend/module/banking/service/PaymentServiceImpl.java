@@ -34,13 +34,17 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String PAYMENT_QR_ENDPOINT = "/api/v1/payment/qr";
-    private static final String PAYMENT_MOBILE_PHONE_CREDIT = "/api/v1/payment/mobile/prepaid/credit";
 
-    private static final String GET_PROVIDER_BY_ID = "/api/v1/providers/";
-    private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = "/api/v1/providers/find?prefixNumber=";
-    private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = "/api/v1/prepaid/mobile/credit";
-    private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = "/api/v1/prepaid/mobile/credit/";
+    private static final String PAYMENT_QR_ENDPOINT = "/v1/payment/qr";
+    private static final String PAYMENT_MOBILE_PHONE_CREDIT = "/v1/payment/mobile/prepaid/credit";
+    private static final String PAYMENT_MOBILE_PHONE_DATA = "/v1/payment/mobile/prepaid/data";
+
+    private static final String GET_PROVIDER_BY_ID = "/v1/providers/";
+    private static final String GET_PROVIDER_BY_PREFIX_ENDPOINT = "/v1/providers/find?prefixNumber=";
+    private static final String GET_MOBILE_PHONE_CREDIT_OPTIONS = "/v1/prepaid/mobile/credit";
+    private static final String GET_MOBILE_PHONE_DATA_OPTIONS = "/v1/prepaid/mobile/data";
+    private static final String GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID = "/v1/prepaid/mobile/credit/";
+    private static final String GET_MOBILE_PHONE_DATA_OPTION_BY_ID = "/v1/prepaid/mobile/data/";
 
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_PAYMENT_DISCOUNT = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
@@ -101,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public ConfirmPaymentDto confirmPaymentQr(String corporateId, BigDecimal amount) {
-        return initializeConfirmTransferDto(
+        return initializeConfirmPaymentDto(
                 corporateId,
                 corporateService.getCorporateByCorporateId(corporateId).getCorporateName(),
                 amount,
@@ -126,7 +130,40 @@ public class PaymentServiceImpl implements PaymentService {
 
         PrepaidMobilePhoneDto prepaidMobilePhoneDto = modelMapperUtility.initialize()
                 .map(providerDto, PrepaidMobilePhoneDto.class);
-        prepaidMobilePhoneDto.setPrepaidList(prepaidDtoList);
+        prepaidMobilePhoneDto.setCreditList(prepaidDtoList);
+        return prepaidMobilePhoneDto;
+    }
+
+    @Override
+    public PrepaidMobilePhoneDto getMobilePhonePrepaidOptions(String mobilePhoneNumber) {
+        ProviderDto providerDto = getMobilePhoneProvider(mobilePhoneNumber);
+
+        ResponseEntity<GetPrepaidOptionResponse> responseCreditOptions = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_MOBILE_PHONE_CREDIT_OPTIONS,
+                GetPrepaidOptionResponse.class);
+
+        ResponseEntity<GetPrepaidOptionDetailsResponse> responseDataOptions = restTemplateUtility.initialize().getForEntity(
+                BASE_URL + GET_MOBILE_PHONE_DATA_OPTIONS,
+                GetPrepaidOptionDetailsResponse.class);
+
+        List<PrepaidDto> creditList = new ArrayList<>();
+        for (PrepaidOption prepaidOption : Objects.requireNonNull(responseCreditOptions.getBody()).getPrepaidOptionList()) {
+            PrepaidDto prepaidDto = modelMapperUtility.initialize()
+                    .map(prepaidOption, PrepaidDto.class);
+            creditList.add(prepaidDto);
+        }
+
+        List<PrepaidDetailsDto> dataList = new ArrayList<>();
+        for (PrepaidOptionDetails prepaidOptionDetails : Objects.requireNonNull(responseDataOptions.getBody()).getPrepaidOptionDetailsList()) {
+            PrepaidDetailsDto prepaidDetailsDto = modelMapperUtility.initialize()
+                    .map(prepaidOptionDetails, PrepaidDetailsDto.class);
+            dataList.add(prepaidDetailsDto);
+        }
+
+        PrepaidMobilePhoneDto prepaidMobilePhoneDto = modelMapperUtility.initialize()
+                .map(providerDto, PrepaidMobilePhoneDto.class);
+        prepaidMobilePhoneDto.setCreditList(creditList);
+        prepaidMobilePhoneDto.setDataList(dataList);
         return prepaidMobilePhoneDto;
     }
 
@@ -170,7 +207,46 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ConfirmPaymentDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber) {
+    public TransactionDto payMobilePhoneData(String providerId, String mobilePhoneNumber, BigDecimal amount) {
+        UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User details not found"));
+
+        PaymentMobilePhoneDataRequest request = new PaymentMobilePhoneDataRequest();
+        request.setSourceAccountNumber(userDetails.getAccountNumber());
+        request.setCorporateId(providerId);
+        request.setMobilePhoneNumber(mobilePhoneNumber);
+        request.setAmount(amount);
+
+        try {
+            HttpEntity<PaymentMobilePhoneDataRequest> requestEntity = new HttpEntity<>(request);
+            ResponseEntity<PaymentMobilePhoneDataResponse> response = restTemplateUtility.initialize().postForEntity(
+                    BASE_URL + PAYMENT_MOBILE_PHONE_DATA,
+                    requestEntity,
+                    PaymentMobilePhoneDataResponse.class);
+
+            Transaction transaction = modelMapperUtility.initialize()
+                    .map(Objects.requireNonNull(response.getBody()).getSourceTransaction(), Transaction.class);
+            transaction.setTransactionDate(LocalDate.parse(Objects.requireNonNull(response.getBody()).getSourceTransaction().getTransactionDate()));
+            transaction.setCorporateId(getCorporateId(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setAccountNumber(getAccountNumber(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setTransactionMessage(getTransactionMessage(response.getBody().getSourceTransaction().getTransactionDescription()));
+            transaction.setUser(userDetails.getUser());
+
+            Transaction savedTransaction = transactionRepository.save(transaction);
+            TransactionDto transactionDto = modelMapperUtility.initialize()
+                    .map(savedTransaction, TransactionDto.class);
+            transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
+            transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            return transactionDto;
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new PaymentFailedException(error);
+        }
+    }
+
+    @Override
+    public ConfirmPaymentDetailsDto confirmPaymentMobilePhoneCredit(String providerId, UUID prepaidId, String mobilePhoneNumber) {
         try {
             ResponseEntity<GetProviderResponse> responseProvider = restTemplateUtility.initialize().getForEntity(
                     BASE_URL + GET_PROVIDER_BY_ID + providerId,
@@ -180,12 +256,13 @@ public class PaymentServiceImpl implements PaymentService {
                     BASE_URL + GET_MOBILE_PHONE_CREDIT_OPTION_BY_ID + prepaidId,
                     PrepaidOption.class);
 
-            return initializeConfirmTransferDto(
+            return initializeConfirmPaymentDetailsDto(
                     Objects.requireNonNull(responseProvider.getBody()).getProviderId(),
                     corporateService.getCorporateByCorporateId(providerId).getCorporateName(),
                     Objects.requireNonNull(responsePrepaid.getBody()).getPrice(),
                     IDR_NO_PAYMENT_FEE,
-                    IDR_NO_PAYMENT_DISCOUNT);
+                    IDR_NO_PAYMENT_DISCOUNT,
+                    responsePrepaid.getBody().getPrepaidName());
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
             String error = object.getString("error");
@@ -193,7 +270,32 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private ConfirmPaymentDto initializeConfirmTransferDto(
+    @Override
+    public ConfirmPaymentDetailsDto confirmPaymentMobilePhoneData(String providerId, UUID prepaidId, String mobilePhoneNumber) {
+        try {
+            ResponseEntity<GetProviderResponse> responseProvider = restTemplateUtility.initialize().getForEntity(
+                    BASE_URL + GET_PROVIDER_BY_ID + providerId,
+                    GetProviderResponse.class);
+
+            ResponseEntity<PrepaidOptionDetails> responsePrepaid = restTemplateUtility.initialize().getForEntity(
+                    BASE_URL + GET_MOBILE_PHONE_DATA_OPTION_BY_ID + prepaidId,
+                    PrepaidOptionDetails.class);
+
+            return initializeConfirmPaymentDetailsDto(
+                    Objects.requireNonNull(responseProvider.getBody()).getProviderId(),
+                    corporateService.getCorporateByCorporateId(providerId).getCorporateName(),
+                    Objects.requireNonNull(responsePrepaid.getBody()).getPrice(),
+                    IDR_NO_PAYMENT_FEE,
+                    IDR_NO_PAYMENT_DISCOUNT,
+                    responsePrepaid.getBody().getPrepaidName());
+        } catch (HttpClientErrorException exception) {
+            JSONObject object = new JSONObject(exception.getResponseBodyAsString());
+            String error = object.getString("error");
+            throw new ResourceNotFoundException(error);
+        }
+    }
+
+    private ConfirmPaymentDto initializeConfirmPaymentDto(
             String corporateId,
             String corporateName,
             BigDecimal transferAmount,
@@ -206,6 +308,23 @@ public class PaymentServiceImpl implements PaymentService {
                 transferFee,
                 transferDiscount,
                 transferAmount.add(transferFee).subtract(transferDiscount));
+    }
+
+    private ConfirmPaymentDetailsDto initializeConfirmPaymentDetailsDto(
+            String corporateId,
+            String corporateName,
+            BigDecimal transferAmount,
+            BigDecimal transferFee,
+            BigDecimal transferDiscount,
+            Object transferDetails) {
+        return new ConfirmPaymentDetailsDto(
+                corporateId,
+                corporateName,
+                transferAmount,
+                transferFee,
+                transferDiscount,
+                transferAmount.add(transferFee).subtract(transferDiscount),
+                transferDetails);
     }
 
     private ProviderDto getMobilePhoneProvider(String mobilePhoneNumber) {

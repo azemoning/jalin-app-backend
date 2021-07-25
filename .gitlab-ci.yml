@@ -1,8 +1,9 @@
 image: maven:3-jdk-11
 
 cache:
+  key: "$CI_JOB_NAME"
   paths:
-    - .m2/
+    - .m2/repository
 
 stages:
   - build
@@ -10,14 +11,14 @@ stages:
 
 maven-build:
   tags:
-    - production
-  image: maven:3-jdk-11
+    - build
   stage: build
-  script: "mvn -Pproduction clean package -DskipTests"
+  script:
+    - mvn -Pproduction spring-boot:build-image -DskipTests -Dspring.boot.build-image.imageName=jalin-backend
   only:
     - master
 
-deploy:
+deploy-development:
   tags:
     - development
   stage: deploy
@@ -27,5 +28,17 @@ deploy:
     - apt-get install -y ruby-dev
     - gem install dpl
     - dpl --provider=heroku --app=$APP_NAME --api-key=$HEROKU_API_KEY
+  only:
+    - develop
+
+deploy-production:
+  tags:
+    - production
+  stage: deploy
+  script:
+    - source ./jalin.env
+    - docker-compose down
+    - docker image -a -f
+    - docker-compose up -d
   only:
     - master

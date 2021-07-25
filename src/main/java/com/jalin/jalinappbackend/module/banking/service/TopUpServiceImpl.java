@@ -34,7 +34,8 @@ import java.util.Objects;
 public class TopUpServiceImpl implements TopUpService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String FUND_TRANSFER_VIRTUAL_ENDPOINT = "/api/v1/transfers/virtual";
+
+    private static final String FUND_TRANSFER_VIRTUAL_ENDPOINT = "/v1/transfers/virtual";
     private static final BigDecimal IDR_NO_TRANSFER_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     @Autowired
     private ModelMapperUtility modelMapperUtility;

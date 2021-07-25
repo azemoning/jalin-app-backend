@@ -1,6 +1,5 @@
 package com.jalin.jalinappbackend.module.banking.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class TransactionDto {
@@ -54,7 +52,7 @@ public class TransactionDto {
     }
 
     public void setAmount(String amount) {
-        this.amount = amount;
+        this.amount = formatAmount(new BigDecimal(amount));
     }
 
     public void setAmount(BigDecimal amount) {
@@ -66,7 +64,7 @@ public class TransactionDto {
         symbols.setDecimalSeparator(',');
         symbols.setGroupingSeparator('.');
 
-        String pattern = "#,##0.##";
+        String pattern = "#,###,###,###";
         DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
         return decimalFormat.format(amount);
     }

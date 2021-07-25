@@ -161,6 +161,7 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         UserDetails userDetails = userDetailsRepository.findByUser(transaction.getUser())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         transactionDetailsDto.setSourceAccountNumber(userDetails.getAccountNumber());
+        transactionDetailsDto.setSourceAccountCustomerName(userDetails.getFullName());
         return transactionDetailsDto;
     }
 

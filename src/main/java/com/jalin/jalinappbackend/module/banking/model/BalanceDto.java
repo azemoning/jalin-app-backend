@@ -33,7 +33,7 @@ public class BalanceDto {
         symbols.setDecimalSeparator(',');
         symbols.setGroupingSeparator('.');
 
-        String pattern = "#,##0.##";
+        String pattern = "#,###,###,###";
         DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
         return decimalFormat.format(amount);
     }

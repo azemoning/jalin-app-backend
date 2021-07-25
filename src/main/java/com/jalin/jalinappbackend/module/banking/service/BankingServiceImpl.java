@@ -35,9 +35,10 @@ import java.util.Objects;
 public class BankingServiceImpl implements BankingService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String GET_BANK_ACCOUNT_ENDPOINT = "/api/v1/accounts/";
-    private static final String FUND_TRANSFER_ENDPOINT = "/api/v1/transfers";
-    private static final String FUND_TRANSFER_DOMESTIC_ENDPOINT = "/api/v1/transfers/domestic";
+
+    private static final String GET_BANK_ACCOUNT_ENDPOINT = "/v1/accounts/";
+    private static final String FUND_TRANSFER_ENDPOINT = "/v1/transfers";
+    private static final String FUND_TRANSFER_DOMESTIC_ENDPOINT = "/v1/transfers/domestic";
     private static final BigDecimal IDR_TRANSFER_FEE = new BigDecimal("6500").setScale(2, RoundingMode.UNNECESSARY);
     private static final BigDecimal IDR_NO_TRANSFER_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);
     @Autowired

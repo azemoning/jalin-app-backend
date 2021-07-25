@@ -39,6 +39,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "TRANSFER_DOMESTIC",
+                    0,
                     10,
                     "Free 10x transfer to any bank",
                     7000,
@@ -48,6 +49,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "TRANSFER_DOMESTIC",
+                    0,
                     3,
                     "Free 3x transfer to any bank voucher",
                     1500,
@@ -57,6 +59,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "TRANSFER_DOMESTIC",
+                    0,
                     5,
                     "Free 5x transfer to any bank voucher",
                     2000,
@@ -66,6 +69,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "TOP_UP",
+                    0,
                     10,
                     "Free 10x top up e-wallet (OVO, GOPAY, Shopee Pay)",
                     750,
@@ -75,6 +79,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "PAYMENT_BILL_PLN",
+                    0,
                     3,
                     "Free 3x PLN bill payment fee",
                     1000,
@@ -84,6 +89,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "PAYMENT_BILL_PDAM",
+                    0,
                     3,
                     "Free 3x PDAM bill payment fee",
                     1000,
@@ -93,6 +99,7 @@ public class VoucherSeeder implements CommandLineRunner {
             addVoucher(
                     "JALIN_OFFER",
                     "PAYMENT_BILL_INTERNET",
+                    0,
                     3,
                     "Free 3x Indihome or FirstMedia or Biznet bill payment fee",
                     1000,
@@ -101,7 +108,8 @@ public class VoucherSeeder implements CommandLineRunner {
 
             addVoucher(
                     "VOUCHER",
-                    "PAYMENT_MOBILE_PHONE_CREDIT_25000",
+                    "PAYMENT_MOBILE_PHONE_CREDIT",
+                    25000,
                     1,
                     "Free pulsa any operator Rp 25.000",
                     4500,
@@ -110,7 +118,8 @@ public class VoucherSeeder implements CommandLineRunner {
 
             addVoucher(
                     "VOUCHER",
-                    "PAYMENT_MOBILE_PHONE_CREDIT_15000",
+                    "PAYMENT_MOBILE_PHONE_CREDIT",
+                    15000,
                     1,
                     "Free pulsa any operator Rp 15.000",
                     3000,
@@ -119,9 +128,10 @@ public class VoucherSeeder implements CommandLineRunner {
 
             addVoucher(
                     "VOUCHER",
-                    "PAYMENT_MOBILE_PHONE_DATA_5GB",
+                    "PAYMENT_MOBILE_PHONE_DATA",
+                    20000,
                     1,
-                    "Free Tsel or Indosat or SmartFren, or Three quota 5GB",
+                    "Discount Tsel or Indosat or SmartFren, or Three quota Rp 20.000",
                     5000,
                     today.plusMonths(3)
             );
@@ -131,6 +141,7 @@ public class VoucherSeeder implements CommandLineRunner {
     private void addVoucher(
             String category,
             String usage,
+            Integer amount,
             Integer quota,
             String tncDescription,
             Integer points,
@@ -139,6 +150,7 @@ public class VoucherSeeder implements CommandLineRunner {
         Voucher voucher = new Voucher();
         voucher.setCategory(category);
         voucher.setUsage(usage);
+        voucher.setAmount(amount);
         voucher.setQuota(quota);
         voucher.setTncDescription(tncDescription);
         voucher.setPoints(points);

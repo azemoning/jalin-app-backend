@@ -25,7 +25,8 @@ import java.util.Objects;
 public class TransferListServiceImpl implements TransferListService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String FIND_CUSTOMER_ENDPOINT = "/api/v1/customers/find";
+
+    private static final String FIND_CUSTOMER_ENDPOINT = "/v1/customers/find";
     private static final String FIND_CUSTOMER_ENDPOINT_ID_CARD_NUMBER_PARAMETER = "idCardNumber=";
     private static final String FIND_CUSTOMER_ENDPOINT_ACCOUNT_NUMBER_PARAMETER = "accountNumber=";
     @Autowired

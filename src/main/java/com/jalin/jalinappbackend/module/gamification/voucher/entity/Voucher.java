@@ -28,6 +28,9 @@ public class Voucher {
     private String usage;
 
     @NotNull
+    private Integer amount = 0;
+
+    @NotNull
     private Integer quota;
 
     @Column(name = "tnc_description")
