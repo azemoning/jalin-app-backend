@@ -14,7 +14,7 @@ maven-build:
     - build
   stage: build
   script:
-    - mvn -Pproduction spring-boot:build-image -DskipTests -Dspring.boot.build-image.imageName=jalin-backend
+    - mvn -Pproduction -DskipTests spring-boot:build-image
   only:
     - master
 
@@ -36,9 +36,9 @@ deploy-production:
     - production
   stage: deploy
   script:
-    - source /home/gitlab-runner/jalin.env
+    - docker tags jalin-app-backend:0.0.1-SNAPSHOT jalin-app-backend:latest
     - docker-compose down
-    - docker image prune -a -f
     - docker-compose up -d
+    - docker image prune -a -f
   only:
     - master
