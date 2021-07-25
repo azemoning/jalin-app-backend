@@ -16,10 +16,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PrepaidOption {
+public class PrepaidOptionDetails {
     private UUID prepaidId;
     private String prepaidType;
     private String prepaidName;
+    private String prepaidDetails;
     private BigDecimal price;
 
     public void setPrice(BigDecimal amount) {
@@ -32,6 +33,7 @@ public class PrepaidOption {
         this.prepaidId = objectMapper.convertValue(data.get("prepaidId"), UUID.class);
         this.prepaidType = (String) data.get("prepaidType");
         this.prepaidName = (String) data.get("prepaidName");
+        this.prepaidDetails = (String) data.get("prepaidDetails");
         this.price = BigDecimal.valueOf((Double) data.get("price")).setScale(2, RoundingMode.UNNECESSARY);
     }
 }
