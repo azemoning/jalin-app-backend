@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("${url.map.api}/v1")
 public class UserMissionController {
 
     @Autowired

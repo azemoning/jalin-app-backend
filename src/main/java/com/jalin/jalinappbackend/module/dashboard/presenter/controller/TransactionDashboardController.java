@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/v1")
+@RequestMapping("${url.map.api}/admin/v1")
 public class TransactionDashboardController {
     @Autowired
     private TransactionDashboardService transactionDashboardService;

@@ -38,10 +38,14 @@ import java.util.*;
 public class PaymentBillServiceImpl implements PaymentBillService {
     @Value("${resource.server.url}")
     private String BASE_URL;
-    private static final String PAYMENT_ELECTRICITY_PREPAID = "/api/v1/payment/electricity/prepaid";
-    private static final String PAYMENT_ELECTRICITY_POSTPAID = "/api/v1/payment/electricity/postpaid";
-    private static final String GET_ELECTRICITY_PREPAID_OPTIONS = "/api/v1/prepaid/electricity";
-    private static final String GET_ELECTRICITY_PREPAID_OPTION_BY_ID = "/api/v1/prepaid/electricity/";
+
+    @Value("${url.map.api}")
+    private static String URL_MAP_API;
+
+    private static final String PAYMENT_ELECTRICITY_PREPAID = URL_MAP_API + "/v1/payment/electricity/prepaid";
+    private static final String PAYMENT_ELECTRICITY_POSTPAID = URL_MAP_API + "/v1/payment/electricity/postpaid";
+    private static final String GET_ELECTRICITY_PREPAID_OPTIONS = URL_MAP_API + "/v1/prepaid/electricity";
+    private static final String GET_ELECTRICITY_PREPAID_OPTION_BY_ID = URL_MAP_API + "/v1/prepaid/electricity/";
 
     private static final String PLN_CORPORATE_ID = "10123";
     private static final BigDecimal IDR_NO_PAYMENT_FEE = new BigDecimal("0").setScale(2, RoundingMode.UNNECESSARY);

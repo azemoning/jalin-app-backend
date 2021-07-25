@@ -9,17 +9,12 @@ stages:
   - build
   - deploy
 
-variables:
-  JDBC_DATABASE_URL: $DATABASE_URL
-  JDBC_DATABASE_USER: $DATABASE_USER
-  JDBC_DATABASE_PASSWORD: $DATABASE_PASSWORD
-
 maven-build:
   tags:
     - build
   stage: build
   script:
-    - mvn -Pproduction spring-boot:build-image -DskipTests -Dspring.boot.build-image.imageName=jalin-backend -Dresource.server.url=$RESOURCE_SERVER_URL -Dserver.port=8888
+    - mvn -Pproduction spring-boot:build-image -DskipTests -Dspring.boot.build-image.imageName=jalin-backend
   only:
     - master
 
@@ -41,8 +36,9 @@ deploy-production:
     - production
   stage: deploy
   script:
-    - docker container rm jalin-backend -f
-    - docker run -itd -p 8888:8888 --name jalin-backend --restart always -e JDBC_DATABASE_URL=$JDBC_DATABASE_URL -e JDBC_DATABASE_USER=$JDBC_DATABASE_USER -e JDBC_DATABASE_PASSWORD=$JDBC_DATABASE_PASSWORD jalin-backend
+    - source ./jalin.env
+    - docker-compose down
     - docker image -a -f
+    - docker-compose up -d
   only:
     - master
