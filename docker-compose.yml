@@ -13,7 +13,7 @@ services:
     restart: on-failure
     depends_on:
       - core
-    image: jalin-backend
+    image: jalin-app-backend:0.0.1-SNAPSHOT
     ports:
     - 8889:8080
     environment:
