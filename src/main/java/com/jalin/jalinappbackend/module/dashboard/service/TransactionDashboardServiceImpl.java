@@ -4,7 +4,9 @@ import com.jalin.jalinappbackend.exception.ResourceNotFoundException;
 import com.jalin.jalinappbackend.module.authentication.entity.UserDetails;
 import com.jalin.jalinappbackend.module.authentication.repository.UserDetailsRepository;
 import com.jalin.jalinappbackend.module.banking.entity.Transaction;
+import com.jalin.jalinappbackend.module.banking.entity.TransferList;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
+import com.jalin.jalinappbackend.module.banking.repository.TransferListRepository;
 import com.jalin.jalinappbackend.module.banking.service.CorporateService;
 import com.jalin.jalinappbackend.module.dashboard.model.transaction.*;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
@@ -21,6 +23,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 public class TransactionDashboardServiceImpl implements TransactionDashboardService {
@@ -37,6 +40,8 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
     private UserDetailsRepository userDetailsRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private TransferListRepository transferListRepository;
 
     @Autowired
     private CorporateService corporateService;
@@ -137,7 +142,7 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
         transactionAllDto.setCurrentPage(currentPage);
         transactionAllDto.setTotalPages(totalPages);
         transactionAllDto.setStartDate(startDate);
-        transactionAllDto.setEndDate(startDate);
+        transactionAllDto.setEndDate(endDate);
         transactionAllDto.setKeyword(keyword);
         transactionAllDto.setTransactionList(transactionDtoList);
         return transactionAllDto;
@@ -156,12 +161,19 @@ public class TransactionDashboardServiceImpl implements TransactionDashboardServ
                 .getCorporateName());
         transactionDetailsDto.setBeneficiaryAccountNumber(transaction.getAccountNumber());
         transactionDetailsDto.setTransactionTime(
-                LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+                LocalTime.ofInstant(transaction.getCreatedDate(), ZoneId.of("Asia/Jakarta")));
 
         UserDetails userDetails = userDetailsRepository.findByUser(transaction.getUser())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         transactionDetailsDto.setSourceAccountNumber(userDetails.getAccountNumber());
         transactionDetailsDto.setSourceAccountCustomerName(userDetails.getFullName());
+
+        Optional<TransferList> transferList = transferListRepository.findByUserAndCorporateIdAndAccountNumber(
+                transaction.getUser(),
+                transaction.getCorporateId(),
+                transaction.getAccountNumber());
+        transactionDetailsDto.setBeneficiaryAccountCustomerName(transferList.map(TransferList::getFullName).orElse(null));
+
         return transactionDetailsDto;
     }
 
