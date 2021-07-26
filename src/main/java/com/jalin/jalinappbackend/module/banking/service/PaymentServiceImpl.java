@@ -9,6 +9,7 @@ import com.jalin.jalinappbackend.module.banking.entity.Transaction;
 import com.jalin.jalinappbackend.module.banking.model.*;
 import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository;
 import com.jalin.jalinappbackend.module.banking.service.model.payment.*;
+import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import com.jalin.jalinappbackend.utility.UserUtility;
@@ -64,6 +65,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private CorporateService corporateService;
 
+    @Autowired
+    private UserMissionService userMissionService;
+
     @Override
     public TransactionDto payWithQr(String corporateId, BigDecimal amount, String transactionNote) {
         UserDetails userDetails = userDetailsRepository.findByUser(userUtility.getSignedInUser())
@@ -95,6 +99,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .map(savedTransaction, TransactionDto.class);
             transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
             transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            userMissionService.checkUserMissionProgress();
             return transactionDto;
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
