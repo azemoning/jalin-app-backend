@@ -6,6 +6,8 @@ import com.jalin.jalinappbackend.module.gamification.mission.entity.Mission;
 import com.jalin.jalinappbackend.module.gamification.mission.entity.UserMission;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.MissionRepository;
 import com.jalin.jalinappbackend.module.gamification.mission.repository.UserMissionRepository;
+import com.jalin.jalinappbackend.module.gamification.point.entity.PointSource;
+import com.jalin.jalinappbackend.module.gamification.point.repository.PointSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class MissionServiceImpl implements MissionService {
     private UserMissionRepository userMissionRepository;
 
     @Autowired
-    private UserMissionService userMissionService;
+    private PointSourceRepository pointSourceRepository;
 
     @Override
     public List<Mission> getAllMissions() {
@@ -88,6 +90,7 @@ public class MissionServiceImpl implements MissionService {
     public void deleteMission(UUID missionId) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
+        List<PointSource> pointSources = pointSourceRepository.findByMission(mission);
         List<UserMission> userMissions = userMissionRepository.findUserMissionsByMission(mission);
 
         if (!userMissions.isEmpty()) {
@@ -95,6 +98,13 @@ public class MissionServiceImpl implements MissionService {
                 userMissionRepository.delete(userMission);
             }
         }
+
+        if (!pointSources.isEmpty()) {
+            for (PointSource pointSource : pointSources) {
+                pointSourceRepository.delete(pointSource);
+            }
+        }
+
         missionRepository.delete(mission);
     }
 }
