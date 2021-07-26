@@ -36,8 +36,10 @@ deploy-production:
     - production
   stage: deploy
   script:
-    - docker tag jalin-app-backend:0.0.1-SNAPSHOT jalin-app-backend:latest
+    - docker tag jalin-app-backend:latest jalin-app-backend:archive
     - docker-compose down
+    - docker rmi jalin-app-backend:latest -f
+    - docker tag jalin-app-backend:0.0.1-SNAPSHOT jalin-app-backend:latest
     - docker-compose up -d
     - docker image prune -a -f
   only:
