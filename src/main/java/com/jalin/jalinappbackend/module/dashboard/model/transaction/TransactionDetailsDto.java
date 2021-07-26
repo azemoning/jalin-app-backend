@@ -20,6 +20,7 @@ public class TransactionDetailsDto {
     private String sourceAccountCustomerName;
     private String corporateName;
     private String beneficiaryAccountNumber;
+    private String beneficiaryAccountCustomerName;
     private LocalDate transactionDate;
     private LocalTime transactionTime;
     private String transactionType;
