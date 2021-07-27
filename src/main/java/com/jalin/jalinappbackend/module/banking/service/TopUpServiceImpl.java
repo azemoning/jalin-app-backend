@@ -12,6 +12,7 @@ import com.jalin.jalinappbackend.module.banking.repository.TransactionRepository
 import com.jalin.jalinappbackend.module.banking.repository.WalletListRepository;
 import com.jalin.jalinappbackend.module.banking.service.model.FundTransferVirtualRequest;
 import com.jalin.jalinappbackend.module.banking.service.model.FundTransferVirtualResponse;
+import com.jalin.jalinappbackend.module.gamification.mission.service.UserMissionService;
 import com.jalin.jalinappbackend.utility.ModelMapperUtility;
 import com.jalin.jalinappbackend.utility.RestTemplateUtility;
 import com.jalin.jalinappbackend.utility.UserUtility;
@@ -51,6 +52,9 @@ public class TopUpServiceImpl implements TopUpService {
     private WalletListRepository walletListRepository;
     @Autowired
     private CorporateService corporateService;
+
+    @Autowired
+    private UserMissionService userMissionService;
 
     @Override
     public ConfirmTransferDto confirmTransfer(String corporateId, String beneficiaryAccountNumber, BigDecimal amount) {
@@ -99,6 +103,7 @@ public class TopUpServiceImpl implements TopUpService {
                     .map(savedTransaction, TransactionDto.class);
             transactionDto.setCorporateName(corporateService.getCorporateByCorporateId(savedTransaction.getCorporateId()).getCorporateName());
             transactionDto.setTransactionTime(LocalTime.ofInstant(savedTransaction.getCreatedDate(), ZoneId.of("Asia/Ho_Chi_Minh")));
+            userMissionService.checkUserMissionProgress();
             return transactionDto;
         } catch (HttpClientErrorException exception) {
             JSONObject object = new JSONObject(exception.getResponseBodyAsString());
