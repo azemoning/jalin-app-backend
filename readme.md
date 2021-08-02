@@ -31,6 +31,8 @@
 
 ## Running Application
 
+First you need to clone [the banking resource repository](https://github.com/kristiansandratama/jalin-bank-resource-server) and run it before running this backend application.
+
 - Copy ```application-development.properties```
 - Paste as ```application-local.properties```
 - Change all the environment variables corresponding value with your local environment
